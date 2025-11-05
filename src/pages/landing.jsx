@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import bugBounty from "../assets/images/bug-bounty-logo.png";
 import shieldBg from "../assets/images/Group-1450.svg";
-import speaker1 from "../assets/images/image-1.png";
-import speaker2 from "../assets/images/image-2.png";
-import speaker3 from "../assets/images/image-3.png";
-import speaker4 from "../assets/images/image-4.png";
+import speaker1 from "../assets/images/Image-1.png";
+import speaker2 from "../assets/images/Image-2.png";
+import speaker3 from "../assets/images/Image-3.png";
+import speaker4 from "../assets/images/Image-4.png";
 import Logotypes from "../assets/images/Logotypes.png";
 
 
