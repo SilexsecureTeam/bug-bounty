@@ -15,8 +15,10 @@ export default function Register() {
       />
 
       <div className="text-center mb-10 z-10">
-        <h2 className="text-lg text-gray-300">READY TO</h2>
-        <h1 className="text-4xl font-bold text-neon">FORTIFY THE SHIELD?</h1>
+        <h2 className="text-2xl font bold mb-6">
+          <span className="text-white">READY TO</span> <br />
+          <span className="text-[#85AB20]">FORTIFY THE SHIELD?</span>
+        </h2>
       </div>
 
       {/* Registration Box */}

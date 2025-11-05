@@ -93,13 +93,13 @@ export default function Landing() {
   Register now ↗
 </a>
       </section>
+      <div className="w-full border-t-3 border-[#85AB20]"></div>
+
 
       {/* Info Section */}
-<section className="bg-[#1c1c1c] text-white px-8 md:px-16 pt-24 relative z-10">
+<section className="text-center mt">
   <div className="flex flex-col space-y-12">
-    {/* Line at top of section */}
-    <div className="w-full border-t-3 border-[#85AB20]"></div>
-
+    
     {/* Button container */}
     <div className="flex justify-start pl-[12px]">
       <button
@@ -210,25 +210,19 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 gap-12">
             <div>
               <h3 className="text-lime-400 text-lg font-semibold">
-                DAY 1 – December 4, 2025
+                 Nov  2025
               </h3>
               <ul className="mt-4 space-y-2 text-gray-300 text-sm">
-                <li>09:00 – Opening Ceremony</li>
-                <li>10:30 – Keynote: The Future of African Cyber Defence</li>
-                <li>12:00 – Lunch & Networking</li>
-                <li>14:00 – Live Hacking Demonstrations</li>
-                <li>16:00 – Panel: Sovereign Encryption Challenges</li>
+                <li>09:30-  dec 4</li>
+                
               </ul>
 
               <h3 className="text-lime-400 text-lg font-semibold mt-10">
-                DAY 2 – December 5, 2025
+                9:30-8:00 Dec 5, 2025
               </h3>
               <ul className="mt-4 space-y-2 text-gray-300 text-sm">
                 <li>09:00 – Capture the Flag (CTF) Challenge</li>
-                <li>12:00 – Lunch Break</li>
-                <li>13:30 – Innovation Showcase</li>
-                <li>15:30 – Award Ceremony</li>
-                <li>17:00 – Closing Remarks</li>
+                
               </ul>
             </div>
 
@@ -236,9 +230,7 @@ export default function Landing() {
             <div className="flex items-center justify-center">
               <div className="bg-lime-500/10 border border-lime-500/30 p-8 rounded-2xl w-full md:w-3/4 text-center">
                 <p className="text-gray-300 text-sm">
-                  Explore 2 days of cybersecurity excellence, live demos,
-                  and collaboration between Africa’s top ethical hackers
-                  and defense experts.
+                  .
                 </p>
                 <a
                   href="#"
@@ -259,24 +251,7 @@ export default function Landing() {
             Keynote <span className="text-lime-400">Speakers</span>
           </h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[speaker1, speaker2, speaker3, speaker4].map((img, i) => (
-              <div
-                key={i}
-                className="bg-[#1a1a1a] rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300"
-              >
-                <img src={img} alt={`Speaker ${i + 1}`} className="w-full h-64 object-cover" />
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold text-lime-400">
-                    {["Dr. Emily Carter", "Elon Park", "Laura Kim", "Dr. Alan Foster"][i]}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    {["Chief AI Scientist, OpenAI", "CTO, DeepMind", "AI Policy Advisor, EU Commission", "Standard AI Lab"][i]}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          
         </div>
         <a href="#" className="hover:text-lime-300 font-semibold mt-6 inline-block">
           And more →
