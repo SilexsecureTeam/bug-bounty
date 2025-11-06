@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 
-const inputClasses = "w-full rounded-xl border border-white/15 bg-[#0C0F14] px-4 py-3 text-sm text-[#E8EAF2] placeholder:text-[#5F6675] focus:border-[#9DB347] focus:outline-none focus:ring-0";
+const inputClasses = "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
 const roleLabels = {
   hunter: "Bug Hunter",
   guest: "Guest",
@@ -16,18 +16,26 @@ export default function Register() {
   return (
     <AuthLayout
       title="Sign Up"
-      lead="Create a Defcomm account to collaborate on critical missions and secure the digital frontier."
       infoText="Bug hunters and security teams, welcome! Join the Defcomm community of cybersecurity enthusiasts and help us build a safer digital world."
       activeTab="Create a User Account"
     >
-      <form className="flex flex-col gap-6 text-sm text-[#E8EAF2]">
-        {selectedRoleLabel && (
-          <div className="rounded-2xl border border-white/10 bg-[#11151C] p-5 text-xs uppercase tracking-[0.35em] text-[#C5CCDC]">
-            Selected Role: <span className="ml-2 text-white">{selectedRoleLabel}</span>
-          </div>
-        )}
+      <form className="flex flex-col gap-7 text-sm text-[#E8EAF2]">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-[#8F96A7]">
+          <Link
+            to="/register"
+            className="flex items-center gap-2 text-[#A4AAC0] transition-colors duration-150 hover:text-white"
+          >
+            <span className="text-base">←</span>
+            Back to Selection
+          </Link>
+          {selectedRoleLabel && (
+            <span className="rounded-full border border-white/15 bg-[#141922] px-4 py-2 text-[10px] font-semibold tracking-[0.35em] text-[#D5DAE7]">
+              {selectedRoleLabel}
+            </span>
+          )}
+        </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           <FormField label="First Name" required>
             <input type="text" placeholder="Type here" className={inputClasses} />
           </FormField>
@@ -59,13 +67,13 @@ export default function Register() {
         </FormField>
 
         <label className="flex items-start gap-3 text-xs text-[#C3C7D3]">
-          <input type="checkbox" className="mt-1 h-4 w-4 rounded border border-white/20 bg-transparent" />
+          <input type="checkbox" className="mt-1 h-4 w-4 rounded border border-white/25 bg-transparent" />
           <span>
             I have read, understood, and accept the Defcomm General Conditions of Use
           </span>
         </label>
 
-        <div className="rounded-2xl border border-white/10 bg-[#11151C] p-5">
+        <div className="rounded-3xl border border-white/12 bg-[#11151C] p-6 shadow-[0_22px_55px_rgba(0,0,0,0.35)]">
           <div className="h-16 w-full rounded-lg border border-white/15 bg-[#0C0F14]" />
           <p className="mt-3 text-[11px] text-[#9DA2B5]">Protected by reCAPTCHA • Privacy • Terms</p>
         </div>
@@ -74,11 +82,11 @@ export default function Register() {
           The information you provide will be processed by Defcomm as the data controller for the creation and management of your account. To learn more about how we handle your data and your rights, please review our Privacy Policy.
         </p>
 
-        <p className="text-[11px] font-medium text-[#B0B5C3]">* Mandatory Fields</p>
+        <p className="text-[11px] font-medium text-[#B0B5C3]">• Mandatory Fields</p>
 
         <button
           type="submit"
-          className="rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5"
+          className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5"
         >
           Join the Hunt
         </button>
@@ -90,15 +98,8 @@ export default function Register() {
         </div>
 
         <Link
-          to="/register"
-          className="block rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-center text-sm font-semibold uppercase tracking-[0.3em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white"
-        >
-          Back to Selection
-        </Link>
-
-        <Link
           to="/signin"
-          className="block rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-center text-sm font-semibold uppercase tracking-[0.3em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white"
+          className="block w-full rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-center text-sm font-semibold uppercase tracking-[0.3em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white"
         >
           Sign In
         </Link>
@@ -109,7 +110,7 @@ export default function Register() {
 
 function FormField({ label, required, children }) {
   return (
-    <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[#9399A8]">
+    <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
       <span>
         {label}
         {required && <span className="text-[#C77661]"> *</span>}
