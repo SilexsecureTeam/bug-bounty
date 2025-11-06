@@ -1,297 +1,624 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import bugBounty from "../assets/images/bug-bounty-logo.png";
 import shieldBg from "../assets/images/Group-1450.svg";
+import Logotypes from "../assets/images/Logotypes.png";
+import agendaMap from "../assets/images/Frame-34.png";
 import speaker1 from "../assets/images/Image-1.png";
 import speaker2 from "../assets/images/Image-2.png";
 import speaker3 from "../assets/images/Image-3.png";
 import speaker4 from "../assets/images/Image-4.png";
-import Logotypes from "../assets/images/Logotypes.png";
+import contactMap from "../assets/images/contactMap.jpg";
+import Footer from "../components/Footer";
 
+const socialLinks = [
+  { label: "Facebook", icon: "facebook", href: "https://facebook.com/defcomm" },
+  { label: "LinkedIn", icon: "linkedin", href: "https://linkedin.com/company/defcomm" },
+  { label: "Instagram", icon: "instagram", href: "https://instagram.com/defcomm" },
+  { label: "YouTube", icon: "youtube", href: "https://youtube.com/@defcomm" }
+];
+
+const statPills = [
+  "Strategy Summit",
+  "Cyber Range",
+  "Innovation Expo"
+];
+
+const impactBullets = [
+  "1,500+ participants from 10 nations",
+  "$200,000+ in prizes and innovation grants",
+  "Live hacking of Secure OS, encrypted drones, privacy phones",
+  "Strategic panels on sovereignty and cyber resilience"
+];
+
+const agendaItems = [
+  {
+    label: "Nov 2025",
+    title: "Pre Event",
+    time: "Private briefings and threat modelling"
+  },
+  {
+    label: "Dec 4",
+    title: "Event Day",
+    time: "Strategy labs · 09:30 – 18:00"
+  },
+  {
+    label: "Dec 5, 2025",
+    title: "Event Day",
+    time: "CTF finals · 09:30 – 18:00"
+  }
+];
+
+const speakerCardStyles = {
+  text: {
+    light: "bg-[#E3E4E9] text-[#1B1F24]",
+    accent: "bg-linear-to-br from-[#1F3513] via-[#3C7A19] to-[#89D12F] text-white"
+  },
+  image: "bg-[#202227]"
+};
+
+const speakerCards = [
+  {
+    type: "text",
+    name: "Dr. Emily Carter",
+    role: "Chief AI Scientist, OpenAI",
+    variant: "light"
+  },
+  {
+    type: "image",
+    name: "Dr. Emily Carter",
+    image: speaker1
+  },
+  {
+    type: "text",
+    name: "Elon Park",
+    role: "CTO, DeepMind",
+    variant: "accent"
+  },
+  {
+    type: "image",
+    name: "Elon Park",
+    image: speaker2
+  },
+  {
+    type: "image",
+    name: "Laura Kim",
+    image: speaker3
+  },
+  {
+    type: "text",
+    name: "Laura Kim",
+    role: "AI Policy Advisor, EU Commission",
+    variant: "accent"
+  },
+  {
+    type: "image",
+    name: "Dr. Alan Foster",
+    image: speaker4
+  },
+  {
+    type: "text",
+    name: "Dr. Alan Foster",
+    role: "Stanford AI Lab",
+    variant: "accent"
+  }
+];
+
+const sponsorReasons = [
+  {
+    title: "Exclusive Access",
+    body: "Defence agencies & enterprise buyers. 1-on-1 briefings.",
+    number: "01"
+  },
+  {
+    title: "Innovation Credibility",
+    body: "Innovation credibility, strategic tech halo.",
+    number: "02"
+  },
+  {
+    title: "Top Talents",
+    body: "Recruit the top cyber talent through the bounty arena.",
+    number: "03"
+  },
+  {
+    title: "Strategic Positioning",
+    body: "Strategic platform to seed, advise, and direct digital operations for West African resilience.",
+    number: "04"
+  }
+];
+
+const contactDetails = {
+  phones: [
+    "+234 803 697 5198",
+    "+44 746 347 4337",
+    "+234 703 220 5576"
+  ],
+  email: "business@defcomm.ng",
+  address: "The Shehu Musa Yar'Adua Center, Memorial Drive, Central Business District, Abuja, Nigeria."
+};
 
 export default function Landing() {
   const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
+    days: "00",
+    hours: "00",
+    minutes: "00",
+    seconds: "00"
   });
 
   useEffect(() => {
-    const countdownDate = new Date("2025-12-01T00:00:00").getTime();
+    const target = new Date("2025-12-04T09:30:00").getTime();
 
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = countdownDate - now;
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const distance = target - now;
 
-      if (distance < 0) {
-        clearInterval(interval);
+      if (distance <= 0) {
+        setTimeLeft({ days: "00", hours: "00", minutes: "00", seconds: "00" });
+        clearInterval(timer);
         return;
       }
 
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
       setTimeLeft({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        days: String(days).padStart(2, "0"),
+        hours: String(hours).padStart(2, "0"),
+        minutes: String(minutes).padStart(2, "0"),
+        seconds: String(seconds).padStart(2, "0")
       });
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
 
   return (
-    <>
-    <div className="bg-[#1c1c1c] text-white">
-      {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-b from-[#1d1d1d] to-[#252525] text-white overflow-hidden">
-        {/* Background Image */}
- <img
-  src={shieldBg}
-  alt="Shield Background"
-  className="absolute w-[916px] h-[817.5px] top-[108px] left-[493px] opacity-100 object-contain pointer-events-none select-none"
-/>
- 
-
-    <p
-  className="absolute w-[247px] h-[30px] top-[140px] left-[100px] text-white font-bold"
-  style={{
-    fontFamily: 'Montserrat Alternates',
-    fontSize: '22px',
-    lineHeight: '30px',
-    letterSpacing: '0%',
-  }}
->
-  DECEMBER 4-5, 2025
-</p>
-<p
-  className="absolute w-[527px] h-[30px] top-[150px] left-[753px] text-right text-white font-bold"
-  style={{
-    fontFamily: 'Montserrat Alternates',
-    fontSize: '22px',
-    lineHeight: '30px',
-    letterSpacing: '0%',
-  }}
->
-  Shehu Musa Yar'Adua Center, Abuja, Nigeria
-</p>
-
-
-         <img
-  src={bugBounty}
-  alt="Bug Bounty Programme"
-  className="absolute w-[639.22px] h-[281.89px] top-[250px] left-[100px] opacity-100 object-contain select-none pointer-events-none"
-/>
-
-     <a
-  href="/register"
-  className="absolute flex items-center justify-center w-[307px] h-[74px] top-[650px] left-[139px] gap-[20px] px-[50px] rounded-[100px] text-black font-semibold text-lg shadow-md hover:shadow-xl transition-all duration-300"
-  style={{
-    background: 'linear-gradient(90deg, #36460A 0%, #9ecb32 100%)',
-    opacity: 1,
-  }}
->
-  Register now ↗
-</a>
-      </section>
-      <div className="w-full border-t-3 border-[#85AB20]"></div>
-
-
-      {/* Info Section */}
-<section className="text-center mt">
-  <div className="flex flex-col space-y-12">
-    
-    {/* Button container */}
-    <div className="flex justify-start pl-[12px]">
-      <button
-        className="bg-gradient-to-r from-[#36460A] to-[#85AB20] text-white font-semibold py-[10px] px-[24px] rounded-full flex items-center gap-[10px]"
-      >
-        Sponsors
-        <span className="transform rotate-45">↑</span>
-      </button>
-    </div>
-
-    {/* Logos Image */}
-    <div className="flex justify-center items-center">
-      <img
-        src={Logotypes}
-        alt="Sponsors Logos"
-        className="object-contain w-[90%] max-w-[1619px] h-[45px]"
-      />
-    </div>
-
-    {/* Cards Grid */}
-<div className="max-w-[2000px] mx-auto mt-4 flex md:flex-row justify-between items-start gap-8 overflow-visible">
-
-  {/* Left Card */}
-  <div
-    className="bg-[#85AB20] text-black rounded-[50px] shadow-lg flex-shrink-0 transform transition-transform duration-300 hover:scale-105"
-    style={{
-      width: "290px",
-      height: "350px",
-      padding: "32px",
-      opacity: 1,
-    }}
-  >
-    <h2 className="text-2xl font-bold mb-6">
-      <span className="text-white">Fortifying</span> <br />
-      <span className="text-[#36450D]">Africa's Digital Future</span>
-    </h2>
-    <p className="text-base leading-relaxed mb-10">
-      <span className="font-bold">Operation Iron Shield</span> brings together cybersecurity researchers, defence organizations, and government leaders for two days of live bounty testing, defense-tech demonstrations, and innovation showcases.
-    </p>
-    <a
-      href="#"
-      className="inline-flex items-center gap-2 text-white rounded-full hover:bg-[#2a340a] transition-all"
-      style={{
-        backgroundColor: "#36450D",
-        border: "1px solid #000",
-        marginTop: "30px",
-        padding: "10px 20px",
-      }}
-    >
-      Download Slide Deck →
-    </a>
-  </div>
-
-  {/* Right Cards Stack */}
-  <div className="flex flex-col justify-between gap-8">
-    {/* Top Right Card */}
-    <div
-      className="bg-gradient-to-b from-[#36460A] to-[#85AB20] rounded-[50px] p-8 shadow-lg transform transition-transform duration-300 hover:scale-105"
-      style={{
-        width: "450px",
-        height: "250px",
-      }}
-    >
-      <h2 className="text-xl font-bold mb-4 text-white">
-        <span className="font-bold">Why</span> <br /> Operation Iron Shield?
-      </h2>
-      <p className="text-sm text-gray-100 leading-relaxed">
-        Operation Iron Shield is the official Bug Bounty Programme of Defcom Solutions, serving as a cybersecurity challenge and innovation showcase.
-      </p>
-    </div>
-
-    {/* Bottom Right Card */}
-    <div
-      className="bg-white text-black rounded-[50px] p-8 shadow-lg transform transition-transform duration-300 hover:scale-105"
-      style={{
-        width: "290px",
-        height: "350px",
-        opacity: 1,
-      }}
-    >
-      <p className="text-sm leading-relaxed">
-        The programme integrates <b>bounty testing</b>, <b>live demonstrations</b>, and <b>innovation exhibitions</b>.
-      </p>
-      <ul className="list-disc list-inside mt-4 space-y-1 text-sm">
-        <li>1,500+ active participants from 10 nations</li>
-        <li>$200,000+ in prizes and innovation grants</li>
-        <li>Live hacking of Defcomm's Secure OS, Encrypted Drones, and Privacy Phones</li>
-        <li>Strategic panels on encryption sovereignty and cyber resilience</li>
-      </ul>
-    </div>
-  </div>
-</div>
-</div>
-  
-</section>
-
-
-      {/* Agenda Section */}
+    <div className="bg-[#060706] text-white">
       <section
-        className="relative text-white py-24 px-8 md:px-16 bg-cover bg-center"
-        style={{ backgroundImage: "url('../assets/images/group-1451.png')" }}
+        id="hero"
+        className="relative overflow-hidden bg-linear-to-b from-[#0b0e07] via-[#10140b] to-[#131717]"
       >
-        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src={shieldBg}
+            alt="Abstract circuit shield"
+            className="absolute right-[-15%] top-[-5%] h-[120%] w-auto opacity-70"
+          />
+        </div>
 
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12">AGENDA</h2>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-lime-400 text-lg font-semibold">
-                 Nov  2025
-              </h3>
-              <ul className="mt-4 space-y-2 text-gray-300 text-sm">
-                <li>09:30-  dec 4</li>
-                
-              </ul>
-
-              <h3 className="text-lime-400 text-lg font-semibold mt-10">
-                9:30-8:00 Dec 5, 2025
-              </h3>
-              <ul className="mt-4 space-y-2 text-gray-300 text-sm">
-                <li>09:00 – Capture the Flag (CTF) Challenge</li>
-                
-              </ul>
+        <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-28 sm:px-10 lg:gap-20 lg:px-0 lg:pt-40">
+          <header className="flex flex-col gap-6 lg:gap-10">
+            <div className="flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between">
+              <span>December 4-5, 2025</span>
+              <span className="text-left lg:text-right">Shehu Musa Yar'Adua Center, Abuja, Nigeria</span>
             </div>
 
-            {/* Right column */}
-            <div className="flex items-center justify-center">
-              <div className="bg-lime-500/10 border border-lime-500/30 p-8 rounded-2xl w-full md:w-3/4 text-center">
-                <p className="text-gray-300 text-sm">
-                  .
+            <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex max-w-3xl flex-col gap-6">
+                <div className="w-full max-w-xl">
+                  <img
+                    src={bugBounty}
+                    alt="Defcomm Bug Bounty Programme"
+                    className="max-w-full"
+                  />
+                </div>
+                <p className="text-lg text-[#C6D4A1] sm:text-xl">
+                  Operation Iron Shield brings together cybersecurity strategists, defence partners, and ethical hackers for Africa's most ambitious bounty operation.
                 </p>
-                <a
-                  href="#"
-                  className="mt-6 inline-block bg-lime-500 hover:bg-lime-400 text-black font-semibold px-6 py-3 rounded-full transition-all"
-                >
-                  View detailed schedule →
-                </a>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-semibold text-[#0D1206] shadow-[0_20px_45px_rgba(107,168,15,0.35)] transition-transform duration-200 hover:scale-[1.02]"
+                    style={{
+                      background: "linear-gradient(90deg, #36460A 0%, #9ECB32 100%)"
+                    }}
+                  >
+                    Register now ↗
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="text-sm font-semibold text-[#9ECB32] underline-offset-4 transition-colors duration-200 hover:text-[#B5FF4A]"
+                  >
+                    Request VIP briefing →
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-5">
+                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#A7B87B]">
+                  Operation Iron Shield
+                </span>
+                <div className="flex flex-wrap gap-3">
+                  {statPills.map((label) => (
+                    <span
+                      key={label}
+                      className="rounded-full border border-[#3A4611] bg-[#161B0D] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#A4C03B]"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+                <div className="rounded-3xl border border-[#23300D] bg-linear-to-br from-[#1A230A] to-[#10160A] p-6 shadow-[0_25px_60px_rgba(6,8,5,0.6)]">
+                  <p className="text-sm leading-relaxed text-[#D7E4BB]">
+                    Two days of precision testing, red-team simulations, and frontier innovation designed to fortify Africa's digital sovereignty.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+            <button
+              className="flex items-center gap-2 rounded-full border border-[#3D4F10] bg-linear-to-r from-[#36460A] via-[#6E8E1D] to-[#85AB20] px-6 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#152005] shadow-[0_18px_35px_rgba(81,128,12,0.35)] transition-transform duration-200 hover:scale-[1.04]"
+            >
+              Sponsors
+              <span className="inline-block rotate-45 text-lg">↑</span>
+            </button>
+            <div className="flex items-center gap-3 text-[#5B6A28]">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#313D11] bg-[#10160A] text-lg text-[#85AB20] transition-transform duration-200 hover:-translate-x-1">
+                ←
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#85AB20]"></span>
+                <span className="h-2 w-2 rounded-full bg-[#3B4516]"></span>
+                <span className="h-2 w-2 rounded-full bg-[#3B4516]"></span>
+                <span className="h-2 w-2 rounded-full bg-[#3B4516]"></span>
               </div>
             </div>
           </div>
+
+          <div className="rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10">
+            <img
+              src={Logotypes}
+              alt="Sponsor logos"
+              className="mx-auto w-full max-w-5xl object-contain"
+            />
+          </div>
+
+          <section id="highlights" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+            <article className="flex h-full flex-col justify-between rounded-[45px] bg-[#85AB20] p-10 text-[#102206] shadow-[0_45px_90px_rgba(133,171,32,0.35)]">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold leading-tight text-white sm:text-[2.6rem]">
+                  Fortifying Africa's Digital Future
+                </h2>
+                <p className="text-base leading-relaxed text-[#173008]">
+                  Operation Iron Shield unites ethical hackers, defence partners, and government leaders to anticipate, neutralise, and outpace emerging threats across critical infrastructure.
+                </p>
+              </div>
+              <Link
+                to="/register"
+                className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#1B2807] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                Download slide deck →
+              </Link>
+            </article>
+
+            <div className="grid gap-8 lg:grid-cols-1">
+              <article className="rounded-[45px] bg-linear-to-br from-[#36460A] to-[#85AB20] p-10 text-white shadow-[0_35px_70px_rgba(24,34,11,0.55)]">
+                <h3 className="text-2xl font-bold leading-snug">
+                  Why Operation Iron Shield?
+                </h3>
+                <p className="mt-5 text-sm leading-relaxed text-[#F4FCE8]">
+                  Defcomm's flagship programme harmonises strategic intelligence, live bounty testing, and rapid deployment teams to lock down the next frontier of digital sovereignty.
+                </p>
+              </article>
+
+              <article className="rounded-[45px] border border-[#E6EEDF] bg-[#F6FBF0] p-10 text-[#1A2A08] shadow-[0_35px_60px_rgba(16,22,10,0.15)]">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#7A8C3A]">
+                  Programme Highlights
+                </p>
+                <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-[#1C2810]">
+                  {impactBullets.map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#85AB20]"></span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section
+            id="agenda"
+            className="mt-24 flex flex-col gap-16 rounded-[55px] border border-[#1F2611] bg-[#131516] px-6 py-16 sm:px-10 lg:px-16"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
+                  Agenda
+                </h2>
+                <p className="mt-4 max-w-md text-sm text-[#B6C197]">
+                  Two days engineered around reconnaissance, live testing, and collaborative defence frameworks across the continent.
+                </p>
+              </div>
+              <p className="max-w-sm text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
+                December 4-5, 2025 · Shehu Musa Yar'Adua Center · Abuja
+              </p>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[48px] border border-[#2C3218] bg-[#1A1D1D]/90 p-10 shadow-[0_35px_90px_rgba(6,10,6,0.6)]">
+              <div className="pointer-events-none absolute inset-0 opacity-80">
+                <img src={agendaMap} alt="African map" className="h-full w-full object-cover" />
+              </div>
+              <div className="relative z-10 grid gap-8 text-sm text-[#F3F7E8] lg:grid-cols-2">
+                {agendaItems.map(({ label, title, time }) => (
+                  <div key={label} className="flex flex-col gap-2">
+                    <span className="text-xs uppercase tracking-[0.35em] text-[#C7E27A]">
+                      {label}
+                    </span>
+                    <h3 className="text-2xl font-semibold text-white">{title}</h3>
+                    <p className="text-sm text-[#DEE7C8]">{time}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="relative z-10 mt-10 flex justify-center">
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-[#10150A] shadow-[0_15px_40px_rgba(133,171,32,0.4)] transition-transform duration-200 hover:-translate-y-0.5"
+                  style={{ background: "linear-gradient(90deg, #3F550F 0%, #9ECB32 100%)" }}
+                >
+                  View in executive reader →
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="speakers"
+            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#3A3D42] bg-[#2B2E32] px-6 py-16 sm:px-10 lg:px-16"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="space-y-6">
+                <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-[3.75rem]">
+                  <span className="relative inline-block">
+                    <span>Keynote</span>
+                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#30A2FF]"></span>
+                  </span>
+                  <br />
+                  <span className="relative mt-4 inline-block">
+                    <span>Speakers</span>
+                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#30A2FF]"></span>
+                  </span>
+                </h2>
+              </div>
+              <p className="max-w-xs text-sm leading-relaxed text-[#D8DCE4] lg:text-right">
+                Meet the industry leaders shaping the future of Cyber secsecurity.
+              </p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {speakerCards.map((card, index) => {
+                if (card.type === "text") {
+                  return (
+                    <article
+                      key={`${card.name}-text-${index}`}
+                      className={`flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
+                    >
+                      <h3 className="text-2xl font-semibold tracking-tight">{card.name}</h3>
+                      <p className={`text-sm leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
+                        {card.role}
+                      </p>
+                    </article>
+                  );
+                }
+
+                return (
+                  <article
+                    key={`${card.name}-image-${index}`}
+                    className={`aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
+                  >
+                    <img
+                      src={card.image}
+                      alt={card.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section
+            id="sponsors"
+            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1D2115] bg-[#101213] px-6 py-16 sm:px-10 lg:px-16"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
+                  Why Sponsor?
+                </h2>
+                <p className="mt-4 max-w-xl text-sm text-[#B6C197]">
+                  Discover what makes Bug Bounty the ideal event to sponsor.
+                </p>
+              </div>
+              <p className="max-w-sm text-right text-xs uppercase tracking-[0.32em] text-[#7D8A5A]">
+                Discover what makes bug bounty the ideal event to sponsor.
+              </p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              {sponsorReasons.map(({ title, body, number }) => (
+                <article
+                  key={number}
+                  className="group flex flex-col justify-between gap-6 rounded-[36px] bg-[#1A1D1F] p-8 text-white shadow-[0_30px_70px_rgba(10,12,12,0.45)] transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <div className="flex flex-col gap-4">
+                    <span className="text-5xl font-black tracking-tight text-[#9ECB32]">{number}</span>
+                    <h3 className="text-xl font-semibold uppercase tracking-[0.15em] text-white">
+                      {title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-[#DDE5C8]">{body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-3 text-white">
+                <h3 className="text-4xl font-black uppercase tracking-[0.25em] sm:text-5xl">
+                  Register Now
+                </h3>
+                <p className="max-w-lg text-sm text-[#B6C197]">
+                  Secure your spot at the Bug Bounty programme 2025 and join the future of cyber security.
+                </p>
+              </div>
+
+              <div className="relative overflow-hidden rounded-[48px] border border-[#242A1A] bg-[#0F1011] p-10 shadow-[0_35px_80px_rgba(8,10,5,0.55)]">
+                <div className="pointer-events-none absolute inset-0 opacity-60">
+                  <img src={shieldBg} alt="Circuit overlay" className="h-full w-full object-cover" />
+                </div>
+                <div className="relative z-10 flex flex-col gap-8">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs uppercase tracking-[0.35em] text-[#9ECB32]">
+                      Event begins in...
+                    </span>
+                    <div className="flex flex-wrap items-baseline gap-6 text-[#F4F8E8]">
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-5xl font-black tracking-widest">{timeLeft.days}</span>
+                        <span className="text-xs uppercase tracking-[0.4em] text-[#7D8A5A]">Days</span>
+                      </div>
+                      <span className="text-5xl font-light text-[#495024]">:</span>
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-5xl font-black tracking-widest">{timeLeft.hours}</span>
+                        <span className="text-xs uppercase tracking-[0.4em] text-[#7D8A5A]">Hours</span>
+                      </div>
+                      <span className="text-5xl font-light text-[#495024]">:</span>
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-5xl font-black tracking-widest">{timeLeft.minutes}</span>
+                        <span className="text-xs uppercase tracking-[0.4em] text-[#7D8A5A]">Minutes</span>
+                      </div>
+                      <span className="text-5xl font-light text-[#495024]">:</span>
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-5xl font-black tracking-widest">{timeLeft.seconds}</span>
+                        <span className="text-xs uppercase tracking-[0.4em] text-[#7D8A5A]">Seconds</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center justify-center rounded-full border border-[#9ECB32] px-8 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#1A220D] shadow-[0_18px_45px_rgba(133,171,32,0.45)] transition-transform duration-200 hover:-translate-y-0.5"
+                      style={{ background: "linear-gradient(90deg, #3F550F 0%, #9ECB32 100%)" }}
+                    >
+                      Register now ↗
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="contact"
+            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1E1F23] bg-[#0D0F10] px-6 py-16 sm:px-10 lg:px-16"
+          >
+            <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
+              <div className="flex-1 space-y-8">
+                <div className="space-y-4">
+                  <h2 className="text-4xl font-black uppercase tracking-[0.25em] text-white sm:text-5xl">
+                    We're Here To Connect And Assist You
+                  </h2>
+                  <p className="max-w-lg text-sm text-[#C7D2B7]">
+                    Have questions about the Programme? Need help with registration or travel? Our team is ready to assist you.
+                  </p>
+                </div>
+
+                <div className="grid gap-8 sm:grid-cols-2">
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Contact Us</h3>
+                    <ul className="space-y-2 text-sm text-[#E9F0DA]">
+                      {contactDetails.phones.map((phone) => (
+                        <li key={phone}>{phone}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Event Location</h3>
+                    <p className="text-sm text-[#E9F0DA]">
+                      {contactDetails.address}
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Email</h3>
+                    <a
+                      href={`mailto:${contactDetails.email}`}
+                      className="block text-sm font-medium text-[#F4F9E6] underline-offset-4 hover:underline"
+                    >
+                      {contactDetails.email}
+                    </a>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Follow Us</h3>
+                    <div className="flex items-center gap-3">
+                      {socialLinks.map(({ label, href }) => (
+                        <a
+                          key={label}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
+                        >
+                          {label[0]}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <div className="rounded-[36px] border border-[#2B2D31] bg-[#F2F3F8] p-8 text-[#1B2126] shadow-[0_30px_70px_rgba(7,8,9,0.45)]">
+                  <h3 className="text-lg font-bold uppercase tracking-[0.25em]">Get In Touch</h3>
+                  <p className="mt-3 text-sm text-[#4B545E]">
+                    Reach out with inquiries about sponsorships, partnerships, or event details.
+                  </p>
+                  <form className="mt-8 space-y-5">
+                    {[
+                      { name: "name", label: "Name", type: "text" },
+                      { name: "email", label: "Email", type: "email" },
+                      { name: "subject", label: "Subject", type: "text" }
+                    ].map(({ name, label, type }) => (
+                      <label key={name} className="block space-y-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.35em] text-[#6B7683]">{label}</span>
+                        <input
+                          type={type}
+                          name={name}
+                          className="w-full rounded-2xl border border-[#D9DBE1] bg-white px-4 py-3 text-sm text-[#20252B] shadow-inner focus:border-[#9ECB32] focus:outline-none"
+                          placeholder={label}
+                        />
+                      </label>
+                    ))}
+                    <label className="block space-y-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.35em] text-[#6B7683]">Message</span>
+                      <textarea
+                        name="message"
+                        rows={4}
+                        className="w-full rounded-2xl border border-[#D9DBE1] bg-white px-4 py-3 text-sm text-[#20252B] shadow-inner focus:border-[#9ECB32] focus:outline-none"
+                        placeholder="Message"
+                      ></textarea>
+                    </label>
+                    <button
+                      type="submit"
+                      className="mt-4 inline-flex items-center justify-center rounded-full border border-[#36460A] bg-[#7EA522] px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-transform duration-200 hover:-translate-y-0.5"
+                    >
+                      Send message
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-[45px] border border-[#1F2227] bg-[#0B0C0E]">
+              <img src={contactMap} alt="Venue map" className="h-full w-full object-cover" />
+            </div>
+          </section>
         </div>
       </section>
-
-      {/* Keynote Speakers */}
-      <section className="py-24 px-8 md:px-16 bg-[#0b0b0b] text-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-12">
-            Keynote <span className="text-lime-400">Speakers</span>
-          </h2>
-
-          
-        </div>
-        <a href="#" className="hover:text-lime-300 font-semibold mt-6 inline-block">
-          And more →
-        </a>
-      </section>
-
-      {/* Register Now Section (Countdown) */}
-      <section className="relative py-24 px-8 md:px-16 bg-[#0b0b0b] text-white text-center overflow-hidden">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <h2 className="text-4xl font-bold mb-6">
-            <span className="text-lime-400">REGISTER</span> NOW
-          </h2>
-          <p className="text-gray-400 mb-8">
-            Secure your spot at the Bug Bounty Programme 2025 and join the future of Cybersecurity.
-          </p>
-        </div>
-
-        {/* Countdown Timer */}
-        <div className="flex justify-center gap-6 mb-10">
-          <div className="bg-[#1a1a1a] rounded-xl p-4 w-20">
-            <h3 className="text-3xl font-bold text-lime-400">{timeLeft.days}</h3>
-            <p className="text-xs text-gray-400">Days</p>
-          </div>
-          <div className="bg-[#1a1a1a] rounded-xl p-4 w-20">
-            <h3 className="text-3xl font-bold text-lime-400">{timeLeft.hours}</h3>
-            <p className="text-xs text-gray-400">Hours</p>
-          </div>
-          <div className="bg-[#1a1a1a] rounded-xl p-4 w-20">
-            <h3 className="text-3xl font-bold text-lime-400">{timeLeft.minutes}</h3>
-            <p className="text-xs text-gray-400">Minutes</p>
-          </div>
-          <div className="bg-[#1a1a1a] rounded-xl p-4 w-20">
-            <h3 className="text-3xl font-bold text-lime-400">{timeLeft.seconds}</h3>
-            <p className="text-xs text-gray-400">Seconds</p>
-          </div>
-        </div>
-      </section>
+      <Footer />
     </div>
-    </>
-    
-      
   );
 }

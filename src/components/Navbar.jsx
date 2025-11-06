@@ -4,16 +4,16 @@ import Defcomm from "../assets/images/Defcomm-04 2.svg";
 export default function Navbar() {
   const navItems = [
     { name: 'Home', to: '/', special: true },
-    { name: 'Schedule', href: '#schedule' },
-    { name: 'Speakers', href: '#speakers' },
-    { name: 'Venue', href: '#venue' },
-    { name: 'Sponsors', href: '#sponsors' },
+    { name: 'Programme', href: '#hero' },
+    { name: 'Highlights', href: '#highlights' },
+  { name: 'Sponsors', href: '#sponsors' },
+  { name: 'Contact', href: '#contact' },
     { name: 'Registration', to: '/register' }
   ];
 
   return (
     <nav 
-      className="w-full absolute top-0 left-0 z-50"
+      className="w-full top-0 fixed left-0 z-50"
       style={{
         background: 'linear-gradient(to right, #36460A, #85AB20, #36450D)'
       }}
@@ -21,7 +21,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <img src={Defcomm} alt="Logo" className="h-8" />
           </div>
 
