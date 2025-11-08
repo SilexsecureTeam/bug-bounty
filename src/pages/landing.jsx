@@ -4,12 +4,12 @@ import bugBounty from "../assets/images/bug-bounty-logo.png";
 import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
 import agendaMap from "../assets/images/Frame-34.png";
-import speaker1 from "../assets/images/Image-1.png";
-import speaker2 from "../assets/images/Image-2.png";
-import speaker3 from "../assets/images/Image-3.png";
-import speaker4 from "../assets/images/Image-4.png";
-import contactMap from "../assets/images/contactMap.jpg";
+import speaker1 from "../assets/images/speakers-falback.png";
+import speaker2 from "../assets/images/speakers-falback.png";
+import speaker3 from "../assets/images/speakers-falback.png";
+import speaker4 from "../assets/images/speakers-falback.png";
 import Footer from "../components/Footer";
+import { useReveal } from "../hooks/useReveal";
 
 const socialLinks = [
   { label: "Facebook", icon: "facebook", href: "https://facebook.com/defcomm" },
@@ -145,6 +145,14 @@ export default function Landing() {
     seconds: "00"
   });
 
+  const heroRef = useReveal({ threshold: 0.2 });
+  const logosRef = useReveal({ threshold: 0.25 });
+  const highlightsRef = useReveal({ threshold: 0.25 });
+  const agendaRef = useReveal({ threshold: 0.25 });
+  const speakersRef = useReveal({ threshold: 0.2 });
+  const sponsorsRef = useReveal({ threshold: 0.2 });
+  const contactRef = useReveal({ threshold: 0.2 });
+
   useEffect(() => {
     const target = new Date("2025-12-04T09:30:00").getTime();
 
@@ -178,24 +186,31 @@ export default function Landing() {
     <div className="bg-[#060706] text-white">
       <section
         id="hero"
-        className="relative overflow-hidden bg-linear-to-b from-[#0b0e07] via-[#10140b] to-[#131717]"
+        ref={heroRef}
+        className="reveal-section relative overflow-hidden bg-linear-to-b from-[#0b0e07] via-[#10140b] to-[#131717]"
       >
         <div className="pointer-events-none absolute inset-0">
           <img
             src={shieldBg}
             alt="Abstract circuit shield"
-            className="absolute right-[-15%] top-[-5%] h-[120%] w-auto opacity-70"
+            className="floating-pulse absolute right-[-15%] top-[-5%] h-[120%] w-auto opacity-70"
           />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-28 sm:px-10 lg:gap-20 lg:px-0 lg:pt-40">
+        <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-18 sm:px-10 lg:gap-20 lg:px-0 lg:pt-10">
           <header className="flex flex-col gap-6 lg:gap-10">
-            <div className="flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between">
+            <div
+              className="reveal-child flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between"
+              style={{ "--reveal-child-delay": "0.1s" }}
+            >
               <span>December 4-5, 2025</span>
               <span className="text-left lg:text-right">Shehu Musa Yar'Adua Center, Abuja, Nigeria</span>
             </div>
 
-            <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+            <div
+              className="reveal-child flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between"
+              style={{ "--reveal-child-delay": "0.2s" }}
+            >
               <div className="flex max-w-3xl flex-col gap-6">
                 <div className="w-full max-w-xl">
                   <img
@@ -231,10 +246,11 @@ export default function Landing() {
                   Operation Iron Shield
                 </span>
                 <div className="flex flex-wrap gap-3">
-                  {statPills.map((label) => (
+                  {statPills.map((label, index) => (
                     <span
                       key={label}
-                      className="rounded-full border border-[#3A4611] bg-[#161B0D] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#A4C03B]"
+                      className="reveal-child rounded-full border border-[#3A4611] bg-[#161B0D] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#A4C03B]"
+                      style={{ "--reveal-child-delay": `${0.25 + index * 0.08}s` }}
                     >
                       {label}
                     </span>
@@ -269,7 +285,11 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10">
+          <div
+            ref={logosRef}
+            className="reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10"
+            style={{ "--reveal-delay": "0.15s" }}
+          >
             <img
               src={Logotypes}
               alt="Sponsor logos"
@@ -277,8 +297,15 @@ export default function Landing() {
             />
           </div>
 
-          <section id="highlights" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-            <article className="flex h-full flex-col justify-between rounded-[45px] bg-[#85AB20] p-10 text-[#102206] shadow-[0_45px_90px_rgba(133,171,32,0.35)]">
+          <section
+            id="highlights"
+            ref={highlightsRef}
+            className="reveal-section grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]"
+          >
+            <article
+              className="reveal-child flex h-full flex-col justify-between rounded-[45px] bg-[#85AB20] p-10 text-[#102206] shadow-[0_45px_90px_rgba(133,171,32,0.35)]"
+              style={{ "--reveal-child-delay": "0.05s" }}
+            >
               <div className="space-y-6">
                 <h2 className="text-3xl font-bold leading-tight text-white sm:text-[2.6rem]">
                   Fortifying Africa's Digital Future
@@ -296,7 +323,10 @@ export default function Landing() {
             </article>
 
             <div className="grid gap-8 lg:grid-cols-1">
-              <article className="rounded-[45px] bg-linear-to-br from-[#36460A] to-[#85AB20] p-10 text-white shadow-[0_35px_70px_rgba(24,34,11,0.55)]">
+              <article
+                className="reveal-child rounded-[45px] bg-linear-to-br from-[#36460A] to-[#85AB20] p-10 text-white shadow-[0_35px_70px_rgba(24,34,11,0.55)]"
+                style={{ "--reveal-child-delay": "0.18s" }}
+              >
                 <h3 className="text-2xl font-bold leading-snug">
                   Why Operation Iron Shield?
                 </h3>
@@ -305,13 +335,20 @@ export default function Landing() {
                 </p>
               </article>
 
-              <article className="rounded-[45px] border border-[#E6EEDF] bg-[#F6FBF0] p-10 text-[#1A2A08] shadow-[0_35px_60px_rgba(16,22,10,0.15)]">
+              <article
+                className="reveal-child rounded-[45px] border border-[#E6EEDF] bg-[#F6FBF0] p-10 text-[#1A2A08] shadow-[0_35px_60px_rgba(16,22,10,0.15)]"
+                style={{ "--reveal-child-delay": "0.28s" }}
+              >
                 <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#7A8C3A]">
                   Programme Highlights
                 </p>
                 <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-[#1C2810]">
-                  {impactBullets.map((item) => (
-                    <li key={item} className="flex gap-3">
+                  {impactBullets.map((item, index) => (
+                    <li
+                      key={item}
+                      className="reveal-child flex gap-3"
+                      style={{ "--reveal-child-delay": `${0.35 + index * 0.07}s` }}
+                    >
                       <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#85AB20]"></span>
                       <span>{item}</span>
                     </li>
@@ -323,9 +360,10 @@ export default function Landing() {
 
           <section
             id="agenda"
-            className="mt-24 flex flex-col gap-16 rounded-[55px] border border-[#1F2611] bg-[#131516] px-6 py-16 sm:px-10 lg:px-16"
+            ref={agendaRef}
+            className="reveal-section mt-24 flex flex-col gap-16 rounded-[55px] border border-[#1F2611] bg-[#131516] px-6 py-16 sm:px-10 lg:px-16"
           >
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.08s" }}>
               <div>
                 <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
                   Agenda
@@ -334,18 +372,22 @@ export default function Landing() {
                   Two days engineered around reconnaissance, live testing, and collaborative defence frameworks across the continent.
                 </p>
               </div>
-              <p className="max-w-sm text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
+              <p className="text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
                 December 4-5, 2025 · Shehu Musa Yar'Adua Center · Abuja
               </p>
             </div>
 
-            <div className="relative overflow-hidden rounded-[48px] border border-[#2C3218] bg-[#1A1D1D]/90 p-10 shadow-[0_35px_90px_rgba(6,10,6,0.6)]">
+            <div className="reveal-child relative overflow-hidden rounded-[48px] border border-[#2C3218] bg-[#1A1D1D]/90 p-10 shadow-[0_35px_90px_rgba(6,10,6,0.6)]" style={{ "--reveal-child-delay": "0.2s" }}>
               <div className="pointer-events-none absolute inset-0 opacity-80">
                 <img src={agendaMap} alt="African map" className="h-full w-full object-cover" />
               </div>
               <div className="relative z-10 grid gap-8 text-sm text-[#F3F7E8] lg:grid-cols-2">
-                {agendaItems.map(({ label, title, time }) => (
-                  <div key={label} className="flex flex-col gap-2">
+                {agendaItems.map(({ label, title, time }, index) => (
+                  <div
+                    key={label}
+                    className="reveal-child flex flex-col gap-2"
+                    style={{ "--reveal-child-delay": `${0.28 + index * 0.08}s` }}
+                  >
                     <span className="text-xs uppercase tracking-[0.35em] text-[#C7E27A]">
                       {label}
                     </span>
@@ -357,7 +399,8 @@ export default function Landing() {
               <div className="relative z-10 mt-10 flex justify-center">
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-[#10150A] shadow-[0_15px_40px_rgba(133,171,32,0.4)] transition-transform duration-200 hover:-translate-y-0.5"
+                  className="reveal-child inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-[#10150A] shadow-[0_15px_40px_rgba(133,171,32,0.4)] transition-transform duration-200 hover:-translate-y-0.5"
+                  // style={{ "--reveal-child-delay": "0.5s" }}
                   style={{ background: "linear-gradient(90deg, #3F550F 0%, #9ECB32 100%)" }}
                 >
                   View in executive reader →
@@ -368,19 +411,20 @@ export default function Landing() {
 
           <section
             id="speakers"
-            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#3A3D42] bg-[#2B2E32] px-6 py-16 sm:px-10 lg:px-16"
+            ref={speakersRef}
+            className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#3A3D42] bg-[#2B2E32] px-6 py-16 sm:px-10 lg:px-16"
           >
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.1s" }}>
               <div className="space-y-6">
                 <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-[3.75rem]">
                   <span className="relative inline-block">
                     <span>Keynote</span>
-                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#30A2FF]"></span>
+                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
                   </span>
                   <br />
                   <span className="relative mt-4 inline-block">
                     <span>Speakers</span>
-                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#30A2FF]"></span>
+                    <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
                   </span>
                 </h2>
               </div>
@@ -395,7 +439,8 @@ export default function Landing() {
                   return (
                     <article
                       key={`${card.name}-text-${index}`}
-                      className={`flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
+                      className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
+                      style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
                     >
                       <h3 className="text-2xl font-semibold tracking-tight">{card.name}</h3>
                       <p className={`text-sm leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
@@ -408,7 +453,8 @@ export default function Landing() {
                 return (
                   <article
                     key={`${card.name}-image-${index}`}
-                    className={`aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
+                    className={`reveal-child aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
+                    style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
                   >
                     <img
                       src={card.image}
@@ -423,9 +469,10 @@ export default function Landing() {
 
           <section
             id="sponsors"
-            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1D2115] bg-[#101213] px-6 py-16 sm:px-10 lg:px-16"
+            ref={sponsorsRef}
+            className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1D2115] bg-[#101213] px-6 py-16 sm:px-10 lg:px-16"
           >
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.08s" }}>
               <div>
                 <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
                   Why Sponsor?
@@ -440,10 +487,11 @@ export default function Landing() {
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2">
-              {sponsorReasons.map(({ title, body, number }) => (
+              {sponsorReasons.map(({ title, body, number }, index) => (
                 <article
                   key={number}
-                  className="group flex flex-col justify-between gap-6 rounded-[36px] bg-[#1A1D1F] p-8 text-white shadow-[0_30px_70px_rgba(10,12,12,0.45)] transition-transform duration-300 hover:-translate-y-1"
+                  className="reveal-child group flex flex-col justify-between gap-6 rounded-[36px] bg-[#1A1D1F] p-8 text-white shadow-[0_30px_70px_rgba(10,12,12,0.45)] transition-transform duration-300 hover:-translate-y-1"
+                  style={{ "--reveal-child-delay": `${0.18 + index * 0.08}s` }}
                 >
                   <div className="flex flex-col gap-4">
                     <span className="text-5xl font-black tracking-tight text-[#9ECB32]">{number}</span>
@@ -457,7 +505,7 @@ export default function Landing() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-3 text-white">
+              <div className="reveal-child flex flex-col gap-3 text-white" style={{ "--reveal-child-delay": "0.38s" }}>
                 <h3 className="text-4xl font-black uppercase tracking-[0.25em] sm:text-5xl">
                   Register Now
                 </h3>
@@ -466,7 +514,7 @@ export default function Landing() {
                 </p>
               </div>
 
-              <div className="relative overflow-hidden rounded-[48px] border border-[#242A1A] bg-[#0F1011] p-10 shadow-[0_35px_80px_rgba(8,10,5,0.55)]">
+              <div className="reveal-child relative overflow-hidden rounded-[48px] border border-[#242A1A] bg-[#0F1011] p-10 shadow-[0_35px_80px_rgba(8,10,5,0.55)]" style={{ "--reveal-child-delay": "0.46s" }}>
                 <div className="pointer-events-none absolute inset-0 opacity-60">
                   <img src={shieldBg} alt="Circuit overlay" className="h-full w-full object-cover" />
                 </div>
@@ -501,7 +549,8 @@ export default function Landing() {
                   <div>
                     <Link
                       to="/register"
-                      className="inline-flex items-center justify-center rounded-full border border-[#9ECB32] px-8 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#1A220D] shadow-[0_18px_45px_rgba(133,171,32,0.45)] transition-transform duration-200 hover:-translate-y-0.5"
+                      className="reveal-child inline-flex items-center justify-center rounded-full border border-[#9ECB32] px-8 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#1A220D] shadow-[0_18px_45px_rgba(133,171,32,0.45)] transition-transform duration-200 hover:-translate-y-0.5"
+                      // style={{ "--reveal-child-delay": "0.68s" }}
                       style={{ background: "linear-gradient(90deg, #3F550F 0%, #9ECB32 100%)" }}
                     >
                       Register now ↗
@@ -514,9 +563,10 @@ export default function Landing() {
 
           <section
             id="contact"
-            className="mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1E1F23] bg-[#0D0F10] px-6 py-16 sm:px-10 lg:px-16"
+            ref={contactRef}
+            className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1E1F23] bg-[#0D0F10] px-6 py-16 sm:px-10 lg:px-16"
           >
-            <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
+            <div className="reveal-child flex flex-col gap-10 lg:flex-row lg:gap-16" style={{ "--reveal-child-delay": "0.08s" }}>
               <div className="flex-1 space-y-8">
                 <div className="space-y-4">
                   <h2 className="text-4xl font-black uppercase tracking-[0.25em] text-white sm:text-5xl">
@@ -528,21 +578,27 @@ export default function Landing() {
                 </div>
 
                 <div className="grid gap-8 sm:grid-cols-2">
-                  <div className="space-y-3">
+                  <div className="reveal-child space-y-3" style={{ "--reveal-child-delay": "0.2s" }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Contact Us</h3>
                     <ul className="space-y-2 text-sm text-[#E9F0DA]">
-                      {contactDetails.phones.map((phone) => (
-                        <li key={phone}>{phone}</li>
+                      {contactDetails.phones.map((phone, index) => (
+                        <li
+                          key={phone}
+                          className="reveal-child"
+                          style={{ "--reveal-child-delay": `${0.26 + index * 0.06}s` }}
+                        >
+                          {phone}
+                        </li>
                       ))}
                     </ul>
                   </div>
-                  <div className="space-y-3">
+                  <div className="reveal-child space-y-3" style={{ "--reveal-child-delay": "0.32s" }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Event Location</h3>
                     <p className="text-sm text-[#E9F0DA]">
                       {contactDetails.address}
                     </p>
                   </div>
-                  <div className="space-y-3">
+                  <div className="reveal-child space-y-3" style={{ "--reveal-child-delay": "0.38s" }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Email</h3>
                     <a
                       href={`mailto:${contactDetails.email}`}
@@ -551,16 +607,17 @@ export default function Landing() {
                       {contactDetails.email}
                     </a>
                   </div>
-                  <div className="space-y-3">
+                  <div className="reveal-child space-y-3" style={{ "--reveal-child-delay": "0.44s" }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Follow Us</h3>
                     <div className="flex items-center gap-3">
-                      {socialLinks.map(({ label, href }) => (
+                      {socialLinks.map(({ label, href }, index) => (
                         <a
                           key={label}
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
+                          className="reveal-child inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
+                          style={{ "--reveal-child-delay": `${0.5 + index * 0.05}s` }}
                         >
                           {label[0]}
                         </a>
@@ -571,7 +628,7 @@ export default function Landing() {
               </div>
 
               <div className="flex-1">
-                <div className="rounded-[36px] border border-[#2B2D31] bg-[#F2F3F8] p-8 text-[#1B2126] shadow-[0_30px_70px_rgba(7,8,9,0.45)]">
+                <div className="reveal-child rounded-[36px] border border-[#2B2D31] bg-[#F2F3F8] p-8 text-[#1B2126] shadow-[0_30px_70px_rgba(7,8,9,0.45)]" style={{ "--reveal-child-delay": "0.28s" }}>
                   <h3 className="text-lg font-bold uppercase tracking-[0.25em]">Get In Touch</h3>
                   <p className="mt-3 text-sm text-[#4B545E]">
                     Reach out with inquiries about sponsorships, partnerships, or event details.
@@ -612,8 +669,18 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[45px] border border-[#1F2227] bg-[#0B0C0E]">
-              <img src={contactMap} alt="Venue map" className="h-full w-full object-cover" />
+            <div
+              className="reveal-child overflow-hidden rounded-[45px] border border-[#1F2227] bg-[#0B0C0E]"
+              style={{ "--reveal-child-delay": "0.5s" }}
+            >
+              <iframe
+                title="Shehu Musa Yar'Adua Center map"
+                src="https://www.google.com/maps?q=9.0468,7.4867&z=16&output=embed"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-[420px] w-full border-0"
+              />
             </div>
           </section>
         </div>

@@ -5,10 +5,19 @@ import RegisterSelection from "./pages/register-selection";
 import Register from "./pages/register";
 import SignIn from "./pages/signin";
 import OtpVerification from "./pages/otp";
+import BountyDetails from "./pages/bounty-details";
+import SubmitReport from "./pages/submit-report";
 
 export default function App() {
   const location = useLocation();
-  const hideNavbar = ["/register", "/register/create", "/signin", "/otp"].includes(location.pathname);
+  const hideNavbar = [
+    "/register",
+    "/register/create",
+    "/signin",
+    "/otp",
+    "/bounty/broken-authentication",
+    "/submit-report"
+  ].includes(location.pathname);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,6 +29,8 @@ export default function App() {
           <Route path="/register/create" element={<Register />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/otp" element={<OtpVerification />} />
+          <Route path="/bounty/broken-authentication" element={<BountyDetails />} />
+          <Route path="/submit-report" element={<SubmitReport />} />
         </Routes>
       </main>
     </div>

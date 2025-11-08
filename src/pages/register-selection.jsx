@@ -12,6 +12,9 @@ export default function RegisterSelection() {
   const navigate = useNavigate();
 
   const handleSelect = (role) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("defcommRegistrationRole", role);
+    }
     navigate("/register/create", { state: { role } });
   };
 

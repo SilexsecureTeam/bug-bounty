@@ -1,0 +1,4544 @@
+{
+	"info": {
+		"_postman_id": "beb1604e-b78b-400c-9440-838a1a688300",
+		"name": "Defcomm New",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26558844",
+		"_collection_link": "https://lively-crescent-258752.postman.co/workspace/My-Workspace~26bf3d99-2139-4ab5-8357-24b54d34d183/collection/26558844-beb1604e-b78b-400c-9440-838a1a688300?action=share&source=collection_link&creator=26558844"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "QRCode Login",
+					"item": [
+						{
+							"name": "Create QR Code",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "//The initiator device",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/qr/create",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"qr",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Approve device",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "//The logged in device\r\n{\r\n    \"confirm\": true //true, false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/qr/d9c0c850-79fa-4e89-a406-8e7a62f375d0/approve",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"qr",
+										"d9c0c850-79fa-4e89-a406-8e7a62f375d0",
+										"approve"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log device",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "//The logged in device\r\n{\r\n    \"confirm\": true //true, false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/qr/c18eaf0d-a1f9-4e41-bb31-d539d201069b/exchange",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"qr",
+										"c18eaf0d-a1f9-4e41-bb31-d539d201069b",
+										"exchange"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get QrCode Status",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "//Checking QRcode status",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/qr/a584e64f-6c8e-4a69-90f2-b90bea2f9d80/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"qr",
+										"a584e64f-6c8e-4a69-90f2-b90bea2f9d80",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"John Ayo\",\r\n    \"email\": \"john2@gmail.com\",\r\n    \"phone\": \"07063787760\",\r\n    \"password\": \"1234567890\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"john@gmail.com\",\r\n    \"password\": \"1234567890\",\r\n    \"device_type\": \"new\",\r\n    \"device_token\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Account Verified",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"encrypt\": \"eyJpdiI6IjNEQWNLRlFMMFh5TjJISnZJNW1zYVE9PSIsInZhbHVlIjoiQ1JSRmpyVC9MQnE1QTFqUlNWZ3pCSzdURzVJUjFWUytwMnk5NkZtQ29NL2lIQTh3cVlkK0h6YndqM2xWMWJDNSIsIm1hYyI6IjgwY2Y4ZDdiZjIwOTQxMjhmMTM4M2RlYThjZDI1ZWRjYzA2OTRiNjUyNzUzNTRjZDg2OWViZDRjODY1YmExZmIiLCJ0YWciOiIifQ==\",\r\n    \"otp\": \"2239\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/userVerify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"userVerify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Otp Sms",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"+2347062787760\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/requestOtpSms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requestOtpSms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login With Phone",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"+2347062787760\",\r\n    \"otp\": \"6528\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/loginWithPhone",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loginWithPhone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "App Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user21@gmail\",\r\n    \"phone\": \"090886534\",\r\n    \"access_token\": \"68552701a704f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/authenticate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\":\"password\",\r\n    \"password_confirmation\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/resetPassword",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/language",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"language"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Agreements",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/agreements/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"agreements",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "App Configuration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"signal_blocking\":\"on\", //on or off\r\n    \"remote_management\":\"on\",  //on or off\r\n    \"encrypted_storage\":\"on\",  //on or off\r\n    \"self_wipe\":\"on\", //on or off\r\n    \"imei\":\"6779097.978966\", \r\n    \"device_type\":\"andriod\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/configuration",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"configuration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Log of Login Device",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logindevicelog",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logindevicelog"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Device",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// status: 'active', 'remove', 'block' ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logindevice/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logindevice",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Device Status Update",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// status: 'active', 'remove', 'block'",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logindevicestatus/7r8PRKy9xAjV/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logindevicestatus",
+								"7r8PRKy9xAjV",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Block IP",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ip_address\": [\"13\",\"12\",\"11\"] //Let it be [] with the ip string\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/loginblockip",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"loginblockip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Block IP List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/loginblockip/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"loginblockip",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unblock IP",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ip_address\": [\"eyJpdiI6ImZCOCtJY0FLMkVXbUdhV0xENWJMY0E9PSIsInZhbHVlIjoiaEZJVUFLMjBEWlVRUEhNa1UyZ3djUT09IiwibWFjIjoiOGE0MWJhMTFlMGUzOTY1NDQwNWU1MmNjMjA1ZjljNmJiNDRiZmQyYTk2NzBiZGViZDIzZDJmYmE0ZmNmZTkwOSIsInRhZyI6IiJ9\", \"eyJpdiI6IlFRa0N6WW1sVGZVVzM2V3lRenhFQWc9PSIsInZhbHVlIjoiNVlhejYrWDQ5K0hqTW8rMnlDYmtDZz09IiwibWFjIjoiNmFhYmViNmUyNzJmMTRlNjQ5ZDQyZTE3MTY4YmRjYjdkNmRlZDZhNDUyYzA1MzRmZGNjM2I2NWIzZDc2MGVmOCIsInRhZyI6IiJ9\"] //Let it be [] with the ip string\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/loginunblockip",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"loginunblockip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"device\": \"Oq16kwa8KRN3\" //optional put the device id\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "Create Company",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"John Ayo\",\r\n    \"email\": \"john@gmail.com\",\r\n    \"phone\": \"07062787760\",\r\n    \"password\": \"1234567890\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Chat",
+					"item": [
+						{
+							"name": "Call",
+							"item": [
+								{
+									"name": "Send Chat Message",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "message",
+													"value": "call",
+													"description": "This could be file or text",
+													"type": "text"
+												},
+												{
+													"key": "is_file",
+													"value": "no",
+													"description": "yes or no",
+													"type": "text"
+												},
+												{
+													"key": "current_chat_user_type",
+													"value": "user",
+													"type": "text"
+												},
+												{
+													"key": "current_chat_user",
+													"value": "ndjb9N4RZqQe",
+													"type": "text"
+												},
+												{
+													"key": "chat_id",
+													"value": "",
+													"type": "text"
+												},
+												{
+													"key": "mss_type",
+													"value": "call",
+													"description": "text, call,",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/user/chat/messages/send",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user",
+												"chat",
+												"messages",
+												"send"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update call log",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"mss_id\": \"lxEO9o0paj7K\", // the message Id\r\n    \"call_duration\": \"00.20.00\", //hh:mm:ss\r\n    \"call_state\": \"pick\" // pick, miss, end\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/user/chat/messages/call",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user",
+												"chat",
+												"messages",
+												"call"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Group Member",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/group/member/Nwb0KvzKBmLA",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"group",
+										"member",
+										"Nwb0KvzKBmLA"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Contact",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/contact",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"contact"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Contact",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/contact/add/5Lvr6JZ648Kg",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"contact",
+										"add",
+										"5Lvr6JZ648Kg"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Contact",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/user/contact/remove/eyJpdiI6Im92Ni9wbjlkWFZiRitVcnpTQ1J0bHc9PSIsInZhbHVlIjoiZXIycGs0U2tyQlRnUDVBUThSLzh5QT09IiwibWFjIjoiNjc0ODc5NGUwYTZlMzI0YTliMzI4MjViMTgzNDY5ZWU0NTAyYjlhZTM3NWZjODBhODM5OTFlY2RjOWRiMmVhZiIsInRhZyI6IiJ9",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"contact",
+										"remove",
+										"eyJpdiI6Im92Ni9wbjlkWFZiRitVcnpTQ1J0bHc9PSIsInZhbHVlIjoiZXIycGs0U2tyQlRnUDVBUThSLzh5QT09IiwibWFjIjoiNjc0ODc5NGUwYTZlMzI0YTliMzI4MjViMTgzNDY5ZWU0NTAyYjlhZTM3NWZjODBhODM5OTFlY2RjOWRiMmVhZiIsInRhZyI6IiJ9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Chat History",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/chat/history",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"chat",
+										"history"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Chat Last",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/chat/lastMessage",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"chat",
+										"lastMessage"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Chat Call Log",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/chat/callLog",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"chat",
+										"callLog"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Chat Message",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/user/chat/messages/7PBgcWSpDokyqg39NjPfTa/user?page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"chat",
+										"messages",
+										"7PBgcWSpDokyqg39NjPfTa",
+										"user"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Chat Message",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "message",
+											"value": "The New security man one ",
+											"description": "This could be file or text",
+											"type": "text"
+										},
+										{
+											"key": "is_file",
+											"value": "no",
+											"description": "yes or no",
+											"type": "text"
+										},
+										{
+											"key": "current_chat_user_type",
+											"value": "user",
+											"description": "user or group",
+											"type": "text"
+										},
+										{
+											"key": "current_chat_user",
+											"value": "puTdoXfk4iMbrBSUFlaUm",
+											"type": "text"
+										},
+										{
+											"key": "chat_id",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "mss_type",
+											"value": "text",
+											"description": "text, call, video",
+											"type": "text"
+										},
+										{
+											"key": "tag_user",
+											"value": "",
+											"description": "Let it be array",
+											"type": "text"
+										},
+										{
+											"key": "tag_mess",
+											"value": "2keWgcsWfao2fb9abgA3us",
+											"description": "Message Id",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/user/chat/messages/send",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"chat",
+										"messages",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Is Typing",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_chat_user\": 37, // users or group\r\n    \"typing\": \"not_typing\" // is_typing or not_typing\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/messages/typing",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"messages",
+										"typing"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Is Read Live",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Message Id for ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/messages/isread/GqMbabq297WP",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"messages",
+										"isread",
+										"GqMbabq297WP"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Is Important",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/messages/important/GqMbabq297WP",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"messages",
+										"important",
+										"GqMbabq297WP"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Chat Message",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "message",
+											"value": "It works now jkkl",
+											"description": "This could be file or text",
+											"type": "text"
+										},
+										{
+											"key": "is_file",
+											"value": "no",
+											"description": "yes or no",
+											"type": "text"
+										},
+										{
+											"key": "current_chat_user_type",
+											"value": "user",
+											"type": "text"
+										},
+										{
+											"key": "current_chat_user",
+											"value": "36",
+											"type": "text"
+										},
+										{
+											"key": "chat_id",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "mss_type",
+											"value": "call",
+											"description": "text, call,",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingTokenGen",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingTokenGen"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Meeting Create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"meeting_link\": \"https://mail.google.com/\",\r\n    \"meeting_id\": \"eeejdnnmhe377\",\r\n    \"subject\": \"new meeting\",\r\n    \"title\": \"ok\",\r\n    \"agenda\": \"in let\",\r\n    \"startdatetime\": \"2025-05-01 00:52:14\", // YY-MM-DD HH:MM:SS\r\n    \"group_user_id\": \"eyJpdiI6Im1xL1FQY3U5V29CZTVFVjBmYkRaMkE9PSIsInZhbHVlIjoiYjZrNDVOZWdQT1Fvb05ZVGV5NzBoQT09IiwibWFjIjoiZDZhMzllMTc2N2E5MzBhNjU2NDgxYmM4OWE4N2M5MmNkZTFlMTUxNjAwMWVmNjBjMTg4MTVhMDM4OWExNjBlMCIsInRhZyI6IiJ9\", // user can be in array string but group can only process one group \r\n    \"group_user\": \"group\" // users or group\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meeting/create",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meeting",
+										"create"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "File",
+					"item": [
+						{
+							"name": "Get File",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get File Pending",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/pending",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"pending"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get File of other",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/other",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"other"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get File request",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/user/file/request",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"file",
+										"request"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/OLTGROUP/Downloads/Receipt_eJzTd9e39Hd1jYgEAAr_2BAmk_3D.pdf"
+										},
+										{
+											"key": "name",
+											"value": "like899999",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "descript",
+											"type": "text"
+										},
+										{
+											"key": "folder_id",
+											"value": "",
+											"description": "// folder id",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/upload",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"upload"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View File",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/Ky7VaMjRr3Eo/view",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"Ky7VaMjRr3Eo",
+										"view"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Download File",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/jeDg9vM6m82L/download",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"jeDg9vM6m82L",
+										"download"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View File url",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/{{id}}/url",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"{{id}}",
+										"url"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept File",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// use the id of the pending endpoint /accept",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/eyJpdiI6IkNuMGp1eUV4VmFaY0dxSjNLMjZORkE9PSIsInZhbHVlIjoiNmM2dWpaNk9aL3FjTktWWnNOSmFpZz09IiwibWFjIjoiMmIxNjIyMGUwZGIwNzc2MTJmOThkNmFkNjI4ODk1ODY3YmIwMWQ4ZDdmODFkYWNiMzEwODM1ODhjYzEyZTgxMiIsInRhZyI6IiJ9/accept",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"eyJpdiI6IkNuMGp1eUV4VmFaY0dxSjNLMjZORkE9PSIsInZhbHVlIjoiNmM2dWpaNk9aL3FjTktWWnNOSmFpZz09IiwibWFjIjoiMmIxNjIyMGUwZGIwNzc2MTJmOThkNmFkNjI4ODk1ODY3YmIwMWQ4ZDdmODFkYWNiMzEwODM1ODhjYzEyZTgxMiIsInRhZyI6IiJ9",
+										"accept"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Decline File",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/user/file/{id}/decline",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"file",
+										"{id}",
+										"decline"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Share File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"eyJpdiI6IkV5MGd6OENkUExDNjZsTDM5d0g0anc9PSIsInZhbHVlIjoiZGZ3ZHF1NkRVUlp2S0hWNWVVQlQ0UT09IiwibWFjIjoiNzZhZjU2MDdkNmFmMmJkYzY5YTJlZDNiZDI5ZTMzMmIxYmVmNmNmZDkzZjAzY2ZhMmExYzQ1ZTcxNzJhMGMyOSIsInRhZyI6IiJ9\", //file_id\r\n    \"users\": \"[18]\" // send in user id it must be a string e.g \"[1,34,5]\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/file/share",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"share"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Folder Create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"new2bevv\", //file_id\r\n    \"rel\": \"eyJpdiI6IldxSVBKUUYxTll6dVkvbk80RHhuNUE9PSIsInZhbHVlIjoiNWNRMVR5cXc1SFVpUEtwM0J2YWhBZz09IiwibWFjIjoiZTU1MTE3ZDk1Mjc2NTJhYmY4ZDExYmJmOWI0ZDBiZWI1OGU0NjYyY2VmNDI5MGJkYjViZWUzMmY3YTgxZTZhMCIsInRhZyI6IiJ9\", // encrypted id of the associated folder, leave empty if it is root folder\r\n    \"description\": \"\" // send in user id it must be a string e.g \"[1,34,5]\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/folder/create",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"folder",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Folder Get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Leave id empty if you want to get the root folder\r\n// Use the encrypted id of the folder list you want to see ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/folder",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"folder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Folder Delete",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Use the encrypted id of the folder list you want to see ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/folderDel/eyJpdiI6IlB1U3JrM3A5eU5QUk9KYjU0dFEzeVE9PSIsInZhbHVlIjoibmM1QkwyS1VVUEV1R0h5YzZmeXlnZz09IiwibWFjIjoiNjZiN2I0M2RmZGRkM2EyMDMyNDQyZjYwNWI1N2U5YTA2MmJkNWYyOTg3NjM1Y2M2YWJkMDY1YTQzNWY1Y2I5NiIsInRhZyI6IiJ9",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"folderDel",
+										"eyJpdiI6IlB1U3JrM3A5eU5QUk9KYjU0dFEzeVE9PSIsInZhbHVlIjoibmM1QkwyS1VVUEV1R0h5YzZmeXlnZz09IiwibWFjIjoiNjZiN2I0M2RmZGRkM2EyMDMyNDQyZjYwNWI1N2U5YTA2MmJkNWYyOTg3NjM1Y2M2YWJkMDY1YTQzNWY1Y2I5NiIsInRhZyI6IiJ9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Folder Update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"eyJpdiI6Ik9UWmFjZm9vRGh2YThZSXpBR0M5eEE9PSIsInZhbHVlIjoianF2ampXTUVGanQrZU1vNGM2UGx5Zz09IiwibWFjIjoiOTIzZDY1MzEwYzdkNDVhNGUwNmE0ZDViMzkyMjEzZTg3YzAwY2Q3ZjU0YjQ1YTMyNTU4YTM5ZWUzOTVkNzYwNyIsInRhZyI6IiJ9\", //encrypted id of the folder\r\n    \"name\": \"new2\", //file_id\r\n    \"rel\": \"\", // encrypted id of the associated folder, leave empty if it is root folder\r\n    \"description\": \"\" // send in user id it must be a string e.g \"[1,34,5]\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/folderUpdate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"folderUpdate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Folder File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"folder_id\": \"eyJpdiI6IlpBbXR1T2RvNWl1NUVnY3l5OFlGWnc9PSIsInZhbHVlIjoidDlGZGVEbFZNQm00VE1iSXJZZ2Qrdz09IiwibWFjIjoiOGQ1NTQ3YTdmZWVlZjk1OWU3NzBmMTFiZmYzNjYyNWIxNTg2MGFmNGFkYmY0OTY4OGQxYjQ5M2RmYTRhOWEyNiIsInRhZyI6IiJ9\", //file_id\r\n    \"file_id\": \"eyJpdiI6IlpBbXR1T2RvNWl1NUVnY3l5OFlGWnc9PSIsInZhbHVlIjoidDlGZGVEbFZNQm00VE1iSXJZZ2Qrdz09IiwibWFjIjoiOGQ1NTQ3YTdmZWVlZjk1OWU3NzBmMTFiZmYzNjYyNWIxNTg2MGFmNGFkYmY0OTY4OGQxYjQ5M2RmYTRhOWEyNiIsInRhZyI6IiJ9\" // encrypted id of the associated folder, leave empty if it is root folder\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/folderFile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"folderFile"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Meeting",
+					"item": [
+						{
+							"name": "Get Meeting by Creator",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/user/getmeeting",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"getmeeting"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Meeting Details",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}/user/getmeeting/eyJpdiI6IlJ2eVp4dFFhaitDd3Y5MWdOLzZnbnc9PSIsInZhbHVlIjoiLzcyeFFyZElEcmE0aHlHWHhDSDBRUT09IiwibWFjIjoiNjFlMGJkZWYxNDJmNjRjZmUyZmU3NTViOTc1NWRkOThlOTNjNDNmZDA2Mjk3ZTc2YjJmMTgzMTE3YTZjMWQ4NSIsInRhZyI6IiJ9",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"getmeeting",
+										"eyJpdiI6IlJ2eVp4dFFhaitDd3Y5MWdOLzZnbnc9PSIsInZhbHVlIjoiLzcyeFFyZElEcmE0aHlHWHhDSDBRUT09IiwibWFjIjoiNjFlMGJkZWYxNDJmNjRjZmUyZmU3NTViOTc1NWRkOThlOTNjNDNmZDA2Mjk3ZTc2YjJmMTgzMTE3YTZjMWQ4NSIsInRhZyI6IiJ9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Meeting Invited",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// the encrypted id of the user or group\r\n// user or group \r\n// {{base_url}}/user/getmeetingid/{use_id or group_id}/{user or group}"
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingInvitationlist",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingInvitationlist"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Meeting Participant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n// {{base_url}}/getmeetingid/{status}  'invite', 'joined'\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingParticipantlist/eeejdnnmhe377/joined",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingParticipantlist",
+										"eeejdnnmhe377",
+										"joined"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Meeting Update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"eyJpdiI6IlhWQmgySWFCYjJ0MWpWZXVNTDVpSFE9PSIsInZhbHVlIjoiUEtqWnBncVhMVmd2VWVNR1pmeDZCQT09IiwibWFjIjoiYWEzNGExZTQ2ZGQ0ZTU4NGUxMjBlYzQyYmU1ZDM5ZTgwOTk0ZGE0ZTI0NDM4YmViZjgzYmM3N2Q0YTA2ZmZlNSIsInRhZyI6IiJ9\",\r\n    \"meeting_link\": \"https:\\/cloud.defcomm.ng\\/dashboard\\/conference\\/waiting\",\r\n    \"meeting_id\": \"rb0a-9rea-uix6\",\r\n    \"subject\": \"General Meeting-2\",\r\n    \"title\": \"General Meeting-2\",\r\n    \"agenda\": \"in let\",\r\n    \"startdatetime\": \"2025-08-11 09:30:00\", // YY-MM-DD HH:MM:SS\r\n    \"duration\": \"00:20:00\" // HH:MM:SS\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meeting/update",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meeting",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Meeting Invitation",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"meetings_id\": \"eyJpdiI6IlRkOUxWSFpsRksyeEJrOHphbkc3cWc9PSIsInZhbHVlIjoiUG9ZcUM1UDc3QlN2enFnWVo2OW9ZZz09IiwibWFjIjoiMGVmNzMyMWZlODAwN2VhY2I0MzcwOTJlZjQ4NjExMTJjOGIzZjI5ZjQzZWFiNTE3NDI5OTJjM2VlNGMzNjE0YiIsInRhZyI6IiJ9\",\r\n    \"users\": \"['eyJpdiI6IkhQV2RLLzA5Y05JNVBsdmVpUnlUL2c9PSIsInZhbHVlIjoiYWc4ZFVOY1U2ZFBQTWdvVTFvYS92Zz09IiwibWFjIjoiNDU3NjU2NmI1ZjYxMDI1MzhkNzkyNWM3YTg1ZTcxZWY1NzViZjM3ZGIxZGEwOTNiOGQ4ZTQ0ZGFmZWY4NTRkMiIsInRhZyI6IiJ9']\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingInvitation",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingInvitation"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Meeting Invitation Group",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"meetings_id\": \"eyJpdiI6IkwzdEtiY00zbDZGNzBwYk5LOGdYZ2c9PSIsInZhbHVlIjoiVXgzNFlxZnExQTNsSHNhU2REQTJKUT09IiwibWFjIjoiMGVkMmUwYTVmYTZlNDEyYWI0M2Q3N2EwZTcyOGMyNTlhOGE4NDA5MWY4ZGYyMzA2MDAyZDE1NjlmM2Q0ZmQwNSIsInRhZyI6IiJ9\",\r\n    \"group_id\": \"eyJpdiI6IlJvZEtiVi92VFFZWHRqRGlDNGVqZGc9PSIsInZhbHVlIjoicEJNVXFWeTc2WHRYbUE5WFAwaVZVUT09IiwibWFjIjoiMjYzNDI1MDFlNjM5YzFkYmFmMDkzNDJlMDIxOTllYjk1M2ZiZWZiMzA2YWRjYTIxZDFmYzU0MzhmZTgzNjdlZSIsInRhZyI6IiJ9\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingInvitationGroup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingInvitationGroup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Meeting Join",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// meeting id"
+								},
+								"url": {
+									"raw": "{{base_url}}/user/meetingInvitationJoin/eyJpdiI6IjdoRjBxdVRkU0ZDMmVkZGZOV2tXdWc9PSIsInZhbHVlIjoiWS9UMDVPcG14MTY0NnNpSEp0SW5SUT09IiwibWFjIjoiNDhhMTIzYjBkZWM2MWYwZDZiY2U5MjIwZGU2NjhkYjY0Nzk3YThlNDgzMTM5YzMxNjY3MmRlODRmOTFmYjIxYiIsInRhZyI6IiJ9",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"meetingInvitationJoin",
+										"eyJpdiI6IjdoRjBxdVRkU0ZDMmVkZGZOV2tXdWc9PSIsInZhbHVlIjoiWS9UMDVPcG14MTY0NnNpSEp0SW5SUT09IiwibWFjIjoiNDhhMTIzYjBkZWM2MWYwZDZiY2U5MjIwZGU2NjhkYjY0Nzk3YThlNDgzMTM5YzMxNjY3MmRlODRmOTFmYjIxYiIsInRhZyI6IiJ9"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Group",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/group",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"group"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Group Pending",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/group/pending",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"group",
+								"pending"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Group",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/group/eyJpdiI6IitHWWZMRHNWOXJTbWQ4UEsrajRhcVE9PSIsInZhbHVlIjoiYkQwb1pFdGFLSUdNZDFjcDQwSGxOdz09IiwibWFjIjoiOTZiMjA4NWMxN2NjMjk2MmNkMTdlYjJmYTAwMjU0YTcwYWRlOTcyNDBjMWUzY2E5ZWViM2ZlMDI3Y2IzMDYzYSIsInRhZyI6IiJ9/accept",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"group",
+								"eyJpdiI6IitHWWZMRHNWOXJTbWQ4UEsrajRhcVE9PSIsInZhbHVlIjoiYkQwb1pFdGFLSUdNZDFjcDQwSGxOdz09IiwibWFjIjoiOTZiMjA4NWMxN2NjMjk2MmNkMTdlYjJmYTAwMjU0YTcwYWRlOTcyNDBjMWUzY2E5ZWViM2ZlMDI3Y2IzMDYzYSIsInRhZyI6IiJ9",
+								"accept"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Decline Group",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/group/{id}/decline",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"group",
+								"{id}",
+								"decline"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Plan",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/userplan",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"userplan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile upload",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/protein.png"
+								},
+								{
+									"key": "name",
+									"value": "jo me",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "0980",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "uw",
+									"type": "text"
+								},
+								{
+									"key": "enable_2fa",
+									"value": "1",
+									"description": "// 1 or 0",
+									"type": "text"
+								},
+								{
+									"key": "device_token",
+									"value": "wewheeee",
+									"type": "text"
+								},
+								{
+									"key": "device_type",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "pin",
+									"value": "1234",
+									"type": "text"
+								},
+								{
+									"key": "onboarding_stage",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "encryptorkey",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/user/profile/upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Setting",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/getsetting",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"getsetting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Setting",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "hide_message_style",
+									"value": "open_once",
+									"description": "'open_once', 'hold_open'",
+									"type": "text"
+								},
+								{
+									"key": "hide_message",
+									"value": "1",
+									"description": "1 or 0",
+									"type": "text"
+								},
+								{
+									"key": "chat_language",
+									"value": "1",
+									"description": "Id of Lanague Code",
+									"type": "text"
+								},
+								{
+									"key": "walkie_language",
+									"value": "1",
+									"description": "Id of Lanague Code",
+									"type": "text"
+								},
+								{
+									"key": "app_language",
+									"value": "",
+									"description": "Id of Lanague Code",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/user/setting",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"setting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Braodcast",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"channel_name\": \"private-chat.37\",\r\n  \"socket_id\": \"605344040.948128981\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/broadcasting/auth",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"broadcasting",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notification",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/notification",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"notification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language Code",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/languagecode",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"languagecode"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "websocket",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "channel_name",
+									"value": "private-chat.1",
+									"type": "text"
+								},
+								{
+									"key": "socket_id",
+									"value": "1234.5678",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/broadcasting/auth",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"broadcasting",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "App Store",
+			"item": [
+				{
+					"name": "Verify Email",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"john12@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/emailVerify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"emailVerify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"John Ayo\",\r\n    \"email\": \"loshonine2@gmail.com\",\r\n    \"phone\": \"07062787760\",\r\n    \"password\": \"1234567890\",\r\n    \"country\": \"Nigeria\",\r\n    \"dob\": \"06-01-2022\",\r\n    \"gender\": \"male\", //male, female, other\r\n    \"role\": \"user\", // user, company\r\n    \"verify_option\": \"sms\" //sms, email\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for developer mode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "rc_number",
+									"value": "8904",
+									"description": "// if company",
+									"type": "text"
+								},
+								{
+									"key": "rc_doc",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/shamarma.png"
+								},
+								{
+									"key": "tin",
+									"value": "1234",
+									"type": "text"
+								},
+								{
+									"key": "tin_doc",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/fruit.png"
+								},
+								{
+									"key": "developer_display_name",
+									"value": "New King",
+									"type": "text"
+								},
+								{
+									"key": "website",
+									"value": "url",
+									"type": "text"
+								},
+								{
+									"key": "selfie",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/snack.png"
+								},
+								{
+									"key": "id_card_front",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/fruit.png"
+								},
+								{
+									"key": "id_card_back",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/snack.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/app/developermode",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"developermode"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload app",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "••••••"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "description",
+									"value": "A useful utility app for students",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "Education",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "support@appdomain.com",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "+2347012345678",
+									"type": "text"
+								},
+								{
+									"key": "phone_opt",
+									"value": "+2348012345678",
+									"type": "text"
+								},
+								{
+									"key": "os",
+									"value": "Android",
+									"type": "text"
+								},
+								{
+									"key": "app_icon",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/shamarma.png"
+								},
+								{
+									"key": "feature_image",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/icream.png"
+								},
+								{
+									"key": "policy",
+									"value": "We collect no personal data.",
+									"type": "text"
+								},
+								{
+									"key": "app_bundle",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Pictures/snack.png"
+								},
+								{
+									"key": "name_release",
+									"value": "UtilityPro",
+									"type": "text"
+								},
+								{
+									"key": "version",
+									"value": "1.2.0",
+									"type": "text"
+								},
+								{
+									"key": "copyright",
+									"value": "© 2025 AppDomain Inc.",
+									"type": "text"
+								},
+								{
+									"key": "release",
+									"value": "automatic",
+									"description": "'manual', 'automatic', 'automatic_earlier'",
+									"type": "text"
+								},
+								{
+									"key": "collect_data",
+									"value": "yes",
+									"description": "yes, no",
+									"type": "text"
+								},
+								{
+									"key": "contact_name",
+									"value": "John Doe",
+									"type": "text"
+								},
+								{
+									"key": "contact_email",
+									"value": "john@appdomain.com",
+									"type": "text"
+								},
+								{
+									"key": "contact_phone",
+									"value": "+2349098765432",
+									"type": "text"
+								},
+								{
+									"key": "contact_address",
+									"value": "12 App Street, Lagos",
+									"type": "text"
+								},
+								{
+									"key": "contact_other",
+									"value": "Telegram: @AppSupport",
+									"type": "text"
+								},
+								{
+									"key": "location_precise",
+									"value": "GPS required for maps feature",
+									"type": "text"
+								},
+								{
+									"key": "location_coarse",
+									"value": "Used to suggest nearby resources",
+									"type": "text"
+								},
+								{
+									"key": "sensitive_info",
+									"value": "App accesses clipboard and file system",
+									"type": "text"
+								},
+								{
+									"key": "app_id",
+									"value": "APP12345678-rtte",
+									"type": "text"
+								},
+								{
+									"key": "app_id_name",
+									"value": "UtilityProApp",
+									"type": "text"
+								},
+								{
+									"key": "app_id_prefix",
+									"value": "com.appdomain.",
+									"type": "text"
+								},
+								{
+									"key": "app_id_surfix",
+									"value": ".utility",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Initial submission. Awaiting review.",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "new app",
+									"type": "text"
+								},
+								{
+									"key": "id",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/app/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"create"
+							]
+						},
+						"description": "Generated from cURL: curl --location 'http://127.0.0.1:3302/api/app/create' \\\r\n--header 'Authorization: ••••••' \\\r\n--form 'description=\"A useful utility app for students\"' \\\r\n--form 'category=\"Education\"' \\\r\n--form 'email=\"support@appdomain.com\"' \\\r\n--form 'phone=\"+2347012345678\"' \\\r\n--form 'phone_opt=\"+2348012345678\"' \\\r\n--form 'os=\"Android\"' \\\r\n--form 'app_icon=@\"/path/to/icon.png\"' \\\r\n--form 'feature_image=@\"/path/to/feature.jpg\"' \\\r\n--form 'policy=\"We collect no personal data.\"' \\\r\n--form 'app_bundle=\"com.appdomain.utility\"' \\\r\n--form 'name_release=\"UtilityPro\"' \\\r\n--form 'version=\"1.2.0\"' \\\r\n--form 'copyright=\"© 2025 AppDomain Inc.\"' \\\r\n--form 'release=\"automatic\"' \\\r\n--form 'collect_data=\"yes\"' \\\r\n--form 'contact_name=\"John Doe\"' \\\r\n--form 'contact_email=\"john@appdomain.com\"' \\\r\n--form 'contact_phone=\"+2349098765432\"' \\\r\n--form 'contact_address=\"12 App Street, Lagos\"' \\\r\n--form 'contact_other=\"Telegram: @AppSupport\"' \\\r\n--form 'location_precise=\"GPS required for maps feature\"' \\\r\n--form 'location_coarse=\"Used to suggest nearby resources\"' \\\r\n--form 'sensitive_info=\"App accesses clipboard and file system\"' \\\r\n--form 'app_id=\"APP1234567890\"' \\\r\n--form 'app_id_name=\"UtilityProApp\"' \\\r\n--form 'app_id_prefix=\"com.appdomain.\"' \\\r\n--form 'app_id_surfix=\".utility\"' \\\r\n--form 'status=\"pending\"' \\\r\n--form 'active_date=\"2025-06-27 09:00:00\"' \\\r\n--form 'disable_date=\"\"' \\\r\n--form 'reject_date=\"\"' \\\r\n--form 'comment=\"Initial submission. Awaiting review.\"' \\\r\n"
+					},
+					"response": []
+				},
+				{
+					"name": "App Update Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"eyJpdiI6IlRRWkRwL2F5N3U0T2F1NjBWbkIrMlE9PSIsInZhbHVlIjoiNHdLemc3QkNnQWs2Z0dKakx0UU1YZz09IiwibWFjIjoiNjgzMTY3N2MyZjUxNzI1N2FjYTIxZTBkMDQ5N2FhNGVmYjQ4NjkwM2U2NmM1Y2MwZmU0OTdiMjkyZTkzOGQ3MyIsInRhZyI6IiJ9\",\r\n    \"status\": \"active\" // 'disable','active'\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "App List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/app/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Own App List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "••••••"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/app/ownlist",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"ownlist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "App Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "••••••"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// id of app encrypted",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/app/listId/eyJpdiI6IkMvOS9BbjVpa2Z6VitPZzJ4KzFwbWc9PSIsInZhbHVlIjoiSmdMZ01oaTBmOHZwejNIUHNXYjlNQT09IiwibWFjIjoiYTU4ZjMyZDM2ZjlkY2Q1YWQ1NDQ0MGU3MDY3MzRhMWEwNmY1NGZhMzUxNTRiMzI3ZDQ1OTAzNTUwODQ1Y2EzMCIsInRhZyI6IiJ9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"app",
+								"listId",
+								"eyJpdiI6IkMvOS9BbjVpa2Z6VitPZzJ4KzFwbWc9PSIsInZhbHVlIjoiSmdMZ01oaTBmOHZwejNIUHNXYjlNQT09IiwibWFjIjoiYTU4ZjMyZDM2ZjlkY2Q1YWQ1NDQ0MGU3MDY3MzRhMWEwNmY1NGZhMzUxNTRiMzI3ZDQ1OTAzNTUwODQ1Y2EzMCIsInRhZyI6IiJ9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Walkie Talkie",
+			"item": [
+				{
+					"name": "Channel Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Work New\",\r\n    \"frequency\": \"\", // leave empty\r\n    \"description\": \"tes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelcreate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelcreate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Create list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channecreatellist",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channecreatellist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"eyJpdiI6IjJ0bkJkNnhYRk44UitGZGlnVDA4dVE9PSIsInZhbHVlIjoiVkxoMzJhVnBoMk96T0ZPNnowcUpXdz09IiwibWFjIjoiNGQ5NzA2NWQyOGE0ZjAyZDc3Y2U3ZjVlMjY1MTY3Yjk0YmY4NWJjZTZjYzdiYWYzYWIyMzBiZGQ2YmFjYjBkYyIsInRhZyI6IiJ9\", //encrypted id\r\n    \"name\": \"letlasf\",\r\n    \"frequency\": \"\", // leave empty\r\n    \"description\": \"thes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelupdate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelupdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Delete",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// encrypted id",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channedelete/eyJpdiI6IjJ0bkJkNnhYRk44UitGZGlnVDA4dVE9PSIsInZhbHVlIjoiVkxoMzJhVnBoMk96T0ZPNnowcUpXdz09IiwibWFjIjoiNGQ5NzA2NWQyOGE0ZjAyZDc3Y2U3ZjVlMjY1MTY3Yjk0YmY4NWJjZTZjYzdiYWYzYWIyMzBiZGQ2YmFjYjBkYyIsInRhZyI6IiJ9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channedelete",
+								"eyJpdiI6IjJ0bkJkNnhYRk44UitGZGlnVDA4dVE9PSIsInZhbHVlIjoiVkxoMzJhVnBoMk96T0ZPNnowcUpXdz09IiwibWFjIjoiNGQ5NzA2NWQyOGE0ZjAyZDc3Y2U3ZjVlMjY1MTY3Yjk0YmY4NWJjZTZjYzdiYWYzYWIyMzBiZGQ2YmFjYjBkYyIsInRhZyI6IiJ9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Invite User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"channel_id\": \"lBMY6zk9d1q4\", //encrypted id\r\n    \"users\": \"['ndjb9N4RZqQe']\" //user id in array\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelinvite",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelinvite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel list invited",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// pending, active, block",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channellistinvited/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channellistinvited",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Invitation Status Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sub_id\": \"DmzER1ER2NKM\", //encrypted id\r\n    \"status\": \"active\" // pending, active, reject\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelinvitedstatus",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelinvitedstatus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Broadcast",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "channel",
+									"value": "6oa24qKw6SYCLiomCZ3Nn4",
+									"description": "// encrypted channel id",
+									"type": "text"
+								},
+								{
+									"key": "record",
+									"type": "file",
+									"src": "/C:/Users/OLTGROUP/Videos/1754490713_record.webm"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelbroadcast",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelbroadcast"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Is Broadcasting",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"channel_id\": \"lBMY6zk9d1q4\", // \r\n    \"recording\": \"is_recording\" // is_recording or not_recording\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelisbroadcasting",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelisbroadcasting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Broadcast Recording",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// channel encrypted id",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelbroadcastlist/Xmyz9876x41W",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelbroadcastlist",
+								"Xmyz9876x41W"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Broadcast Delete Recording",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// recording encrypted id",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/channelbroadcastdel/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"channelbroadcastdel",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber Join",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"channel_id\": \"HVxb0PskNzlUITpo2kse2\" // \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/subscriberJoin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"subscriberJoin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber Leave",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"channel_id\": \"HVxb0PskNzlUITpo2kse2\" // \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/subscriberLeave",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"subscriberLeave"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Active Subscriber",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// channel_id",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/walkietalkie/subscriberActive/HVxb0PskNzlUITpo2kse2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"walkietalkie",
+								"subscriberActive",
+								"HVxb0PskNzlUITpo2kse2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Web",
+			"item": [
+				{
+					"name": "Contact Us",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\": \"test\",\r\n    \"last_name\": \"second\",\r\n    \"email\": \"oloshojodamilare@gmail.com\",\r\n    \"phone\": \"080\",\r\n    \"company\": \"cp\",\r\n    \"detail\": \"tne\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/web/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"web",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Us",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dateTime\": \"2025-04-30 13:01:28\", //YY-mm-dd HH-MM-SS\r\n    \"name\": \"test\",\r\n    \"role\": \"second\",\r\n    \"email\": \"oloshojodamilare@gmail.com\",\r\n    \"phone\": \"080\",\r\n    \"location\": \"lagos\",\r\n    \"meeting_type\": \"call\", // call, physical, defcomm\r\n    \"reason\": \"tne\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/web/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"web",
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Event Registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"form_id\": \"eyJpdiI6IkVEdXJuckxYemx2Zm9BdWl0cHU1Z3c9PSIsInZhbHVlIjoicW9GaUc4Yy82enUzZVZLRzZBK1dmZz09IiwibWFjIjoiNmU3YmZjYmRkM2U4OTdmYWZiZGNhNWNmMGJkYTg2MzBiOWE4MzEzOTA1NmQ5YmU4ODJhZGIzMmExMGE4MGU0YyIsInRhZyI6IiJ9\", // encrypted id of form from admin\r\n    \"name\": \"Joshua Olosho\",\r\n    \"email\": \"joshua@example.com\",\r\n    \"phone\": \"+2348012345678\",\r\n  \"data\": {\r\n    \"personal_information\": {\r\n      \"full_name\": \"Joshua Olosho\",\r\n      \"title\": \"Project Lead\",\r\n      \"organization\": \"Defcomm Solutions\",\r\n      \"country\": \"Nigeria\",\r\n      \"email\": \"oloshojodamilare@gmail.com\",\r\n      \"phone\": \"+2348012345678\"\r\n    },\r\n    \"participation_details\": {\r\n      \"attendance_mode\": \"Physical\",\r\n      \"registration_type\": \"Individual Participant\"\r\n    },\r\n    \"professional_background\": {\r\n      \"fields\": [\r\n        \"Cybersecurity\",\r\n        \"Technology & Innovation\"\r\n      ],\r\n      \"other\": null\r\n    },\r\n    \"consent\": {\r\n      \"information_use\": true,\r\n      \"follow_up_updates\": true\r\n    }\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/web/eventform",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"web",
+								"eventform"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Translator/Transcribing",
+			"item": [
+				{
+					"name": "Speech-to-text",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"value": "https://backend.defcomm.ng/WailkieTalkie/1754327234_record.webm",
+									"type": "text"
+								},
+								{
+									"key": "language",
+									"value": "en-US",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/trans/speech-to-text",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trans",
+								"speech-to-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Text-to-Speech",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "text",
+									"value": "connecting to a new channel coming",
+									"type": "text"
+								},
+								{
+									"key": "language",
+									"value": "en-US",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/trans/text-to-speech",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trans",
+								"text-to-speech"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Translate Text",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "text",
+									"value": "connecting to a new channel coming",
+									"type": "text"
+								},
+								{
+									"key": "target_lang",
+									"value": "yo-NG",
+									"type": "text"
+								},
+								{
+									"key": "source_lang",
+									"value": "en-US",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/trans/translate-text",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trans",
+								"translate-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Translate Speech",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"value": "https://backend.defcomm.ng/WailkieTalkie/decrypted/decrypted_17585460261754490713_record.webm",
+									"type": "text"
+								},
+								{
+									"key": "target_lang",
+									"value": "yo-NG",
+									"type": "text"
+								},
+								{
+									"key": "source_lang",
+									"value": "en-US",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "path",
+									"description": "file, path",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/trans/speech-to-speech",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trans",
+								"speech-to-speech"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bounty",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Registration",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"test\",\r\n    \"lastName\": \"okay\",\r\n    \"username\": \"user\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"phone\": \"090833\",\r\n    \"country\": \"Nigeria\",\r\n    \"user_type\": \"user\", // 'user', 'group', 'company'\r\n    \"password\": \"1234567890\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/bounty/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"bounty",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userlogin\": \"user\", //Username or email\r\n    \"otp\": \"5156\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/bounty/verify",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"bounty",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userlogin\": \"user\", //Username or email\r\n    \"password\": \"1234567890\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/bounty/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"bounty",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "settings",
+					"item": [
+						{
+							"name": "profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "firstName",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "lastName",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "phone",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "country",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "zipcode",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "timezone",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "photo",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "bio",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/bounty/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"bounty",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
