@@ -481,66 +481,69 @@ export default function Landing() {
               </p>
             </div>
 
-            <div className="overflow-x-auto no-scrollbar py-4">
-              <div className="flex gap-6 w-max px-4">
-                {speakerCards.map((card, index) => {
-                  const delay = 0.18 + index * 0.06;
+          <div className="py-4">
+  <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
+    {speakerCards.map((card, index) => {
+      const delay = 0.18 + index * 0.06;
 
-                  // Handle text-type cards
-                  if (card.type === "text") {
-                    const hasName = card.name && card.name.trim() !== "";
+      // Handle text-type cards
+      if (card.type === "text") {
+        const hasName = card.name && card.name.trim() !== "";
 
-                    return (
-                      <article
-                        key={`${card.name || "no-name"}-text-${index}`}
-                        className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-[280px] ${speakerCardStyles.text[card.variant ?? "light"]
-                          }`}
-                        style={{ "--reveal-child-delay": `${delay}s` }}
-                      >
-                        {hasName ? (
-                          <>
-                            <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
-                              {card.name}
-                            </h3>
-                            <p
-                              className={`text-sm sm:text-base leading-relaxed ${card.variant === "light"
-                                  ? "text-[#4A4F58]"
-                                  : "text-white/80"
-                                }`}
-                            >
-                              {card.role}
-                            </p>
-                          </>
-                        ) : (
-                          <div className="flex flex-1 items-center justify-center">
-                            <img
-                              src={fallbackImg}
-                              alt="Speaker placeholder"
-                              className="max-h-[70%] max-w-[70%] object-contain opacity-90"
-                            />
-                          </div>
-                        )}
-                      </article>
-                    );
-                  }
-
-                  // Handle image-type cards
-                  return (
-                    <article
-                      key={`${card.name || "no-name"}-image-${index}`}
-                      className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-[280px] ${speakerCardStyles.image}`}
-                      style={{ "--reveal-child-delay": `${delay}s` }}
-                    >
-                      <img
-                        src={card.image || fallbackImg}
-                        alt={card.name || "Speaker"}
-                        className="h-full w-full object-cover"
-                      />
-                    </article>
-                  );
-                })}
+        return (
+          <article
+            key={`${card.name || "no-name"}-text-${index}`}
+            className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${
+              speakerCardStyles.text[card.variant ?? "light"]
+            }`}
+            style={{ "--reveal-child-delay": `${delay}s` }}
+          >
+            {hasName ? (
+              <>
+                <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
+                  {card.name}
+                </h3>
+                <p
+                  className={`text-sm sm:text-base leading-relaxed ${
+                    card.variant === "light"
+                      ? "text-[#4A4F58]"
+                      : "text-white/80"
+                  }`}
+                >
+                  {card.role}
+                </p>
+              </>
+            ) : (
+              <div className="flex flex-1 items-center justify-center">
+                <img
+                  src={fallbackImg}
+                  alt="Speaker placeholder"
+                  className="max-h-[70%] max-w-[70%] object-contain opacity-90"
+                />
               </div>
-            </div>
+            )}
+          </article>
+        );
+      }
+
+      // Handle image-type cards
+      return (
+        <article
+          key={`${card.name || "no-name"}-image-${index}`}
+          className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
+          style={{ "--reveal-child-delay": `${delay}s` }}
+        >
+          <img
+            src={card.image || fallbackImg}
+            alt={card.name || "Speaker"}
+            className="h-full w-full object-cover"
+          />
+        </article>
+      );
+    })}
+  </div>
+</div>
+
 
 
           </section>
