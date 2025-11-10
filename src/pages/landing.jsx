@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import bugBounty from "../assets/images/bug-bounty-logo.png";
+import bugBounty from "../assets/images/bug bounty logo 4.png";
 import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
 import agendaMap from "../assets/images/Frame-34.png";
-import speaker1 from "../assets/images/speaker-fallback.png";
+import speaker1 from "../assets/images/fb.png";
 import fallbackImg from '../assets/images/fb.png';
 // import speaker2 from "../assets/images/speaker-falback.png";
 // import speaker3 from "../assets/images/speaker-falback.png";
 // import speaker4 from "../assets/images/speaker-falback.png";
 import Footer from "../components/Footer";
-import sponsor1 from '../assets/images/sponsor1.png';
+// import sponsor1 from '../assets/images/sponsor1.png';
 import sponsor2 from '../assets/images/sponsor2.png';
-import sponsor3 from '../assets/images/sponsor3.png';
+import sponsor3 from '../assets/images/sponsor4.png';
 import { useReveal } from "../hooks/useReveal";
 import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
@@ -23,7 +23,7 @@ import youtube from '../assets/images/youtube.svg';
 const sponsors = [
   {
     id: 1,
-    img: sponsor1
+    img: sponsor3
   }, {
     id: 2,
     img: sponsor2
@@ -33,13 +33,13 @@ const sponsors = [
   },
   {
     id: 4,
-    img: sponsor1
-  }, {
-    id: 5,
     img: sponsor2
   }, {
-    id: 6,
+    id: 5,
     img: sponsor3
+  }, {
+    id: 6,
+    img: sponsor2
   }
 ]
 const socialLinks = [
@@ -91,7 +91,7 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
-    name: "Dr. Emily Carter",
+    name: "",
     role: "Chief AI Scientist, OpenAI",
     variant: "light"
   },
@@ -102,7 +102,7 @@ const speakerCards = [
   },
   {
     type: "text",
-    name: "Elon Park",
+    name: "",
     role: "CTO, DeepMind",
     variant: "accent"
   },
@@ -118,7 +118,7 @@ const speakerCards = [
   },
   {
     type: "text",
-    name: "Laura Kim",
+    name: "",
     role: "AI Policy Advisor, EU Commission",
     variant: "accent"
   },
@@ -129,7 +129,7 @@ const speakerCards = [
   },
   {
     type: "text",
-    name: "Dr. Alan Foster",
+    name: "",
     role: "Stanford AI Lab",
     variant: "accent"
   }
@@ -331,7 +331,7 @@ export default function Landing() {
             style={{ "--reveal-delay": "0.15s" }}
           >
             {sponsors.map((spons, index) => (
-              <div className="max-w-28">
+              <div className="max-h-30">
                 <img
   src={spons.img}
   alt="Sponsor logos"
@@ -363,7 +363,7 @@ export default function Landing() {
               </div>
               <Link
                 to="/register"
-                className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#1B2807] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
+                className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#f7f7f7] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Download slide deck →
               </Link>
@@ -481,37 +481,67 @@ export default function Landing() {
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {speakerCards.map((card, index) => {
-                if (card.type === "text") {
-                  // return (
-                  //   <article
-                  //     key={`${card.name}-text-${index}`}
-                  //     className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
-                  //     style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
-                  //   >
-                  //     <h3 className="text-2xl font-semibold tracking-tight">{card.name}</h3>
-                  //     <p className={`text-sm leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
-                  //       {card.role}
-                  //     </p>
-                  //   </article>
-                  // );
-                }
+  {speakerCards.map((card, index) => {
+    const delay = 0.18 + index * 0.06;
 
-                return (
-                  <article
-                    key={`${card.name}-image-${index}`}
-                    className={`reveal-child aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
-                    style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
-                  >
-                    <img
-                      src={card.image || fallbackImg}
-                      alt={card.name}
-                      className="h-full w-full p-2"
-                    />
-                  </article>
-                );
-              })}
+    // Handle text-type cards
+    if (card.type === "text") {
+      const hasName = card.name && card.name.trim() !== "";
+
+      return (
+        <article
+          key={`${card.name || "no-name"}-text-${index}`}
+          className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${
+            speakerCardStyles.text[card.variant ?? "light"]
+          }`}
+          style={{ "--reveal-child-delay": `${delay}s` }}
+        >
+          {hasName ? (
+            <>
+              <h3 className="text-2xl font-semibold tracking-tight">
+                {card.name}
+              </h3>
+              <p
+                className={`text-sm leading-relaxed ${
+                  card.variant === "light"
+                    ? "text-[#4A4F58]"
+                    : "text-white/80"
+                }`}
+              >
+                {card.role}
+              </p>
+            </>
+          ) : (
+            // ✅ Fallback image display when no name
+            <div className="flex flex-1 items-center justify-center">
+              <img
+                src={fallbackImg}
+                alt="Speaker placeholder"
+                className="max-h-[70%] max-w-[70%] object-contain opacity-90"
+              />
             </div>
+          )}
+        </article>
+      );
+    }
+
+    // Handle image-type cards
+    return (
+      <article
+        key={`${card.name || "no-name"}-image-${index}`}
+        className={`reveal-child aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
+        style={{ "--reveal-child-delay": `${delay}s` }}
+      >
+        <img
+          src={card.image || fallbackImg}
+          alt={card.name || "Speaker"}
+          className="h-full w-full p-2"
+        />
+      </article>
+    );
+  })}
+</div>
+
           </section>
 
           <section

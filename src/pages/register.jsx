@@ -16,7 +16,6 @@ const roleLabels = {
   company: "Company",
 };
 
-// Map each role to the user_type to be sent to the API
 const userTypeByRole = {
   hunter: "user",
   guest: "user",
@@ -76,10 +75,9 @@ export default function Register() {
     companyname: "",
   });
 
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Persist chosen role
   useEffect(() => {
     if (selectedRole) {
       window.localStorage.setItem("defcommRegistrationRole", selectedRole);
@@ -88,112 +86,122 @@ export default function Register() {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setFormValues((previous) => ({
-      ...previous,
+    setFormValues((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [name]: null }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError(null);
+  const validateFields = () => {
+    const errors = {};
 
-    if (!selectedRole) {
-      const message = "Please select a registration type.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
+    if (!selectedRole) errors.role = "Please select a registration type.";
+    if (!formValues.firstName) errors.firstName = "First name is required.";
+    if (!formValues.lastName) errors.lastName = "Last name is required.";
+    if (!formValues.username) errors.username = "Username is required.";
+    if (!formValues.email) errors.email = "Email is required.";
+    if (!formValues.phone) errors.phone = "Phone number is required.";
+    if (!formValues.password) errors.password = "Password is required.";
+    if (formValues.password !== formValues.confirmPassword)
+      errors.confirmPassword = "Passwords do not match.";
+    if (!formValues.consent)
+      errors.consent = "You must accept the general conditions.";
 
-    if (!formValues.firstName || !formValues.lastName) {
-      const message = "First and last name are required.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
+    if (selectedRole === "group" && !formValues.groupname)
+      errors.groupname = "Group name is required.";
+    if (selectedRole === "company" && !formValues.companyname)
+      errors.companyname = "Company name is required.";
 
-    if (!formValues.email || !formValues.phone || !formValues.password) {
-      const message = "Email, phone number, and password are required.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
+    return errors;
+  };
 
-    if (formValues.password !== formValues.confirmPassword) {
-      const message = "Passwords do not match.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  setFieldErrors({});
 
-    if (!formValues.consent) {
-      const message =
-        "You need to accept the general conditions to continue.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
+  // Frontend validation
+  const frontendErrors = validateFields();
+  if (Object.keys(frontendErrors).length > 0) {
+    setFieldErrors(frontendErrors);
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const formattedPhone = normalizePhoneNumber(
-        formValues.phone,
-        formValues.country
-      );
-      const userType = userTypeByRole[selectedRole] ?? "user";
-      const userlogin = formValues.username || formValues.email;
+  try {
+    const formattedPhone = normalizePhoneNumber(
+      formValues.phone,
+      formValues.country
+    );
+    const userType = userTypeByRole[selectedRole] ?? "user";
+    const userlogin = formValues.username || formValues.email;
 
-      const response = await registerUser({
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        username: formValues.username,
-        email: formValues.email,
-        phone: formattedPhone,
-        country: formValues.country,
-        userType,
-        password: formValues.password,
-        groupname:
-          userType === "group" ? formValues.groupname : undefined,
-        companyname:
-          userType === "company" ? formValues.companyname : undefined,
-      });
+    const response = await registerUser({
+      firstName: formValues.firstName,
+      lastName: formValues.lastName,
+      username: formValues.username,
+      email: formValues.email,
+      phone: formattedPhone,
+      country: formValues.country,
+      userType,
+      password: formValues.password,
+      groupname: userType === "group" ? formValues.groupname : undefined,
+      companyname: userType === "company" ? formValues.companyname : undefined,
+    });
 
-      const responseData = response?.data ?? response ?? {};
-      const registeredEmail = responseData.email ?? formValues.email;
-      const registeredPhone = responseData.phone ?? formattedPhone;
+    // Log the API response for debugging
+    console.log("API Response (Success):", response);
 
-      window.localStorage.setItem("defcommOtpEmail", registeredEmail);
-      window.localStorage.setItem("defcommOtpPhone", registeredPhone);
-      if (userlogin) {
-        window.localStorage.setItem("defcommOtpUserLogin", userlogin);
+    const responseData = response?.data ?? response ?? {};
+    const registeredEmail = responseData.email ?? formValues.email;
+    const registeredPhone = responseData.phone ?? formattedPhone;
+
+    window.localStorage.setItem("defcommOtpEmail", registeredEmail);
+    window.localStorage.setItem("defcommOtpPhone", registeredPhone);
+    if (userlogin) window.localStorage.setItem("defcommOtpUserLogin", userlogin);
+    window.localStorage.setItem("defcommOtpPassword", formValues.password);
+
+    toast.success(
+      responseData?.message ?? "Registration successful! Enter the OTP we sent."
+    );
+
+    navigate("/otp", {
+      replace: true,
+      state: { email: registeredEmail, phone: registeredPhone, userlogin },
+    });
+  } catch (apiError) {
+  console.log("API Response (Error):", apiError);
+
+  const apiFieldErrors = {};
+
+  // Check if API returned validation errors
+  if (apiError.data?.data && typeof apiError.data.data === "object") {
+    const data = apiError.data.data;
+
+    // Dynamically assign each field error
+    for (const key in data) {
+      if (Array.isArray(data[key])) {
+        apiFieldErrors[key] = data[key][0]; // Take first error for display
+      } else {
+        apiFieldErrors[key] = data[key];
       }
-      window.localStorage.setItem("defcommOtpPassword", formValues.password);
-
-      const successMessage =
-        responseData?.message ??
-        "Registration successful! Enter the OTP we sent.";
-      toast.success(successMessage);
-
-      navigate("/otp", {
-        replace: true,
-        state: {
-          email: registeredEmail,
-          phone: registeredPhone,
-          userlogin,
-        },
-      });
-    } catch (apiError) {
-      const message =
-        apiError.message ?? "Unable to complete registration.";
-      setError(message);
-      toast.error(message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } else if (apiError.data?.message) {
+    // Fallback: show generic message
+    toast.error(apiError.data.message);
+  } else if (apiError.message) {
+    toast.error(apiError.message);
+  }
 
-  // Active tab in AuthLayout
+  // Set field errors so they show next to inputs
+  setFieldErrors(apiFieldErrors);
+}
+
+
+};
+
+
   const activeTabLabel =
     selectedRole === "group"
       ? "Register a New Group"
@@ -226,14 +234,8 @@ export default function Register() {
           )}
         </div>
 
-        {error && (
-          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8]">
-            {error}
-          </div>
-        )}
-
         <div className="grid gap-5 sm:grid-cols-2">
-          <FormField label="First Name" required>
+          <FormField label="First Name" required error={fieldErrors.firstName}>
             <input
               type="text"
               name="firstName"
@@ -243,7 +245,8 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
-          <FormField label="Last Name" required>
+
+          <FormField label="Last Name" required error={fieldErrors.lastName}>
             <input
               type="text"
               name="lastName"
@@ -254,8 +257,7 @@ export default function Register() {
             />
           </FormField>
 
-          {/* Username always visible */}
-          <FormField label="Username" required>
+          <FormField label="Username" required error={fieldErrors.username}>
             <input
               type="text"
               name="username"
@@ -266,9 +268,8 @@ export default function Register() {
             />
           </FormField>
 
-          {/* Additional fields for group/company */}
           {selectedRole === "group" && (
-            <FormField label="Group Name" required>
+            <FormField label="Group Name" required error={fieldErrors.groupname}>
               <input
                 type="text"
                 name="groupname"
@@ -281,7 +282,7 @@ export default function Register() {
           )}
 
           {selectedRole === "company" && (
-            <FormField label="Company Name" required>
+            <FormField label="Company Name" required error={fieldErrors.companyname}>
               <input
                 type="text"
                 name="companyname"
@@ -293,7 +294,7 @@ export default function Register() {
             </FormField>
           )}
 
-          <FormField label="Email" required>
+          <FormField label="Email" required error={fieldErrors.email}>
             <input
               type="email"
               name="email"
@@ -303,7 +304,8 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
-          <FormField label="Phone Number" required>
+
+          <FormField label="Phone Number" required error={fieldErrors.phone}>
             <input
               type="tel"
               name="phone"
@@ -313,7 +315,10 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
-          <FormField label="Password" required>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField label="Password" required error={fieldErrors.password}>
             <input
               type="password"
               name="password"
@@ -323,7 +328,8 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
-          <FormField label="Password Confirmation" required>
+
+          <FormField label="Confirm Password" required error={fieldErrors.confirmPassword}>
             <input
               type="password"
               name="confirmPassword"
@@ -335,7 +341,7 @@ export default function Register() {
           </FormField>
         </div>
 
-        <FormField label="Country of Residence" required>
+        <FormField label="Country of Residence" required error={fieldErrors.country}>
           <select
             name="country"
             className={`${inputClasses} appearance-none`}
@@ -371,9 +377,7 @@ export default function Register() {
           Privacy Policy.
         </p>
 
-        <p className="text-[11px] font-medium text-[#B0B5C3]">
-          • Mandatory Fields
-        </p>
+        <p className="text-[11px] font-medium text-[#B0B5C3]">• Mandatory Fields</p>
 
         <button
           type="submit"
@@ -400,14 +404,17 @@ export default function Register() {
   );
 }
 
-function FormField({ label, required, children }) {
+function FormField({ label, required, children, error }) {
   return (
-    <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
+    <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
       <span>
         {label}
         {required && <span className="text-[#C77661]"> *</span>}
       </span>
       {children}
+      {error && (
+        <p className="mt-1 text-xs text-[#F2B3C8]">{error}</p>
+      )}
     </label>
   );
 }
