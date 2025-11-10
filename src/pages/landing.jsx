@@ -18,6 +18,7 @@ import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
 import instagram from '../assets/images/instagram.svg';
 import youtube from '../assets/images/youtube.svg';
+import { FaXTwitter } from "react-icons/fa6";
 
 
 const sponsors = [
@@ -43,10 +44,10 @@ const sponsors = [
   }
 ]
 const socialLinks = [
-  { label: "Facebook", icon: facebook, href: "https://facebook.com/defcomm" },
-  { label: "LinkedIn", icon: linkedIn, href: "https://linkedin.com/company/defcomm" },
-  { label: "Instagram", icon: instagram, href: "https://instagram.com/defcomm" },
-  { label: "YouTube", icon: youtube, href: "https://youtube.com/@defcomm" }
+  { label: "Twitter", href: "https://x.com/defcomms?s=21" },
+  { label: "LinkedIn", icon: linkedIn, href: "https://www.linkedin.com/company/defcomm-solutions/" },
+  { label: "Instagram", icon: instagram, href: "https://www.instagram.com/defcomm_solution?igsh=MWhuYzF5bGJ1ZnFlbQ==" },
+  { label: "YouTube", icon: youtube, href: "https://youtube.com/@defcommng?si=ij0cqN_d63D4xkBf" }
 ];
 
 const statPills = [
@@ -270,7 +271,7 @@ export default function Landing() {
               <div className="flex flex-col gap-5">
                 {/* countdown to december 4-5 */}
                 <div
-                  className="reveal-child flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between"
+                  className="reveal-child flex gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] flex-row lg:items-center lg:justify-between"
                   style={{ "--reveal-child-delay": "0.1s" }}
                 >
                   <span className="text-4xl font-black tracking-widest">{timeLeft.days}</span>
@@ -333,10 +334,10 @@ export default function Landing() {
             {sponsors.map((spons, index) => (
               <div className="max-h-30">
                 <img
-  src={spons.img}
-  alt="Sponsor logos"
-  className="mx-auto w-full max-w-5xl object-contain filter grayscale brightness-90"
-/>
+                  src={spons.img}
+                  alt="Sponsor logos"
+                  className="mx-auto w-full max-w-5xl object-contain filter grayscale brightness-90"
+                />
 
               </div>
             ))
@@ -480,67 +481,67 @@ export default function Landing() {
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-  {speakerCards.map((card, index) => {
-    const delay = 0.18 + index * 0.06;
+            <div className="overflow-x-auto no-scrollbar py-4">
+              <div className="flex gap-6 w-max px-4">
+                {speakerCards.map((card, index) => {
+                  const delay = 0.18 + index * 0.06;
 
-    // Handle text-type cards
-    if (card.type === "text") {
-      const hasName = card.name && card.name.trim() !== "";
+                  // Handle text-type cards
+                  if (card.type === "text") {
+                    const hasName = card.name && card.name.trim() !== "";
 
-      return (
-        <article
-          key={`${card.name || "no-name"}-text-${index}`}
-          className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${
-            speakerCardStyles.text[card.variant ?? "light"]
-          }`}
-          style={{ "--reveal-child-delay": `${delay}s` }}
-        >
-          {hasName ? (
-            <>
-              <h3 className="text-2xl font-semibold tracking-tight">
-                {card.name}
-              </h3>
-              <p
-                className={`text-sm leading-relaxed ${
-                  card.variant === "light"
-                    ? "text-[#4A4F58]"
-                    : "text-white/80"
-                }`}
-              >
-                {card.role}
-              </p>
-            </>
-          ) : (
-            // ✅ Fallback image display when no name
-            <div className="flex flex-1 items-center justify-center">
-              <img
-                src={fallbackImg}
-                alt="Speaker placeholder"
-                className="max-h-[70%] max-w-[70%] object-contain opacity-90"
-              />
+                    return (
+                      <article
+                        key={`${card.name || "no-name"}-text-${index}`}
+                        className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-[280px] ${speakerCardStyles.text[card.variant ?? "light"]
+                          }`}
+                        style={{ "--reveal-child-delay": `${delay}s` }}
+                      >
+                        {hasName ? (
+                          <>
+                            <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
+                              {card.name}
+                            </h3>
+                            <p
+                              className={`text-sm sm:text-base leading-relaxed ${card.variant === "light"
+                                  ? "text-[#4A4F58]"
+                                  : "text-white/80"
+                                }`}
+                            >
+                              {card.role}
+                            </p>
+                          </>
+                        ) : (
+                          <div className="flex flex-1 items-center justify-center">
+                            <img
+                              src={fallbackImg}
+                              alt="Speaker placeholder"
+                              className="max-h-[70%] max-w-[70%] object-contain opacity-90"
+                            />
+                          </div>
+                        )}
+                      </article>
+                    );
+                  }
+
+                  // Handle image-type cards
+                  return (
+                    <article
+                      key={`${card.name || "no-name"}-image-${index}`}
+                      className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-[280px] ${speakerCardStyles.image}`}
+                      style={{ "--reveal-child-delay": `${delay}s` }}
+                    >
+                      <img
+                        src={card.image || fallbackImg}
+                        alt={card.name || "Speaker"}
+                        className="h-full w-full object-cover"
+                      />
+                    </article>
+                  );
+                })}
+              </div>
             </div>
-          )}
-        </article>
-      );
-    }
 
-    // Handle image-type cards
-    return (
-      <article
-        key={`${card.name || "no-name"}-image-${index}`}
-        className={`reveal-child aspect-3/4 overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.image}`}
-        style={{ "--reveal-child-delay": `${delay}s` }}
-      >
-        <img
-          src={card.image || fallbackImg}
-          alt={card.name || "Speaker"}
-          className="h-full w-full p-2"
-        />
-      </article>
-    );
-  })}
-</div>
 
           </section>
 
@@ -696,7 +697,7 @@ export default function Landing() {
                           className="reveal-child inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
                           style={{ "--reveal-child-delay": `${0.5 + index * 0.05}s` }}
                         >
-                          <img src={icon} alt={label} />
+                          { icon ? <img src={icon} alt={label} /> : <FaXTwitter /> }
                         </a>
                       ))}
                     </div>
