@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
-import { extractEncryptToken, registerUser } from "../api";
+import { registerUser } from "../api";
 
 const inputClasses = "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
 const roleLabels = {
   hunter: "Bug Hunter",
   guest: "Guest",
   volunteer: "Volunteer"
+};
+
+const userTypeByRole = {
+  hunter: "user",
+  guest: "user",
+  volunteer: "user"
 };
 
 const dialCodesByCountry = {
@@ -37,48 +44,6 @@ function normalizePhoneNumber(rawValue, country) {
   }
 
   return trimmed;
-}
-
-function maskTokenForLog(token) {
-  if (!token || typeof token !== "string") {
-    return "(missing)";
-  }
-
-  const trimmed = token.trim();
-  if (trimmed.length <= 10) {
-    return trimmed;
-  }
-
-  return `${trimmed.slice(0, 4)}…${trimmed.slice(-4)}`;
-}
-
-function normalizeTokenCandidate(token) {
-  if (!token || typeof token !== "string") {
-    return null;
-  }
-  const trimmed = token.trim();
-  return trimmed || null;
-}
-
-function isPhoneLikeToken(token) {
-  if (!token) {
-    return false;
-  }
-  return /^\+?\d{8,}$/.test(token.trim());
-}
-
-function pickPreferredOtpToken({ accessToken, encryptCandidate }) {
-  const normalizedAccess = normalizeTokenCandidate(accessToken);
-  if (normalizedAccess) {
-    return normalizedAccess;
-  }
-
-  const normalizedEncrypt = normalizeTokenCandidate(encryptCandidate);
-  if (normalizedEncrypt && !isPhoneLikeToken(normalizedEncrypt)) {
-    return normalizedEncrypt;
-  }
-
-  return null;
 }
 
 export default function Register() {
@@ -120,27 +85,37 @@ export default function Register() {
     setError(null);
 
     if (!selectedRole) {
-      setError("Please select a registration type.");
+      const message = "Please select a registration type.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
     if (!formValues.firstName || !formValues.lastName) {
-      setError("First and last name are required.");
+      const message = "First and last name are required.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
     if (!formValues.email || !formValues.phone || !formValues.password) {
-      setError("Email, phone number, and password are required.");
+      const message = "Email, phone number, and password are required.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
     if (formValues.password !== formValues.confirmPassword) {
-      setError("Passwords do not match.");
+      const message = "Passwords do not match.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
     if (!formValues.consent) {
-      setError("You need to accept the general conditions to continue.");
+      const message = "You need to accept the general conditions to continue.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -148,75 +123,46 @@ export default function Register() {
 
     try {
       const formattedPhone = normalizePhoneNumber(formValues.phone, formValues.country);
+      const userType = userTypeByRole[selectedRole] ?? "user";
+      const userlogin = formValues.username || formValues.email;
 
       const response = await registerUser({
-        name: `${formValues.firstName} ${formValues.lastName}`.trim(),
+        firstName: formValues.firstName,
+        lastName: formValues.lastName,
+        username: formValues.username,
         email: formValues.email,
         phone: formattedPhone,
-        password: formValues.password,
-        username: formValues.username,
-        role: selectedRole,
         country: formValues.country,
-        consent: formValues.consent
+        userType,
+        password: formValues.password
       });
 
-      const responseData = response?.data ?? {};
-      const accessToken = normalizeTokenCandidate(responseData.access_token);
-      const encryptCandidate =
-        extractEncryptToken(response) ??
-        extractEncryptToken(responseData) ??
-        null;
-      const encryptToken = pickPreferredOtpToken({
-        accessToken,
-        encryptCandidate
-      });
-
-      console.debug("[OTP][Register] Extracted encrypt token", {
-        source: "register",
-        encryptPreview: maskTokenForLog(encryptToken)
-      });
-
+      const responseData = response?.data ?? response ?? {};
       const registeredEmail = responseData.email ?? formValues.email;
       const registeredPhone = responseData.phone ?? formattedPhone;
 
-      if (!encryptToken) {
-        console.warn("[OTP][Register] Missing encrypt token in response", {
-          responseMessage: response?.message,
-          responseKeys: Object.keys(responseData || {})
-        });
-        setError("We couldn't start your verification session. Please try again.");
-        return;
-      }
-
       window.localStorage.setItem("defcommOtpEmail", registeredEmail);
       window.localStorage.setItem("defcommOtpPhone", registeredPhone);
-      window.localStorage.setItem("defcommOtpEncrypt", encryptToken);
-
-      const fallbackToken = accessToken ?? encryptToken;
-      window.localStorage.setItem("defcommOtpAccessToken", fallbackToken);
-
-      if (accessToken) {
-        console.debug("[OTP][Register] Stored access token fallback", {
-          accessPreview: maskTokenForLog(accessToken)
-        });
+      if (userlogin) {
+        window.localStorage.setItem("defcommOtpUserLogin", userlogin);
       }
+      window.localStorage.setItem("defcommOtpPassword", formValues.password);
 
-      console.debug("[OTP][Register] Saved encrypt token to localStorage", {
-        encryptPreview: maskTokenForLog(encryptToken)
-      });
+      const successMessage = responseData?.message ?? "Registration successful! Enter the OTP we sent.";
+      toast.success(successMessage);
 
       navigate("/otp", {
         replace: true,
         state: {
           email: registeredEmail,
-          role: selectedRole,
           phone: registeredPhone,
-          encrypt: encryptToken,
-          otpRequested: true
+          userlogin
         }
       });
     } catch (apiError) {
-      setError(apiError.message ?? "Unable to complete registration.");
+      const message = apiError.message ?? "Unable to complete registration.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -1,56 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
-import { extractEncryptToken, loginUser, requestOtpSms } from "../api";
+import { loginUser } from "../api";
 
 const inputClasses = "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
-
-function maskTokenForLog(token) {
-  if (!token || typeof token !== "string") {
-    return "(missing)";
-  }
-
-  const trimmed = token.trim();
-  if (trimmed.length <= 10) {
-    return trimmed;
-  }
-
-  return `${trimmed.slice(0, 4)}…${trimmed.slice(-4)}`;
-}
-
-function normalizeTokenCandidate(token) {
-  if (!token || typeof token !== "string") {
-    return null;
-  }
-  const trimmed = token.trim();
-  return trimmed || null;
-}
-
-function isPhoneLikeToken(token) {
-  if (!token) {
-    return false;
-  }
-  return /^\+?\d{8,}$/.test(token.trim());
-}
-
-function pickPreferredOtpToken({ accessToken, encryptCandidate }) {
-  const normalizedAccess = normalizeTokenCandidate(accessToken);
-  if (normalizedAccess) {
-    return normalizedAccess;
-  }
-
-  const normalizedEncrypt = normalizeTokenCandidate(encryptCandidate);
-  if (normalizedEncrypt && !isPhoneLikeToken(normalizedEncrypt)) {
-    return normalizedEncrypt;
-  }
-
-  return null;
-}
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({
-    email: "",
+    userlogin: "",
     password: "",
     remember: false
   });
@@ -62,7 +21,7 @@ export default function SignIn() {
     if (savedEmail) {
       setFormValues((previous) => ({
         ...previous,
-        email: savedEmail,
+        userlogin: savedEmail,
         remember: true
       }));
     }
@@ -80,8 +39,10 @@ export default function SignIn() {
     event.preventDefault();
     setError(null);
 
-    if (!formValues.email || !formValues.password) {
-      setError("Please enter your email and password.");
+    if (!formValues.userlogin || !formValues.password) {
+      const message = "Please enter your username or email and password.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -89,114 +50,54 @@ export default function SignIn() {
 
     try {
       const response = await loginUser({
-        email: formValues.email,
+        userlogin: formValues.userlogin,
         password: formValues.password
       });
 
       if (formValues.remember) {
-        window.localStorage.setItem("defcommRememberEmail", formValues.email);
+        window.localStorage.setItem("defcommRememberEmail", formValues.userlogin);
       } else {
         window.localStorage.removeItem("defcommRememberEmail");
       }
 
-      window.localStorage.setItem("defcommOtpEmail", formValues.email);
+  window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
+  window.localStorage.setItem("defcommOtpPassword", formValues.password);
+      const responseData = response?.data ?? response ?? {};
+      const emailFromResponse = responseData.email ?? responseData.user?.email;
+      const phoneFromResponse = responseData.phone ?? responseData.user?.phone;
 
-      const token = response?.token ?? response?.data?.token ?? null;
-      const responseData = response?.data ?? {};
-      const phone =
-        response?.phone ??
-        response?.user?.phone ??
-        responseData.phone ??
-        responseData.user?.phone ??
-        "";
-
-      const accessToken = normalizeTokenCandidate(responseData.access_token);
-      const encryptCandidate =
-        extractEncryptToken(response) ??
-        extractEncryptToken(responseData) ??
-        null;
-
-      let encryptToken = pickPreferredOtpToken({
-        accessToken,
-        encryptCandidate
-      });
-
-      console.debug("[OTP][SignIn] Extracted encrypt token", {
-        encryptPreview: maskTokenForLog(encryptToken)
-      });
-
-      let otpRequestedFlag = Boolean(
-        response?.otp ??
-          response?.otpSent ??
-          response?.otp_requested ??
-          responseData.otp ??
-          responseData.otpSent ??
-          responseData.otp_requested
-      );
-
-      if (token) {
-        window.localStorage.setItem("defcommAuthToken", token);
+      if (emailFromResponse) {
+        window.localStorage.setItem("defcommOtpEmail", emailFromResponse);
+      } else {
+        window.localStorage.removeItem("defcommOtpEmail");
       }
 
-      if (phone) {
-        window.localStorage.setItem("defcommOtpPhone", phone);
+      if (phoneFromResponse) {
+        window.localStorage.setItem("defcommOtpPhone", phoneFromResponse);
       } else {
         window.localStorage.removeItem("defcommOtpPhone");
       }
 
-      if (!encryptToken && phone) {
-        try {
-          const otpResponse = await requestOtpSms({ phone });
-          encryptToken =
-            extractEncryptToken(otpResponse) ??
-            extractEncryptToken(otpResponse?.data) ??
-            otpResponse?.access_token ??
-            null;
-          otpRequestedFlag = true;
-
-          console.debug("[OTP][SignIn] Requested new encrypt token via SMS", {
-            encryptPreview: maskTokenForLog(encryptToken)
-          });
-        } catch (otpError) {
-          console.error("Failed to request OTP SMS after sign-in", otpError);
-        }
+      const token = responseData.token ?? response?.token;
+      if (token) {
+        window.localStorage.setItem("defcommAuthToken", token);
       }
 
-      if (!encryptToken) {
-        console.warn("[OTP][SignIn] Missing encrypt token after login", {
-          responseMessage: response?.message,
-          responseKeys: Object.keys(responseData || {})
-        });
-        setError("We couldn't initiate your OTP verification. Please request a new code and try again.");
-        return;
-      }
-
-      window.localStorage.setItem("defcommOtpEncrypt", encryptToken);
-
-      const fallbackToken = accessToken ?? encryptToken;
-      window.localStorage.setItem("defcommOtpAccessToken", fallbackToken);
-
-      if (accessToken) {
-        console.debug("[OTP][SignIn] Stored access token fallback", {
-          accessPreview: maskTokenForLog(accessToken)
-        });
-      }
-
-      console.debug("[OTP][SignIn] Saved encrypt token to localStorage", {
-        encryptPreview: maskTokenForLog(encryptToken)
-      });
+      const successMessage = responseData?.message ?? "OTP sent. Please verify to continue.";
+      toast.success(successMessage);
 
       navigate("/otp", {
         replace: true,
         state: {
-          email: formValues.email,
-          phone,
-          encrypt: encryptToken,
-          otpRequested: Boolean(otpRequestedFlag || encryptToken)
+          userlogin: formValues.userlogin,
+          email: emailFromResponse,
+          phone: phoneFromResponse
         }
       });
     } catch (apiError) {
-      setError(apiError.message ?? "Unable to sign in.");
+      const message = apiError.message ?? "Unable to sign in.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -215,13 +116,13 @@ export default function SignIn() {
           </div>
         )}
 
-  <FormField label="Username" required>
+        <FormField label="Username or Email" required>
           <input
-            type="email"
-            name="email"
-            placeholder="example22@gmail.com"
+            type="text"
+            name="userlogin"
+            placeholder="Enter username or email"
             className={inputClasses}
-            value={formValues.email}
+            value={formValues.userlogin}
             onChange={handleChange}
           />
         </FormField>

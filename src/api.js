@@ -142,53 +142,52 @@ async function request(path, { method = "GET", headers = {}, body, skipContentTy
   }
 }
 
-export async function registerUser({ name, email, phone, password, username, role, country, consent }) {
+export async function registerUser({
+  firstName,
+  lastName,
+  username,
+  email,
+  phone,
+  country,
+  userType,
+  password
+}) {
   const payload = {
-    name,
+    firstName,
+    lastName,
+    username,
     email,
     phone,
-    password,
-    username,
-    role,
     country,
-    consent
+    user_type: userType,
+    password
   };
 
-  return request("/register", {
+  return request("/bounty/register", {
     method: "POST",
     body: JSON.stringify(payload)
   });
 }
 
-export async function loginUser({ email, password, deviceType = "web", deviceToken = "" }) {
+export async function loginUser({ userlogin, password }) {
   const payload = {
-    email,
-    password,
-    device_type: deviceType,
-    device_token: deviceToken
+    userlogin,
+    password
   };
 
-  return request("/login", {
+  return request("/bounty/login", {
     method: "POST",
     body: JSON.stringify(payload)
   });
 }
 
-export async function verifyUserOtp({ encrypt, otp }) {
+export async function verifyUserOtp({ userlogin, otp }) {
   const payload = {
-    encrypt,
+    userlogin,
     otp
   };
 
-  return request("/userVerify", {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
-}
-
-export async function requestOtpSms({ phone }) {
-  const payload = { phone };
-  return request("/requestOtpSms", {
+  return request("/bounty/verify", {
     method: "POST",
     body: JSON.stringify(payload)
   });

@@ -4,10 +4,10 @@ import bugBounty from "../assets/images/bug-bounty-logo.png";
 import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
 import agendaMap from "../assets/images/Frame-34.png";
-import speaker1 from "../assets/images/speakers-falback.png";
-import speaker2 from "../assets/images/speakers-falback.png";
-import speaker3 from "../assets/images/speakers-falback.png";
-import speaker4 from "../assets/images/speakers-falback.png";
+import speaker1 from "../assets/images/speaker-fallback.png";
+// import speaker2 from "../assets/images/speaker-falback.png";
+// import speaker3 from "../assets/images/speaker-falback.png";
+// import speaker4 from "../assets/images/speaker-falback.png";
 import Footer from "../components/Footer";
 import { useReveal } from "../hooks/useReveal";
 
@@ -78,12 +78,12 @@ const speakerCards = [
   {
     type: "image",
     name: "Elon Park",
-    image: speaker2
+    image: speaker1
   },
   {
     type: "image",
     name: "Laura Kim",
-    image: speaker3
+    image: speaker1
   },
   {
     type: "text",
@@ -94,7 +94,7 @@ const speakerCards = [
   {
     type: "image",
     name: "Dr. Alan Foster",
-    image: speaker4
+    image: speaker1
   },
   {
     type: "text",
