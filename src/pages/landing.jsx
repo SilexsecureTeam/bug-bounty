@@ -14,7 +14,7 @@ import Footer from "../components/Footer";
 import sponsor2 from '../assets/images/sponsor2.png';
 import sponsor3 from '../assets/images/sponsor4.png';
 import { useReveal } from "../hooks/useReveal";
-import facebook from '../assets/images/facebook.svg';
+// import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
 import instagram from '../assets/images/instagram.svg';
 import youtube from '../assets/images/youtube.svg';
