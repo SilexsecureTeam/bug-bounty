@@ -2,11 +2,29 @@ import { Link } from "react-router-dom";
 import authImg from "../assets/images/authImg.jpg";
 import DefcommLogo from "../assets/images/Defcomm-04 2.svg";
 
+/**
+ * Tabs now provide a `to` value (object) so we can pass `state.role` when
+ * navigating to the registration form. This makes the register page know
+ * whether it's creating a user, group, or company.
+ */
 const defaultTabs = [
-  { label: "Create a User Account", href: "/register/create" },
-  { label: "Register a New Group", href: "#" },
-  { label: "Register a New Company", href: "#" }
+  {
+    label: "Create a User Account",
+    to: "/register/create",
+    state: { role: "user" }
+  },
+  {
+    label: "Register a New Group",
+    to: "/register/create",
+    state: { role: "group" }
+  },
+  {
+    label: "Register a New Company",
+    to: "/register/create",
+    state: { role: "company" }
+  }
 ];
+
 
 const navLinks = [
   { label: "Program", href: "#" },
@@ -78,35 +96,33 @@ export default function AuthLayout({
               </div>
 
               <div className="grid gap-1 text-[10px] tracking-[0.28em] text-[#C4C9D4] sm:grid-cols-3">
-                {tabs.map(({ label, href }) => {
+                {tabs.map(({ label, to, state }) => {
                   const isActive = label === activeTab;
                   return (
                     <Link
                       key={label}
-                      to={href}
-                      className={`rounded-2xl border px-3 py-3 text-center font-semibold transition-all duration-150 ${
-                        isActive
+                      to={to}
+                      state={state}  // ✅ Pass state properly for React Router v6
+                      className={`rounded-2xl border px-3 py-3 text-center font-semibold transition-all duration-150 ${isActive
                           ? "border-[#A0B84B] bg-[#161C12] text-white shadow-[0_20px_40px_rgba(35,44,18,0.55)]"
                           : "border-white/10 bg-[#0F141D] text-[#A7ADBB] hover:border-[#394050] hover:text-white"
-                      }`}
+                        }`}
                     >
                       {label}
                     </Link>
                   );
                 })}
+
               </div>
             </div>
 
             {infoText && (
               <div className="flex items-start gap-4 rounded-3xl border border-white/12 bg-[#11151E] p-6 text-sm text-[#D6D9E6]">
-                
                 <p className="leading-6">{infoText}</p>
               </div>
             )}
 
-            <div className="flex-1">
-              {children}
-            </div>
+            <div className="flex-1">{children}</div>
 
             {footer && (
               <div className="border-t border-white/10 pt-4 text-xs text-[#9FA6B7]">

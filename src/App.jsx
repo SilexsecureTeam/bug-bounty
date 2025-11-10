@@ -7,6 +7,7 @@ import SignIn from "./pages/signin";
 import OtpVerification from "./pages/otp";
 import BountyDetails from "./pages/bounty-details";
 import SubmitReport from "./pages/submit-report";
+import Leaderboard from "./pages/leaderboard";
 
 export default function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/otp" element={<OtpVerification />} />
           <Route path="/bounty/broken-authentication" element={<BountyDetails />} />
           <Route path="/submit-report" element={<SubmitReport />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </main>
     </div>

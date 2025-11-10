@@ -150,7 +150,9 @@ export async function registerUser({
   phone,
   country,
   userType,
-  password
+  password,
+  groupname,
+  companyname
 }) {
   const payload = {
     firstName,
@@ -160,7 +162,9 @@ export async function registerUser({
     phone,
     country,
     user_type: userType,
-    password
+    password,
+    ...(groupname ? { groupname } : {}),
+    ...(companyname ? { companyname } : {})
   };
 
   return request("/bounty/register", {
@@ -168,6 +172,7 @@ export async function registerUser({
     body: JSON.stringify(payload)
   });
 }
+
 
 export async function loginUser({ userlogin, password }) {
   const payload = {

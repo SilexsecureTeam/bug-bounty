@@ -4,39 +4,42 @@ import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
 import { registerUser } from "../api";
 
-const inputClasses = "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
+const inputClasses =
+  "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
+
 const roleLabels = {
   hunter: "Bug Hunter",
   guest: "Guest",
-  volunteer: "Volunteer"
+  volunteer: "Volunteer",
+  user: "User",
+  group: "Group",
+  company: "Company",
 };
 
+// Map each role to the user_type to be sent to the API
 const userTypeByRole = {
   hunter: "user",
   guest: "user",
-  volunteer: "user"
+  volunteer: "user",
+  user: "user",
+  group: "group",
+  company: "company",
 };
 
 const dialCodesByCountry = {
   ng: "+234",
   gh: "+233",
   uk: "+44",
-  us: "+1"
+  us: "+1",
 };
 
 function normalizePhoneNumber(rawValue, country) {
-  if (!rawValue) {
-    return "";
-  }
+  if (!rawValue) return "";
 
   const trimmed = rawValue.replace(/\s+/g, "").trim();
-  if (!trimmed) {
-    return "";
-  }
+  if (!trimmed) return "";
 
-  if (trimmed.startsWith("+")) {
-    return trimmed;
-  }
+  if (trimmed.startsWith("+")) return trimmed;
 
   const dialCode = dialCodesByCountry[country];
   if (dialCode && trimmed.startsWith("0")) {
@@ -49,9 +52,16 @@ function normalizePhoneNumber(rawValue, country) {
 export default function Register() {
   const location = useLocation();
   const navigate = useNavigate();
-  const storedRole = typeof window !== "undefined" ? window.localStorage.getItem("defcommRegistrationRole") : null;
-  const selectedRole = location.state?.role ?? storedRole ?? null;
-  const selectedRoleLabel = selectedRole ? roleLabels[selectedRole] ?? selectedRole : null;
+  const storedRole =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("defcommRegistrationRole")
+      : null;
+
+  const selectedRole = location.state?.role ?? storedRole ?? "user";
+  const selectedRoleLabel = selectedRole
+    ? roleLabels[selectedRole] ?? selectedRole
+    : null;
+
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
@@ -61,11 +71,15 @@ export default function Register() {
     confirmPassword: "",
     phone: "",
     country: "",
-    consent: false
+    consent: false,
+    groupname: "",
+    companyname: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Persist chosen role
   useEffect(() => {
     if (selectedRole) {
       window.localStorage.setItem("defcommRegistrationRole", selectedRole);
@@ -76,7 +90,7 @@ export default function Register() {
     const { name, value, type, checked } = event.target;
     setFormValues((previous) => ({
       ...previous,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -113,7 +127,8 @@ export default function Register() {
     }
 
     if (!formValues.consent) {
-      const message = "You need to accept the general conditions to continue.";
+      const message =
+        "You need to accept the general conditions to continue.";
       setError(message);
       toast.error(message);
       return;
@@ -122,7 +137,10 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const formattedPhone = normalizePhoneNumber(formValues.phone, formValues.country);
+      const formattedPhone = normalizePhoneNumber(
+        formValues.phone,
+        formValues.country
+      );
       const userType = userTypeByRole[selectedRole] ?? "user";
       const userlogin = formValues.username || formValues.email;
 
@@ -134,7 +152,11 @@ export default function Register() {
         phone: formattedPhone,
         country: formValues.country,
         userType,
-        password: formValues.password
+        password: formValues.password,
+        groupname:
+          userType === "group" ? formValues.groupname : undefined,
+        companyname:
+          userType === "company" ? formValues.companyname : undefined,
       });
 
       const responseData = response?.data ?? response ?? {};
@@ -148,7 +170,9 @@ export default function Register() {
       }
       window.localStorage.setItem("defcommOtpPassword", formValues.password);
 
-      const successMessage = responseData?.message ?? "Registration successful! Enter the OTP we sent.";
+      const successMessage =
+        responseData?.message ??
+        "Registration successful! Enter the OTP we sent.";
       toast.success(successMessage);
 
       navigate("/otp", {
@@ -156,11 +180,12 @@ export default function Register() {
         state: {
           email: registeredEmail,
           phone: registeredPhone,
-          userlogin
-        }
+          userlogin,
+        },
       });
     } catch (apiError) {
-      const message = apiError.message ?? "Unable to complete registration.";
+      const message =
+        apiError.message ?? "Unable to complete registration.";
       setError(message);
       toast.error(message);
     } finally {
@@ -168,13 +193,24 @@ export default function Register() {
     }
   };
 
+  // Active tab in AuthLayout
+  const activeTabLabel =
+    selectedRole === "group"
+      ? "Register a New Group"
+      : selectedRole === "company"
+      ? "Register a New Company"
+      : "Create a User Account";
+
   return (
     <AuthLayout
       title="Sign Up"
       infoText="Bug hunters and security teams, welcome! Join the Defcomm community of cybersecurity enthusiasts and help us build a safer digital world."
-      activeTab="Create a User Account"
+      activeTab={activeTabLabel}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-7 text-sm text-[#E8EAF2]">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-7 text-sm text-[#E8EAF2]"
+      >
         <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-[#8F96A7]">
           <Link
             to="/register"
@@ -217,7 +253,9 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
-          <FormField label="User Name" required>
+
+          {/* Username always visible */}
+          <FormField label="Username" required>
             <input
               type="text"
               name="username"
@@ -227,6 +265,34 @@ export default function Register() {
               onChange={handleChange}
             />
           </FormField>
+
+          {/* Additional fields for group/company */}
+          {selectedRole === "group" && (
+            <FormField label="Group Name" required>
+              <input
+                type="text"
+                name="groupname"
+                placeholder="Enter your group name"
+                className={inputClasses}
+                value={formValues.groupname}
+                onChange={handleChange}
+              />
+            </FormField>
+          )}
+
+          {selectedRole === "company" && (
+            <FormField label="Company Name" required>
+              <input
+                type="text"
+                name="companyname"
+                placeholder="Enter your company name"
+                className={inputClasses}
+                value={formValues.companyname}
+                onChange={handleChange}
+              />
+            </FormField>
+          )}
+
           <FormField label="Email" required>
             <input
               type="email"
@@ -293,20 +359,21 @@ export default function Register() {
             onChange={handleChange}
           />
           <span>
-            I have read, understood, and accept the Defcomm General Conditions of Use
+            I have read, understood, and accept the Defcomm General Conditions
+            of Use
           </span>
         </label>
 
-        <div className="rounded-3xl border border-white/12 bg-[#11151C] p-6 shadow-[0_22px_55px_rgba(0,0,0,0.35)]">
-          <div className="h-16 w-full rounded-lg border border-white/15 bg-[#0C0F14]" />
-          <p className="mt-3 text-[11px] text-[#9DA2B5]">Protected by reCAPTCHA • Privacy • Terms</p>
-        </div>
-
         <p className="text-[11px] leading-5 text-[#AEB3C2]">
-          The information you provide will be processed by Defcomm as the data controller for the creation and management of your account. To learn more about how we handle your data and your rights, please review our Privacy Policy.
+          The information you provide will be processed by Defcomm as the data
+          controller for the creation and management of your account. To learn
+          more about how we handle your data and your rights, please review our
+          Privacy Policy.
         </p>
 
-        <p className="text-[11px] font-medium text-[#B0B5C3]">• Mandatory Fields</p>
+        <p className="text-[11px] font-medium text-[#B0B5C3]">
+          • Mandatory Fields
+        </p>
 
         <button
           type="submit"

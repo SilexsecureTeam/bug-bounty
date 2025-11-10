@@ -156,10 +156,10 @@ export default function SignIn() {
           <span>Remember me</span>
         </label>
 
-        <div className="rounded-3xl border border-white/12 bg-[#11151C] p-6 shadow-[0_22px_55px_rgba(0,0,0,0.35)]">
+        {/* <div className="rounded-3xl border border-white/12 bg-[#11151C] p-6 shadow-[0_22px_55px_rgba(0,0,0,0.35)]">
           <div className="h-16 w-full rounded-lg border border-white/15 bg-[#0C0F14]" />
           <p className="mt-3 text-[11px] text-[#9DA2B5]">Protected by reCAPTCHA • Privacy • Terms</p>
-        </div>
+        </div> */}
 
         <button
           type="submit"

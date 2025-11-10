@@ -12,9 +12,16 @@ export default function RegisterSelection() {
   const navigate = useNavigate();
 
   const handleSelect = (role) => {
+    if (role === "volunteer") {
+      // Redirect volunteers to the external Defcomm programme page
+      window.location.href = "https://www.defcomm.ng/programme/bug-bounty";
+      return;
+    }
+
     if (typeof window !== "undefined") {
       window.localStorage.setItem("defcommRegistrationRole", role);
     }
+
     navigate("/register/create", { state: { role } });
   };
 

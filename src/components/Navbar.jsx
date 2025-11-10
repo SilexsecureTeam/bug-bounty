@@ -1,15 +1,23 @@
 import { Link } from "react-router-dom";
 import Defcomm from "../assets/images/Defcomm-04 2.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navItems = [
     { name: 'Home', to: '/', special: true },
     { name: 'Programme', href: '#hero' },
     { name: 'Highlights', href: '#highlights' },
-  { name: 'Sponsors', href: '#sponsors' },
-  { name: 'Contact', href: '#contact' },
+    { name: 'Sponsors', href: '#sponsors' },
+    { name: 'Contact', href: '#contact' },
+    { name: 'Leaderboard', to: '/leaderboard' },
     { name: 'Registration', to: '/register' }
   ];
+
+  const navigate = useNavigate();
+  
+  const homeNavigate = () => {
+    navigate('/')
+  }
 
   return (
     <nav 
@@ -22,7 +30,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="shrink-0">
-            <img src={Defcomm} alt="Logo" className="h-8" />
+            <img src={Defcomm} onClick={homeNavigate} alt="Logo" className="h-8 cursor-pointer" />
           </div>
 
           {/* Navigation */}

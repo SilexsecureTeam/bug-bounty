@@ -5,17 +5,48 @@ import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
 import agendaMap from "../assets/images/Frame-34.png";
 import speaker1 from "../assets/images/speaker-fallback.png";
+import fallbackImg from '../assets/images/fb.png';
 // import speaker2 from "../assets/images/speaker-falback.png";
 // import speaker3 from "../assets/images/speaker-falback.png";
 // import speaker4 from "../assets/images/speaker-falback.png";
 import Footer from "../components/Footer";
+import sponsor1 from '../assets/images/sponsor1.png';
+import sponsor2 from '../assets/images/sponsor2.png';
+import sponsor3 from '../assets/images/sponsor3.png';
 import { useReveal } from "../hooks/useReveal";
+import facebook from '../assets/images/facebook.svg';
+import linkedIn from '../assets/images/linkedIn.svg';
+import instagram from '../assets/images/instagram.svg';
+import youtube from '../assets/images/youtube.svg';
 
+
+const sponsors = [
+  {
+    id: 1,
+    img: sponsor1
+  }, {
+    id: 2,
+    img: sponsor2
+  }, {
+    id: 3,
+    img: sponsor3
+  },
+  {
+    id: 4,
+    img: sponsor1
+  }, {
+    id: 5,
+    img: sponsor2
+  }, {
+    id: 6,
+    img: sponsor3
+  }
+]
 const socialLinks = [
-  { label: "Facebook", icon: "facebook", href: "https://facebook.com/defcomm" },
-  { label: "LinkedIn", icon: "linkedin", href: "https://linkedin.com/company/defcomm" },
-  { label: "Instagram", icon: "instagram", href: "https://instagram.com/defcomm" },
-  { label: "YouTube", icon: "youtube", href: "https://youtube.com/@defcomm" }
+  { label: "Facebook", icon: facebook, href: "https://facebook.com/defcomm" },
+  { label: "LinkedIn", icon: linkedIn, href: "https://linkedin.com/company/defcomm" },
+  { label: "Instagram", icon: instagram, href: "https://instagram.com/defcomm" },
+  { label: "YouTube", icon: youtube, href: "https://youtube.com/@defcomm" }
 ];
 
 const statPills = [
@@ -199,13 +230,7 @@ export default function Landing() {
 
         <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-18 sm:px-10 lg:gap-20 lg:px-0 lg:pt-10">
           <header className="flex flex-col gap-6 lg:gap-10">
-            <div
-              className="reveal-child flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between"
-              style={{ "--reveal-child-delay": "0.1s" }}
-            >
-              <span>December 4-5, 2025</span>
-              <span className="text-left lg:text-right">Shehu Musa Yar'Adua Center, Abuja, Nigeria</span>
-            </div>
+
 
             <div
               className="reveal-child flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between"
@@ -219,6 +244,7 @@ export default function Landing() {
                     className="max-w-full"
                   />
                 </div>
+
                 <p className="text-lg text-[#C6D4A1] sm:text-xl">
                   Operation Iron Shield brings together cybersecurity strategists, defence partners, and ethical hackers for Africa's most ambitious bounty operation.
                 </p>
@@ -242,6 +268,20 @@ export default function Landing() {
               </div>
 
               <div className="flex flex-col gap-5">
+                {/* countdown to december 4-5 */}
+                <div
+                  className="reveal-child flex flex-col gap-2 text-sm font-medium uppercase tracking-[0.2em] text-[#D4E4B2] lg:flex-row lg:items-center lg:justify-between"
+                  style={{ "--reveal-child-delay": "0.1s" }}
+                >
+                  <span className="text-4xl font-black tracking-widest">{timeLeft.days}</span>
+                  <span className="text-4xl font-light text-[#495024]">:</span>
+                  <span className="text-4xl font-black tracking-widest">{timeLeft.hours}</span>
+                  <span className="text-4xl font-light text-[#495024]">:</span>
+                  <span className="text-4xl font-black tracking-widest">{timeLeft.minutes}</span>
+                  <span className="text-4xl font-light text-[#495024]">:</span>
+                  <span className="text-4xl font-black tracking-widest">{timeLeft.seconds}</span>
+
+                </div>
                 <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#A7B87B]">
                   Operation Iron Shield
                 </span>
@@ -287,14 +327,21 @@ export default function Landing() {
 
           <div
             ref={logosRef}
-            className="reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10"
+            className="flex items-center justify-between  gap-5 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10"
             style={{ "--reveal-delay": "0.15s" }}
           >
-            <img
-              src={Logotypes}
-              alt="Sponsor logos"
-              className="mx-auto w-full max-w-5xl object-contain"
-            />
+            {sponsors.map((spons, index) => (
+              <div className="max-w-28">
+                <img
+  src={spons.img}
+  alt="Sponsor logos"
+  className="mx-auto w-full max-w-5xl object-contain filter grayscale brightness-90"
+/>
+
+              </div>
+            ))
+
+            }
           </div>
 
           <section
@@ -436,18 +483,18 @@ export default function Landing() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {speakerCards.map((card, index) => {
                 if (card.type === "text") {
-                  return (
-                    <article
-                      key={`${card.name}-text-${index}`}
-                      className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
-                      style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
-                    >
-                      <h3 className="text-2xl font-semibold tracking-tight">{card.name}</h3>
-                      <p className={`text-sm leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
-                        {card.role}
-                      </p>
-                    </article>
-                  );
+                  // return (
+                  //   <article
+                  //     key={`${card.name}-text-${index}`}
+                  //     className={`reveal-child flex aspect-3/4 flex-col justify-between rounded-[40px] p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] ${speakerCardStyles.text[card.variant ?? "light"]}`}
+                  //     style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
+                  //   >
+                  //     <h3 className="text-2xl font-semibold tracking-tight">{card.name}</h3>
+                  //     <p className={`text-sm leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
+                  //       {card.role}
+                  //     </p>
+                  //   </article>
+                  // );
                 }
 
                 return (
@@ -457,9 +504,9 @@ export default function Landing() {
                     style={{ "--reveal-child-delay": `${0.18 + index * 0.06}s` }}
                   >
                     <img
-                      src={card.image}
+                      src={card.image || fallbackImg}
                       alt={card.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full p-2"
                     />
                   </article>
                 );
@@ -610,16 +657,16 @@ export default function Landing() {
                   <div className="reveal-child space-y-3" style={{ "--reveal-child-delay": "0.44s" }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-[#9ECB32]">Follow Us</h3>
                     <div className="flex items-center gap-3">
-                      {socialLinks.map(({ label, href }, index) => (
+                      {socialLinks.map(({ label, href, icon }, index) => (
                         <a
                           key={label}
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="reveal-child inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
+                          className="reveal-child inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
                           style={{ "--reveal-child-delay": `${0.5 + index * 0.05}s` }}
                         >
-                          {label[0]}
+                          <img src={icon} alt={label} />
                         </a>
                       ))}
                     </div>
@@ -684,8 +731,8 @@ export default function Landing() {
             </div>
           </section>
         </div>
-      </section>
+      </section >
       <Footer />
-    </div>
+    </div >
   );
 }
