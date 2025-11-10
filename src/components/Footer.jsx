@@ -38,9 +38,9 @@ const contactDetails = {
 };
 
 const socialLinks = [
-  { label: "LinkedIn", href: "https://linkedin.com/company/defcomm" },
-  { label: "Instagram", href: "https://instagram.com/defcomm" },
-  { label: "YouTube", href: "https://youtube.com/@defcomm" }
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/defcomm-solutions/" },
+  { label: "Instagram", href: "https://www.instagram.com/defcomm_solution?igsh=MWhuYzF5bGJ1ZnFlbQ==" },
+  { label: "YouTube", href: "https://youtube.com/@defcommng?si=ij0cqN_d63D4xkBf" }
 ];
 
 export default function Footer() {
