@@ -16,7 +16,6 @@ export default function SignIn() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showVerifyButton, setShowVerifyButton] = useState(false);
 
   useEffect(() => {
     const savedEmail = window.localStorage.getItem("defcommRememberEmail");
@@ -40,7 +39,6 @@ export default function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
-    setShowVerifyButton(false);
 
     if (!formValues.userlogin || !formValues.password) {
       const message =
@@ -58,6 +56,22 @@ export default function SignIn() {
         password: formValues.password,
       });
 
+      // ----------------- TEMPORARY ACCESS RESTRICTION -----------------
+      // Only show if login is successful (status 200)
+      const responseData = response?.data ?? response ?? {};
+      const status = responseData?.status ?? "200";
+      if (status === "200") {
+        toast.error(
+          "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon."
+        );
+        setError(
+          "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // ----------------- ORIGINAL LOGIN IMPLEMENTATION -----------------
       if (formValues.remember) {
         window.localStorage.setItem(
           "defcommRememberEmail",
@@ -70,7 +84,6 @@ export default function SignIn() {
       window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
       window.localStorage.setItem("defcommOtpPassword", formValues.password);
 
-      const responseData = response?.data ?? response ?? {};
       const emailFromResponse =
         responseData.email ?? responseData.user?.email;
       const phoneFromResponse =
@@ -107,13 +120,11 @@ export default function SignIn() {
       });
     } catch (apiError) {
       const apiMsg = apiError?.message ?? "";
-      // ✅ Handle "account not verified" scenario
       if (
         apiError?.status === "400" ||
         apiMsg.includes("not verify yet")
       ) {
         setError("Your account is not verified yet.");
-        setShowVerifyButton(true);
         toast.error("Account not verified. Please verify your account.");
       } else {
         const message = apiMsg || "Unable to sign in.";
@@ -122,15 +133,6 @@ export default function SignIn() {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleVerifyRedirect = () => {
-    if (formValues.userlogin) {
-      window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
-      navigate("/otp", { replace: true });
-    } else {
-      toast.error("No user info found. Please sign in again.");
     }
   };
 
@@ -145,22 +147,14 @@ export default function SignIn() {
         className="flex flex-col gap-7 text-sm text-[#E8EAF2]"
       >
         {error && (
-          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8]">
+          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8] whitespace-pre-line">
             {error}
-            {showVerifyButton && (
-              <button
-                type="button"
-                onClick={handleVerifyRedirect}
-                className="mt-3 w-full rounded-full bg-[#9DB347] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black hover:bg-[#b6ca60] transition-colors"
-              >
-                Verify Account
-              </button>
-            )}
           </div>
         )}
 
         {/* Username / Email */}
-        <FormField label="Username or Email" required>
+        <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
+          <span>Username or Email <span className="text-[#C77661]">*</span></span>
           <input
             type="text"
             name="userlogin"
@@ -169,39 +163,19 @@ export default function SignIn() {
             value={formValues.userlogin}
             onChange={handleChange}
           />
-        </FormField>
+        </label>
 
         {/* Password */}
-        <div className="space-y-2">
-          <FormField label="Password" required>
-            <input
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              className={inputClasses}
-              value={formValues.password}
-              onChange={handleChange}
-            />
-          </FormField>
-          <div className="text-xs font-medium text-[#B4B9C7]">
-            <Link
-              to="#"
-              className="text-[#C6D176] transition-colors duration-150 hover:text-white"
-            >
-              Forgot Password ?
-            </Link>
-          </div>
-        </div>
-
-        <label className="flex items-center gap-2 text-xs text-[#C3C7D3]">
+        <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
+          <span>Password <span className="text-[#C77661]">*</span></span>
           <input
-            type="checkbox"
-            name="remember"
-            className="h-4 w-4 rounded border border-white/25 bg-transparent"
-            checked={formValues.remember}
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            className={inputClasses}
+            value={formValues.password}
             onChange={handleChange}
           />
-          <span>Remember me</span>
         </label>
 
         <button
@@ -223,17 +197,5 @@ export default function SignIn() {
         </div>
       </form>
     </AuthLayout>
-  );
-}
-
-function FormField({ label, required, children }) {
-  return (
-    <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
-      <span>
-        {label}
-        {required && <span className="text-[#C77661]"> *</span>}
-      </span>
-      {children}
-    </label>
   );
 }
