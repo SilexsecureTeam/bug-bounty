@@ -1,22 +1,20 @@
-import { getAuthToken } from "./hooks/useAuthToken";
+import { getAuthToken, saveAuthToken } from "./hooks/useAuthToken";
 
 const normalizeBaseUrl = (url) => {
   if (!url) return "";
   return url.endsWith("/") ? url.slice(0, -1) : url;
 };
 
-const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL ?? "https://backend.defcomm.ng/api");
+const API_BASE_URL = normalizeBaseUrl(
+  import.meta.env.VITE_API_BASE_URL ?? "https://backend.defcomm.ng/api"
+);
 
 const ENCRYPT_KEY_PATTERN = /encrypt|otp_token|verification|session|access?_token/i;
-
 const BASE64ish_REGEX = /^[A-Za-z0-9+/=]+$/;
 const MIN_TOKEN_LENGTH = 8;
 
 function isLikelyEncryptToken(value) {
-  if (typeof value !== "string") {
-    return false;
-  }
-
+  if (typeof value !== "string") return false;
   const trimmed = value.trim();
   return trimmed.length >= MIN_TOKEN_LENGTH && BASE64ish_REGEX.test(trimmed);
 }
@@ -31,99 +29,64 @@ export class ApiError extends Error {
 }
 
 function searchForEncryptToken(payload) {
-  if (!payload || typeof payload !== "object") {
-    return null;
-  }
-
+  if (!payload || typeof payload !== "object") return null;
   const stack = [payload];
-
   while (stack.length) {
     const current = stack.pop();
-    if (!current || typeof current !== "object") {
-      continue;
-    }
-
+    if (!current || typeof current !== "object") continue;
     for (const [key, value] of Object.entries(current)) {
       if (typeof value === "string") {
         const trimmedValue = value.trim();
-        if (!trimmedValue) {
-          continue;
-        }
-
-        if (ENCRYPT_KEY_PATTERN.test(key)) {
-          return trimmedValue;
-        }
-
-        if (isLikelyEncryptToken(trimmedValue)) {
-          return trimmedValue;
-        }
+        if (!trimmedValue) continue;
+        if (ENCRYPT_KEY_PATTERN.test(key)) return trimmedValue;
+        if (isLikelyEncryptToken(trimmedValue)) return trimmedValue;
       }
-
-      if (value && typeof value === "object") {
-        stack.push(value);
-      }
+      if (value && typeof value === "object") stack.push(value);
     }
   }
-
   return null;
 }
 
 export function extractEncryptToken(payload) {
-  if (!payload) {
-    return null;
-  }
-
-  if (typeof payload === "string") {
-    return payload;
-  }
-
-  const directKey = Object.prototype.hasOwnProperty.call(payload, "encrypt") ? payload.encrypt : null;
-  if (isLikelyEncryptToken(directKey)) {
-    return directKey;
-  }
-
+  if (!payload) return null;
+  if (typeof payload === "string") return payload;
+  const directKey = Object.prototype.hasOwnProperty.call(payload, "encrypt")
+    ? payload.encrypt
+    : null;
+  if (isLikelyEncryptToken(directKey)) return directKey;
   const nestedEncrypt = searchForEncryptToken(payload);
-  if (nestedEncrypt) {
-    return nestedEncrypt;
-  }
-
+  if (nestedEncrypt) return nestedEncrypt;
   if (Array.isArray(payload)) {
     for (const item of payload) {
       const found = extractEncryptToken(item);
-      if (found) {
-        return found;
-      }
+      if (found) return found;
     }
   }
-
   return null;
 }
 
 async function parseJsonSafely(response) {
   const text = await response.text();
-  if (!text) {
-    return {};
-  }
+  if (!text) return {};
   try {
     return JSON.parse(text);
   } catch (error) {
     throw new ApiError("The server returned an invalid response.", {
       status: response.status,
-      data: text
+      data: text,
     });
   }
 }
 
 async function request(path, { method = "GET", headers = {}, body, skipContentType = false } = {}) {
   const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
-
   const requestInit = {
     method,
     headers: {
       ...(!skipContentType ? { "Content-Type": "application/json" } : {}),
-      ...headers
+      ...headers,
     },
-    body
+    body,
   };
 
   try {
@@ -137,12 +100,12 @@ async function request(path, { method = "GET", headers = {}, body, skipContentTy
 
     return data;
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
+    if (error instanceof ApiError) throw error;
     throw new ApiError(error.message ?? "Unable to process request.");
   }
 }
+
+// ------------------ Auth APIs ------------------
 
 export async function registerUser({
   firstName,
@@ -154,7 +117,7 @@ export async function registerUser({
   userType,
   password,
   groupname,
-  companyname
+  companyname,
 }) {
   const payload = {
     firstName,
@@ -166,66 +129,43 @@ export async function registerUser({
     user_type: userType,
     password,
     ...(groupname ? { groupname } : {}),
-    ...(companyname ? { companyname } : {})
+    ...(companyname ? { companyname } : {}),
   };
 
   return request("/bounty/register", {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 }
 
 export async function loginUser({ userlogin, password }) {
-  const payload = {
-    userlogin,
-    password
-  };
-
+  const payload = { userlogin, password };
   return request("/bounty/login", {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 }
 
 export async function verifyUserOtp({ userlogin, otp }) {
-  const payload = {
-    userlogin,
-    otp
-  };
-
+  const payload = { userlogin, otp };
   return request("/bounty/verify", {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 }
 
-/**
- * Request OTP endpoint
- * POST /bounty/requestOtp
- * body: { userlogin: "email_or_username" }
- *
- * Example success response:
- * {
- *   "status": 200,
- *   "message": "OTP has been sent",
- *   "otp": 5054
- * }
- */
 export async function requestOtp({ userlogin }) {
-  const payload = { userlogin };
   return request("/bounty/requestOtp", {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ userlogin }),
   });
 }
 
-// ✅ Verify OTP for login
+// ✅ Verify OTP for login and save token
 export async function verifyLoginOtp({ userlogin, otp }) {
-  const response = await fetch("https://backend.defcomm.ng/api/bounty/loginVerify", {
+  const response = await fetch(`${API_BASE_URL}/bounty/loginVerify`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userlogin, otp }),
   });
 
@@ -235,13 +175,18 @@ export async function verifyLoginOtp({ userlogin, otp }) {
     throw new Error(data.message || "Wrong OTP. Try again!");
   }
 
+  if (data.status === "200" && data.token) {
+    saveAuthToken(data.token, data.user);
+  }
+
   return data;
 }
 
+// ------------------ Protected APIs ------------------
 
-// Fetch all programs
 export async function fetchPrograms() {
   const token = getAuthToken();
+  console.log("Fetching programs with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/program", {
@@ -250,9 +195,9 @@ export async function fetchPrograms() {
   });
 }
 
-// Fetch report logs
 export async function fetchReportLogs() {
   const token = getAuthToken();
+  console.log("Fetching report logs with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/reportlog", {
@@ -261,20 +206,20 @@ export async function fetchReportLogs() {
   });
 }
 
-// Submit new report
 export async function submitReport(formData) {
   const token = getAuthToken();
+  console.log("Submitting report with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/report", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
-    skipContentType: true, // let browser handle multipart boundaries
+    skipContentType: true,
   });
 }
 
-
+// ------------------ Helpers ------------------
 export function getApiBaseUrl() {
   return API_BASE_URL;
 }
