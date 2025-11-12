@@ -173,7 +173,6 @@ export async function registerUser({
   });
 }
 
-
 export async function loginUser({ userlogin, password }) {
   const payload = {
     userlogin,
@@ -197,6 +196,46 @@ export async function verifyUserOtp({ userlogin, otp }) {
     body: JSON.stringify(payload)
   });
 }
+
+/**
+ * Request OTP endpoint
+ * POST /bounty/requestOtp
+ * body: { userlogin: "email_or_username" }
+ *
+ * Example success response:
+ * {
+ *   "status": 200,
+ *   "message": "OTP has been sent",
+ *   "otp": 5054
+ * }
+ */
+export async function requestOtp({ userlogin }) {
+  const payload = { userlogin };
+  return request("/bounty/requestOtp", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+// ✅ Verify OTP for login
+export async function verifyLoginOtp({ userlogin, otp }) {
+  const response = await fetch("/bounty/loginVerify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ userlogin, otp }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.status === "400") {
+    throw new Error(data.message || "Wrong OTP. Try again!");
+  }
+
+  return data;
+}
+
 
 export function getApiBaseUrl() {
   return API_BASE_URL;

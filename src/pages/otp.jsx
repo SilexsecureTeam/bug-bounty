@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
-import { loginUser, verifyUserOtp } from "../api";
+import { loginUser, requestOtp, verifyLoginOtp } from "../api"; // ✅ import new API
 
-const otpInputClasses = "h-16 w-16 rounded-2xl border border-white/15 bg-[#0C0F14] text-center text-2xl font-semibold text-white focus:border-[#9DB347] focus:outline-none focus:ring-0";
+const otpInputClasses =
+  "h-16 w-16 rounded-2xl border border-white/15 bg-[#0C0F14] text-center text-2xl font-semibold text-white focus:border-[#9DB347] focus:outline-none focus:ring-0";
 
 export default function OtpVerification() {
   const location = useLocation();
@@ -12,7 +13,6 @@ export default function OtpVerification() {
   const storedEmail = window.localStorage.getItem("defcommOtpEmail") ?? "";
   const storedPhone = window.localStorage.getItem("defcommOtpPhone") ?? "";
   const storedUserLogin = window.localStorage.getItem("defcommOtpUserLogin") ?? "";
-  const storedPassword = window.localStorage.getItem("defcommOtpPassword") ?? "";
 
   const emailAddress = location.state?.email ?? storedEmail;
   const phoneNumber = location.state?.phone ?? storedPhone;
@@ -23,22 +23,18 @@ export default function OtpVerification() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [resendLoading, setResendLoading] = useState(false);
-  const [canResend, setCanResend] = useState(Boolean(userlogin && storedPassword));
+  const [canResend, setCanResend] = useState(Boolean(userlogin));
   const inputsRef = useRef([]);
 
   useEffect(() => {
-    setCanResend(Boolean(userlogin && window.localStorage.getItem("defcommOtpPassword")));
+    setCanResend(Boolean(userlogin));
   }, [userlogin]);
 
   const handleChange = (index, value) => {
-    if (!/^[0-9]?$/.test(value)) {
-      return;
-    }
-
+    if (!/^[0-9]?$/.test(value)) return;
     const nextDigits = [...digits];
     nextDigits[index] = value;
     setDigits(nextDigits);
-
     if (value && index < inputsRef.current.length - 1) {
       inputsRef.current[index + 1]?.focus();
     }
@@ -50,6 +46,7 @@ export default function OtpVerification() {
     }
   };
 
+  // ✅ Updated Submit Handler
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
@@ -65,29 +62,32 @@ export default function OtpVerification() {
     }
 
     if (!userlogin) {
-      const message = "We couldn't determine which account to verify. Please sign in again.";
+      const message =
+        "We couldn't determine which account to verify. Please sign in again.";
       setError(message);
       toast.error(message);
       return;
     }
 
     setLoading(true);
-
     try {
-  await verifyUserOtp({ userlogin, otp });
-  const message = "Verification successful. Redirecting to sign in...";
-  setSuccess(message);
-  toast.success(message);
+      const data = await verifyLoginOtp({ userlogin, otp }); // ✅ new login verify API
+      const message = data?.message ?? "Login verification successful!";
+      setSuccess(message);
+      toast.success(message);
+
+      // ✅ Clear OTP storage after successful verification
       window.localStorage.removeItem("defcommOtpEmail");
       window.localStorage.removeItem("defcommOtpPhone");
       window.localStorage.removeItem("defcommOtpUserLogin");
       window.localStorage.removeItem("defcommOtpPassword");
 
+      // ✅ Navigate to home page
       setTimeout(() => {
-        navigate("/signin", { replace: true });
-      }, 1200);
+        navigate("/", { replace: true });
+      }, 1000);
     } catch (apiError) {
-      const message = apiError.message ?? "Unable to verify OTP. Please try again.";
+      const message = apiError?.message ?? "Unable to verify OTP. Please try again.";
       setError(message);
       toast.error(message);
     } finally {
@@ -96,10 +96,9 @@ export default function OtpVerification() {
   };
 
   const handleResend = async () => {
-    const password = window.localStorage.getItem("defcommOtpPassword");
-
-    if (!userlogin || !password) {
-      const message = "We couldn't resend the OTP because your session expired. Please sign in again.";
+    if (!userlogin) {
+      const message =
+        "We couldn't resend the OTP because we don't know your account. Please sign in again.";
       setError(message);
       toast.error(message);
       return;
@@ -110,13 +109,13 @@ export default function OtpVerification() {
     setResendLoading(true);
 
     try {
-      await loginUser({ userlogin, password });
-      setDigits(["", "", "", ""]);
-      const message = "A new OTP has been sent to your device.";
-      setSuccess(message);
+      const data = await requestOtp({ userlogin });
+      const message = data?.message ?? "A new OTP has been requested.";
       toast.success(message);
+      setSuccess(message);
+      setDigits(["", "", "", ""]);
     } catch (apiError) {
-      const message = apiError.message ?? "Unable to resend OTP.";
+      const message = apiError?.message ?? "Unable to resend OTP.";
       setError(message);
       toast.error(message);
     } finally {
@@ -135,7 +134,8 @@ export default function OtpVerification() {
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-white">Verify with OTP</h2>
           <p className="text-sm text-[#C7CBD7]">
-            To ensure your security, please enter the One-Time Password (OTP) sent to {emailAddress || "your email"}
+            To ensure your security, please enter the One-Time Password (OTP) sent to{" "}
+            {emailAddress || "your email"}.
           </p>
         </div>
 
@@ -156,22 +156,20 @@ export default function OtpVerification() {
             {digits.map((digit, index) => (
               <input
                 key={index}
-                ref={(element) => {
-                  inputsRef.current[index] = element;
-                }}
+                ref={(el) => (inputsRef.current[index] = el)}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
                 className={otpInputClasses}
                 value={digit}
-                onChange={(event) => handleChange(index, event.target.value)}
-                onKeyDown={(event) => handleKeyDown(index, event)}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
               />
             ))}
           </div>
 
           <p className="text-sm text-[#C7CBD7]">
-            Didn't receive the OTP? {" "}
+            Didn't receive the OTP?{" "}
             <button
               type="button"
               onClick={handleResend}

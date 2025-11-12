@@ -13,6 +13,7 @@ import Footer from "../components/Footer";
 // import sponsor1 from '../assets/images/sponsor1.png';
 import sponsor2 from '../assets/images/sponsor2.png';
 import sponsor3 from '../assets/images/sponsor4.png';
+import sponsor5 from '../assets/images/sponsor5.png';
 import { useReveal } from "../hooks/useReveal";
 // import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
@@ -30,17 +31,17 @@ const sponsors = [
     img: sponsor2
   }, {
     id: 3,
-    img: sponsor3
+    img: sponsor5
   },
   {
     id: 4,
-    img: sponsor2
-  }, {
-    id: 5,
     img: sponsor3
   }, {
-    id: 6,
+    id: 5,
     img: sponsor2
+  }, {
+    id: 6,
+    img: sponsor5
   }
 ]
 const socialLinks = [
@@ -328,15 +329,15 @@ export default function Landing() {
 
           <div
             ref={logosRef}
-            className="flex items-center justify-between  gap-5 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10"
+            className="flex items-center justify-between  gap-8 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10"
             style={{ "--reveal-delay": "0.15s" }}
           >
             {sponsors.map((spons, index) => (
-              <div className="max-h-30">
+              <div className="max-h-24">
                 <img
                   src={spons.img}
                   alt="Sponsor logos"
-                  className="mx-auto w-full max-w-5xl object-contain filter grayscale brightness-90"
+                  className="mx-auto w-full max-w-3xl object-contain filter grayscale brightness-100"
                 />
 
               </div>

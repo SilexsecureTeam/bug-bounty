@@ -18,8 +18,8 @@ export default function PortalHeader({ activeLabel = "Program", ctaLabel = "Get 
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#10151F] bg-[#05070C]/95 backdrop-blur">
-      <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
+    <header className="sticky w-full top-0 z-40 border-b border-[#10151F] bg-[#05070C]/95 backdrop-blur">
+      <div className="mx-auto flex h-20 w-full px-12 items-center justify-between">
         <div className="flex items-center gap-10">
           <img src={DefcommLogo} onClick={homeNavigate} alt="Defcomm" className="h-9 w-auto cursor-pointer" />
           <nav className="hidden gap-8 text-[13px] font-semibold uppercase tracking-[0.32em] text-[#7E8798] lg:flex">
