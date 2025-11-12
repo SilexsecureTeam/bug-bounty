@@ -16,6 +16,7 @@ export default function SignIn() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+   const [showVerifyButton, setShowVerifyButton] = useState(false);
 
   useEffect(() => {
     const savedEmail = window.localStorage.getItem("defcommRememberEmail");
@@ -125,6 +126,7 @@ export default function SignIn() {
         apiMsg.includes("not verify yet")
       ) {
         setError("Your account is not verified yet.");
+        setShowVerifyButton(true);
         toast.error("Account not verified. Please verify your account.");
       } else {
         const message = apiMsg || "Unable to sign in.";
@@ -133,6 +135,15 @@ export default function SignIn() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+   const handleVerifyRedirect = () => {
+    if (formValues.userlogin) {
+      window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
+      navigate("/otp", { replace: true });
+    } else {
+      toast.error("No user info found. Please sign in again.");
     }
   };
 
@@ -147,8 +158,17 @@ export default function SignIn() {
         className="flex flex-col gap-7 text-sm text-[#E8EAF2]"
       >
         {error && (
-          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8] whitespace-pre-line">
+          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8]">
             {error}
+            {showVerifyButton && (
+              <button
+                type="button"
+                onClick={handleVerifyRedirect}
+                className="mt-3 w-full rounded-full bg-[#9DB347] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black hover:bg-[#b6ca60] transition-colors"
+              >
+                Verify Account
+              </button>
+            )}
           </div>
         )}
 
