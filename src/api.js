@@ -1,3 +1,5 @@
+import { getAuthToken } from "./hooks/useAuthToken";
+
 const normalizeBaseUrl = (url) => {
   if (!url) return "";
   return url.endsWith("/") ? url.slice(0, -1) : url;
@@ -219,7 +221,7 @@ export async function requestOtp({ userlogin }) {
 
 // ✅ Verify OTP for login
 export async function verifyLoginOtp({ userlogin, otp }) {
-  const response = await fetch("/bounty/loginVerify", {
+  const response = await fetch("https://backend.defcomm.ng/api/bounty/loginVerify", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -234,6 +236,42 @@ export async function verifyLoginOtp({ userlogin, otp }) {
   }
 
   return data;
+}
+
+
+// Fetch all programs
+export async function fetchPrograms() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/program", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// Fetch report logs
+export async function fetchReportLogs() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/reportlog", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// Submit new report
+export async function submitReport(formData) {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/report", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+    skipContentType: true, // let browser handle multipart boundaries
+  });
 }
 
 
