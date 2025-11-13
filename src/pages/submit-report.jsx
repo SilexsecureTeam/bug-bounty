@@ -127,11 +127,11 @@ export default function SubmitReport() {
     <div className="min-h-screen bg-[#05070C] text-white">
       <PortalHeader activeLabel="Submit a report" />
 
-      <main className="mx-auto flex w-full max-w-[1200px] gap-10 px-6 pb-20 pt-16 lg:gap-14">
+      <main className="mx-auto flex w-full text-sm! gap-10 px-4 md:px-12 pb-20 pt-6 lg:gap-8">
         {/* Sidebar */}
-        <aside className="hidden w-[280px] shrink-0 flex-col rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-6 text-sm text-[#C5CBD8] shadow-[0_25px_70px_rgba(5,8,15,0.55)] lg:flex">
+        <aside className="hidden w-[380px] shrink-0 flex-col rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-6 text-sm text-[#C5CBD8] shadow-[0_25px_70px_rgba(5,8,15,0.55)] lg:flex">
           {/* Queue Tabs */}
-          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.32em] text-[#E4E9F6]">
+          <div className="flex items-center justify-between text-xs font-semibold tracking-[0.32em] text-[#E4E9F6]">
             <span>Security Research</span>
             <button
               type="button"
@@ -182,9 +182,8 @@ export default function SubmitReport() {
               <button
                 key={reference}
                 type="button"
-                className={`flex w-full flex-col gap-1 rounded-2xl border px-4 py-4 text-left transition-colors duration-150 ${
-                  active ? "border-[#96C74B] bg-[#131B0F] text-[#DDE8C4]" : "border-transparent bg-[#0E131D] hover:border-[#1F2535]"
-                }`}
+                className={`flex w-full flex-col gap-1 rounded-2xl border px-4 py-4 text-left transition-colors duration-150 ${active ? "border-[#96C74B] bg-[#131B0F] text-[#DDE8C4]" : "border-transparent bg-[#0E131D] hover:border-[#1F2535]"
+                  }`}
               >
                 <span className="text-sm font-semibold text-white">{title}</span>
                 <span className="truncate text-[10px] uppercase tracking-[0.3em] text-[#8991A6]">{reference}</span>
@@ -213,17 +212,35 @@ export default function SubmitReport() {
         {/* Main Content */}
         <div className="flex-1 space-y-12">
           {/* Report Details Form */}
+
           <section className="space-y-10 rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-8 shadow-[0_30px_85px_rgba(5,8,15,0.55)]">
+            <div className="flex gap-5 flex-col md:flex-row">
+
+              <div>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-2xl font-semibold text-white">Report a Vulnerability</h2>
+                  {/* <div className="h-px w-full bg-[#1D2230]" /> */}
+                  <div className="space-y-5 mt-4">
+                    <p>Lorem ipsum dolor sit amet consectetur. Egestas tellus tempor tristique massa nibh. Leo tellus sodales tortor et morbi nisi quis. Et fermentum imperdiet sit aliquet eu nunc euismod neque maecenas. Aliquet laoreet nec dolor donec elementum non velit pellentesque massa. Nunc ultricies imperdiet venenatis risus <span className="text-[#8BAF2B]">convallis in vulputate.</span></p>
+                    <p>Lorem ipsum dolor sit amet consectetur. Egestas tellus tempor tristique massa nibh. Leo tellus sodales tortor et morbi nisi quis. Et fermentum imperdiet sit aliquet eu nunc euismod neque maecenas. Aliquet laoreet nec dolor donec elementum non velit pellentesque massa. Nunc ultricies imperdiet venenatis risus <span className="text-[#8BAF2B]">convallis in vulputate.</span></p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#333333] h-fit w-fit p-4 md:text-nowrap text-sm">
+                <p>Need reporting help?</p>
+                <p className="text-[#8BAF2B] capitalize">View bounty guideines</p>
+              </div>
+            </div>
             <div className="flex flex-col gap-2">
               <h2 className="text-2xl font-semibold text-white">Report Details</h2>
               <div className="h-px w-full bg-[#1D2230]" />
             </div>
 
-            <form onSubmit={handleSubmit} className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
-              {/* Left Column */}
-              <div className="space-y-6">
-                <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Title</span>
+            <form onSubmit={handleSubmit} className="flex flex-row-reverse">
+              {/* right Column */}
+              <div className="flex flex-col gap-3">
+                <label className="space-y-2! text-sm text-[#C5CBD8]">
+                  {/* <span className="font-semibold tracking-[0.3em] text-[#7F8698]">Title</span> */}
                   <input
                     type="text"
                     name="title"
@@ -235,13 +252,13 @@ export default function SubmitReport() {
                 </label>
 
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Program</span>
+                  {/* <span className="font-semibold tracking-[0.3em] text-[#7F8698]">Program</span> */}
                   <select
                     name="program_id"
                     value={formData.program_id}
                     onChange={handleChange}
                     disabled={fetchingPrograms || programs.length === 0}
-                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white focus:border-[#A3CB4F] focus:outline-none"
+                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white-50 focus:border-[#A3CB4F] focus:outline-none"
                   >
                     <option value="">{programs.length === 0 ? "No programs available" : "Select Program"}</option>
                     {programs.map((program) => (
@@ -253,39 +270,36 @@ export default function SubmitReport() {
                 </label>
 
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Steps to Reproduce</span>
+                  {/* <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Steps to Reproduce</span> */}
                   <textarea
                     name="steps"
                     value={formData.steps}
                     onChange={handleChange}
                     rows={3}
-                    placeholder="Provide clear reproduction steps"
+                    placeholder="How can this bug be reproduced?"
                     className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white placeholder:text-[#5E667B] focus:border-[#A3CB4F] focus:outline-none"
                   />
                 </label>
 
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Description</span>
+                  {/* <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Description</span> */}
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
                     rows={5}
-                    placeholder="Provide a detailed description"
+                    placeholder="Provide a detailed description (summary, steps to reproduce, expected result, actual result)"
                     className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white placeholder:text-[#5E667B] focus:border-[#A3CB4F] focus:outline-none"
                   />
                 </label>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-6">
+              
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Category</span>
+                  {/* <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Category</span> */}
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white focus:border-[#A3CB4F] focus:outline-none"
+                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white-50 focus:border-[#A3CB4F] focus:outline-none"
                   >
                     <option value="">Select Category</option>
                     <option>Authentication</option>
@@ -296,12 +310,12 @@ export default function SubmitReport() {
                 </label>
 
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Severity</span>
+                  {/* <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Severity</span> */}
                   <select
                     name="severity"
                     value={formData.severity}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white focus:border-[#A3CB4F] focus:outline-none"
+                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white-50 focus:border-[#A3CB4F] focus:outline-none"
                   >
                     <option value="">Select Severity</option>
                     <option value="Low">Low</option>
@@ -312,12 +326,12 @@ export default function SubmitReport() {
                 </label>
 
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
-                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Attachments</span>
+                  {/* <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Attachments</span> */}
                   <input
                     type="file"
                     name="attachment"
                     onChange={handleChange}
-                    className="block w-full rounded-2xl border border-dashed border-[#2F3648] bg-[#101622] px-3 py-2 text-sm text-white"
+                    className="block w-full rounded-2xl border border-dashed border-[#2F3648] bg-[#101622] px-3 py-2 text-sm text-white-50"
                   />
                 </label>
 

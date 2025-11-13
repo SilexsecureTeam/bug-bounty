@@ -116,98 +116,101 @@ export default function Register() {
     return errors;
   };
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  setFieldErrors({});
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setFieldErrors({});
 
-  // Frontend validation
-  const frontendErrors = validateFields();
-  if (Object.keys(frontendErrors).length > 0) {
-    setFieldErrors(frontendErrors);
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const formattedPhone = normalizePhoneNumber(
-      formValues.phone,
-      formValues.country
-    );
-    const userType = userTypeByRole[selectedRole] ?? "user";
-    const userlogin = formValues.username || formValues.email;
-
-    const response = await registerUser({
-      firstName: formValues.firstName,
-      lastName: formValues.lastName,
-      username: formValues.username,
-      email: formValues.email,
-      phone: formattedPhone,
-      country: formValues.country,
-      userType,
-      password: formValues.password,
-      groupname: userType === "group" ? formValues.groupname : undefined,
-      companyname: userType === "company" ? formValues.companyname : undefined,
-    });
-
-    // Log the API response for debugging
-    console.log("API Response (Success):", response);
-
-    const responseData = response?.data ?? response ?? {};
-    const registeredEmail = responseData.email ?? formValues.email;
-    const registeredPhone = responseData.phone ?? formattedPhone;
-
-    window.localStorage.setItem("defcommOtpEmail", registeredEmail);
-    window.localStorage.setItem("defcommOtpPhone", registeredPhone);
-    if (userlogin) window.localStorage.setItem("defcommOtpUserLogin", userlogin);
-    window.localStorage.setItem("defcommOtpPassword", formValues.password);
-
-    toast.success(
-      responseData?.message ?? "Registration successful! Enter the OTP we sent."
-    );
-
-    navigate("/otp", {
-      replace: true,
-      state: { email: registeredEmail, phone: registeredPhone, userlogin },
-    });
-  } catch (apiError) {
-  console.log("API Response (Error):", apiError);
-
-  const apiFieldErrors = {};
-
-  // Check if API returned validation errors
-  if (apiError.data?.data && typeof apiError.data.data === "object") {
-    const data = apiError.data.data;
-
-    // Dynamically assign each field error
-    for (const key in data) {
-      if (Array.isArray(data[key])) {
-        apiFieldErrors[key] = data[key][0]; // Take first error for display
-      } else {
-        apiFieldErrors[key] = data[key];
-      }
+    // Frontend validation
+    const frontendErrors = validateFields();
+    if (Object.keys(frontendErrors).length > 0) {
+      setFieldErrors(frontendErrors);
+      return;
     }
-  } else if (apiError.data?.message) {
-    // Fallback: show generic message
-    toast.error(apiError.data.message);
-  } else if (apiError.message) {
-    toast.error(apiError.message);
-  }
 
-  // Set field errors so they show next to inputs
-  setFieldErrors(apiFieldErrors);
-}
+    setLoading(true);
+
+    try {
+      const formattedPhone = normalizePhoneNumber(
+        formValues.phone,
+        formValues.country
+      );
+      const userType = userTypeByRole[selectedRole] ?? "user";
+      const userlogin = formValues.username || formValues.email;
+
+      const response = await registerUser({
+        firstName: formValues.firstName,
+        lastName: formValues.lastName,
+        username: formValues.username,
+        email: formValues.email,
+        phone: formattedPhone,
+        country: formValues.country,
+        userType,
+        password: formValues.password,
+        groupname: userType === "group" ? formValues.groupname : undefined,
+        companyname: userType === "company" ? formValues.companyname : undefined,
+      });
+
+      // Log the API response for debugging
+      console.log("API Response (Success):", response);
+
+      const responseData = response?.data ?? response ?? {};
+      const registeredEmail = responseData.email ?? formValues.email;
+      const registeredPhone = responseData.phone ?? formattedPhone;
+
+      window.localStorage.setItem("defcommOtpEmail", registeredEmail);
+      window.localStorage.setItem("defcommOtpPhone", registeredPhone);
+      if (userlogin) window.localStorage.setItem("defcommOtpUserLogin", userlogin);
+      window.localStorage.setItem("defcommOtpPassword", formValues.password);
+
+      toast.success(
+        responseData?.message ?? "Registration successful! Enter the OTP we sent."
+      );
+
+      navigate("/otp", {
+        replace: true,
+        state: { email: registeredEmail, phone: registeredPhone, userlogin },
+      });
+    } catch (apiError) {
+      setLoading(false)
+      console.log("API Response (Error):", apiError);
+      const apiFieldErrors = {};
+
+      // Check if API returned validation errors
+      if (apiError.data?.data && typeof apiError.data.data === "object") {
+        const data = apiError.data.data;
+        setLoading(false)
+        // Dynamically assign each field error
+        for (const key in data) {
+          if (Array.isArray(data[key])) {
+            apiFieldErrors[key] = data[key][0]; // Take first error for display
+          } else {
+            apiFieldErrors[key] = data[key];
+          }
+        }
+      } else if (apiError.data?.message) {
+        // Fallback: show generic message
+        setLoading(false)
+        toast.error(apiError.data.message);
+      } else if (apiError.message) {
+        toast.error(apiError.message);
+        setLoading(false)
+      }
+
+      // Set field errors so they show next to inputs
+      setFieldErrors(apiFieldErrors);
+      setLoading(false)
+    }
 
 
-};
+  };
 
 
   const activeTabLabel =
     selectedRole === "group"
       ? "Register a New Group"
       : selectedRole === "company"
-      ? "Register a New Company"
-      : "Create a User Account";
+        ? "Register a New Company"
+        : "Create a User Account";
 
   return (
     <AuthLayout
