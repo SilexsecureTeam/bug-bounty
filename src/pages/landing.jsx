@@ -351,7 +351,7 @@ export default function Landing() {
                 <img
                   src={spons.img}
                   alt="Sponsor logos"
-                  className="mx-auto w-full max-w-3xl object-contain filter grayscale brightness-100"
+                  className="mx-auto w-full max-w-3xl object-contain grayscale-75 brightness-200"
                 />
 
               </div>

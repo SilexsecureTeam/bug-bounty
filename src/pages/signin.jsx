@@ -16,7 +16,7 @@ export default function SignIn() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-   const [showVerifyButton, setShowVerifyButton] = useState(false);
+  const [showVerifyButton, setShowVerifyButton] = useState(false);
 
   useEffect(() => {
     const savedEmail = window.localStorage.getItem("defcommRememberEmail");
@@ -42,8 +42,7 @@ export default function SignIn() {
     setError(null);
 
     if (!formValues.userlogin || !formValues.password) {
-      const message =
-        "Please enter your username or email and password.";
+      const message = "Please enter your username or email and password.";
       setError(message);
       toast.error(message);
       return;
@@ -117,14 +116,12 @@ export default function SignIn() {
           userlogin: formValues.userlogin,
           email: emailFromResponse,
           phone: phoneFromResponse,
+          // login flow -> verify via loginVerify by default (no flag)
         },
       });
     } catch (apiError) {
       const apiMsg = apiError?.message ?? "";
-      if (
-        apiError?.status === "400" ||
-        apiMsg.includes("not verify yet")
-      ) {
+      if (apiError?.status === "400" || apiMsg.includes("not verify yet")) {
         setError("Your account is not verified yet.");
         setShowVerifyButton(true);
         toast.error("Account not verified. Please verify your account.");
@@ -138,10 +135,14 @@ export default function SignIn() {
     }
   };
 
-   const handleVerifyRedirect = () => {
+  const handleVerifyRedirect = () => {
     if (formValues.userlogin) {
+      // mark that the OTP page is for account verification
       window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
-      navigate("/otp", { replace: true });
+      navigate("/otp", {
+        replace: true,
+        state: { verifyAccount: true, userlogin: formValues.userlogin },
+      });
     } else {
       toast.error("No user info found. Please sign in again.");
     }
@@ -174,7 +175,9 @@ export default function SignIn() {
 
         {/* Username / Email */}
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
-          <span>Username or Email <span className="text-[#C77661]">*</span></span>
+          <span>
+            Username or Email <span className="text-[#C77661]">*</span>
+          </span>
           <input
             type="text"
             name="userlogin"
@@ -187,7 +190,9 @@ export default function SignIn() {
 
         {/* Password */}
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
-          <span>Password <span className="text-[#C77661]">*</span></span>
+          <span>
+            Password <span className="text-[#C77661]">*</span>
+          </span>
           <input
             type="password"
             name="password"

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
-import { loginUser, requestOtp, verifyLoginOtp } from "../api"; // ✅ import new API
+import { requestOtp, verifyLoginOtp, verifyUserOtp } from "../api"; // added verifyUserOtp
 
 const otpInputClasses =
   "h-16 w-16 rounded-2xl border border-white/15 bg-[#0C0F14] text-center text-2xl font-semibold text-white focus:border-[#9DB347] focus:outline-none focus:ring-0";
@@ -17,6 +17,7 @@ export default function OtpVerification() {
   const emailAddress = location.state?.email ?? storedEmail;
   const phoneNumber = location.state?.phone ?? storedPhone;
   const userlogin = location.state?.userlogin ?? storedUserLogin;
+  const verifyAccountFlag = location.state?.verifyAccount === true; // important
 
   const [digits, setDigits] = useState(["", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,7 @@ export default function OtpVerification() {
     }
   };
 
-  // ✅ Updated Submit Handler
+  // Submit handler: choose verify endpoint based on incoming flag
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
@@ -71,21 +72,41 @@ export default function OtpVerification() {
 
     setLoading(true);
     try {
-      const data = await verifyLoginOtp({ userlogin, otp }); // ✅ new login verify API
-      const message = data?.message ?? "Login verification successful!";
-      setSuccess(message);
-      toast.success(message);
+      let data;
+      if (verifyAccountFlag) {
+        // user is verifying their account (account creation flow)
+        data = await verifyUserOtp({ userlogin, otp });
+        // After successful account verification, redirect back to signin so user can login
+        const message = data?.message ?? "Account verified successfully!";
+        setSuccess(message);
+        toast.success(message);
 
-      // ✅ Clear OTP storage after successful verification
-      window.localStorage.removeItem("defcommOtpEmail");
-      window.localStorage.removeItem("defcommOtpPhone");
-      window.localStorage.removeItem("defcommOtpUserLogin");
-      window.localStorage.removeItem("defcommOtpPassword");
+        // clear OTP-related storage
+        window.localStorage.removeItem("defcommOtpEmail");
+        window.localStorage.removeItem("defcommOtpPhone");
+        window.localStorage.removeItem("defcommOtpUserLogin");
+        window.localStorage.removeItem("defcommOtpPassword");
 
-      // ✅ Navigate to home page
-      setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 1000);
+        setTimeout(() => {
+          navigate("/signin", { replace: true });
+        }, 900);
+      } else {
+        // login verification flow
+        data = await verifyLoginOtp({ userlogin, otp });
+        const message = data?.message ?? "Login verification successful!";
+        setSuccess(message);
+        toast.success(message);
+
+        // clear OTP-related storage and navigate home (existing behavior)
+        window.localStorage.removeItem("defcommOtpEmail");
+        window.localStorage.removeItem("defcommOtpPhone");
+        window.localStorage.removeItem("defcommOtpUserLogin");
+        window.localStorage.removeItem("defcommOtpPassword");
+
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 900);
+      }
     } catch (apiError) {
       const message = apiError?.message ?? "Unable to verify OTP. Please try again.";
       setError(message);

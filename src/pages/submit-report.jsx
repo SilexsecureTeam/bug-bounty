@@ -40,13 +40,11 @@ export default function SubmitReport() {
   const [formData, setFormData] = useState({
     program_id: "",
     title: "",
-    report_type: "",
-    vulnerability_type: "",
+    category: "", // maps to backend 'category'
     severity: "",
     description: "",
     steps: "",
-    impact: "",
-    file: null
+    attachment: null // file => backend 'attachment'
   });
 
   // Fetch available programs
@@ -55,12 +53,16 @@ export default function SubmitReport() {
       setFetchingPrograms(true);
       try {
         const data = await fetchPrograms();
-        if (Array.isArray(data.programs)) {
+        if (Array.isArray(data.programs) && data.programs.length) {
           setPrograms(data.programs);
         } else {
-          toast.error("No programs found");
+          // no programs found -> keep programs empty; program_id will be ""
+          setPrograms([]);
+          toast("No programs available — report will be submitted without a program.", { icon: "ℹ️" });
         }
       } catch (error) {
+        setPrograms([]); // explicitly keep empty so program_id will be ""
+        // only show an error toast if it's a true failure
         toast.error(error.message || "Failed to fetch programs");
       } finally {
         setFetchingPrograms(false);
@@ -82,25 +84,37 @@ export default function SubmitReport() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const submitData = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) submitData.append(key, value);
-    });
+    // Build payload according to backend expectation:
+    // program_id, title, detail, category, severity, attachment (file)
+    const payload = new FormData();
+
+    // If there are no programs, ensure program_id is an empty string
+    const programIdToSend = programs.length === 0 ? "" : formData.program_id || "";
+
+    payload.append("program_id", programIdToSend);
+    payload.append("title", formData.title || "");
+    // compose 'detail' from description + steps to preserve all content
+    const detail = `${formData.description || ""}` + (formData.steps ? `\n\nSteps to reproduce:\n${formData.steps}` : "");
+    payload.append("detail", detail);
+    // category should be one of the expected values (Authentication, XSS, API Vulv, Auth Bypass)
+    payload.append("category", formData.category || "");
+    payload.append("severity", formData.severity || "");
+    if (formData.attachment) {
+      payload.append("attachment", formData.attachment);
+    }
 
     setLoading(true);
     try {
-      await submitReport(submitData);
+      await submitReport(payload);
       toast.success("Report submitted successfully!");
       setFormData({
         program_id: "",
         title: "",
-        report_type: "",
-        vulnerability_type: "",
+        category: "",
         severity: "",
         description: "",
         steps: "",
-        impact: "",
-        file: null
+        attachment: null
       });
     } catch (error) {
       toast.error(error.message || "Failed to submit report");
@@ -113,7 +127,7 @@ export default function SubmitReport() {
     <div className="min-h-screen bg-[#05070C] text-white">
       <PortalHeader activeLabel="Submit a report" />
 
-      <main className="mx-auto flex w-full max-w-[1200px] gap-10 px-6 pb-20 pt-20 lg:gap-14">
+      <main className="mx-auto flex w-full max-w-[1200px] gap-10 px-6 pb-20 pt-16 lg:gap-14">
         {/* Sidebar */}
         <aside className="hidden w-[280px] shrink-0 flex-col rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-6 text-sm text-[#C5CBD8] shadow-[0_25px_70px_rgba(5,8,15,0.55)] lg:flex">
           {/* Queue Tabs */}
@@ -226,10 +240,10 @@ export default function SubmitReport() {
                     name="program_id"
                     value={formData.program_id}
                     onChange={handleChange}
-                    disabled={fetchingPrograms}
+                    disabled={fetchingPrograms || programs.length === 0}
                     className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white focus:border-[#A3CB4F] focus:outline-none"
                   >
-                    <option value="">Select Program</option>
+                    <option value="">{programs.length === 0 ? "No programs available" : "Select Program"}</option>
                     {programs.map((program) => (
                       <option key={program.id} value={program.id}>
                         {program.program_name || program.name}
@@ -266,6 +280,22 @@ export default function SubmitReport() {
               {/* Right Column */}
               <div className="space-y-6">
                 <label className="space-y-2 text-sm text-[#C5CBD8]">
+                  <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Category</span>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white focus:border-[#A3CB4F] focus:outline-none"
+                  >
+                    <option value="">Select Category</option>
+                    <option>Authentication</option>
+                    <option>XSS</option>
+                    <option>API Vulv</option>
+                    <option>Auth Bypass</option>
+                  </select>
+                </label>
+
+                <label className="space-y-2 text-sm text-[#C5CBD8]">
                   <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Severity</span>
                   <select
                     name="severity"
@@ -285,7 +315,7 @@ export default function SubmitReport() {
                   <span className="font-semibold uppercase tracking-[0.3em] text-[#7F8698]">Attachments</span>
                   <input
                     type="file"
-                    name="file"
+                    name="attachment"
                     onChange={handleChange}
                     className="block w-full rounded-2xl border border-dashed border-[#2F3648] bg-[#101622] px-3 py-2 text-sm text-white"
                   />
