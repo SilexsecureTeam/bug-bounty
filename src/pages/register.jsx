@@ -149,7 +149,7 @@ export default function Register() {
       // === Guest-specific flow ===
       if (selectedRole === "guest") {
         const FIXED_FORM_ID =
-          "eyJpdiI6IkVkcG40UElQaTlzMmJ1VUJqWU5UeHc9PSIsInZhbHVlIjoiTDlSUzBxZGNYRTdYTFZkRmswSmNxZz09IiwibWFjIjoiZDAwODAwMmNiMTFhMTMyNjNiNzQ4MjE4YmJkOTg2Y2JjMDgyMjU3NjgwZjZkMWIwZGM2NzkzNjg5NzI3YmM5OSIsInRhZyI6IiJ9";
+          "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
         const eventPayload = {
           form_id: FIXED_FORM_ID,
