@@ -219,6 +219,23 @@ export async function submitReport(formData) {
   });
 }
 
+/**
+ * Submit guest/event form
+ * POST /web/eventform
+ * payload: JSON (see conversation)
+ *
+ * This API is a "custom" endpoint — not the bounty endpoints — so it is implemented
+ * using the same request helper for consistent error handling.
+ */
+export async function submitGuestEvent(payload) {
+  // If your eventform endpoint requires a different base, change the path accordingly.
+  // This uses your API_BASE_URL + /web/eventform as requested.
+  return request("/web/eventform", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 // ------------------ Helpers ------------------
 export function getApiBaseUrl() {
   return API_BASE_URL;
