@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
-import { registerUser } from "../api";
+import { registerUser, submitGuestEvent } from "../api";
 
 const inputClasses =
   "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
@@ -47,6 +47,14 @@ function normalizePhoneNumber(rawValue, country) {
 
   return trimmed;
 }
+
+// Utility: map country code to readable name for event payload
+const countryNames = {
+  ng: "Nigeria",
+  gh: "Ghana",
+  uk: "United Kingdom",
+  us: "United States",
+};
 
 export default function Register() {
   const location = useLocation();
@@ -130,6 +138,7 @@ export default function Register() {
     setLoading(true);
 
     try {
+      // Normalize phone before sending
       const formattedPhone = normalizePhoneNumber(
         formValues.phone,
         formValues.country
@@ -137,6 +146,51 @@ export default function Register() {
       const userType = userTypeByRole[selectedRole] ?? "user";
       const userlogin = formValues.username || formValues.email;
 
+      // === Guest-specific flow ===
+      if (selectedRole === "guest") {
+        const FIXED_FORM_ID =
+          "eyJpdiI6IkVkcG40UElQaTlzMmJ1VUJqWU5UeHc9PSIsInZhbHVlIjoiTDlSUzBxZGNYRTdYTFZkRmswSmNxZz09IiwibWFjIjoiZDAwODAwMmNiMTFhMTMyNjNiNzQ4MjE4YmJkOTg2Y2JjMDgyMjU3NjgwZjZkMWIwZGM2NzkzNjg5NzI3YmM5OSIsInRhZyI6IiJ9";
+
+        const eventPayload = {
+          form_id: FIXED_FORM_ID,
+          name: `${formValues.firstName} ${formValues.lastName}`.trim(),
+          email: formValues.email,
+          phone: formattedPhone,
+          data: {
+            personal_information: {
+              full_name: `${formValues.firstName} ${formValues.lastName}`.trim(),
+              country: countryNames[formValues.country] || formValues.country || "",
+              email: formValues.email,
+              phone: formattedPhone,
+            },
+            participation_details: {
+              attendance_mode: "Physical",
+              registration_type: "Individual Participant",
+            },
+            professional_background: {
+              // no specific professional fields collected on registration form — send empty array
+              fields: [],
+              other: null,
+            },
+            consent: {
+              information_use: !!formValues.consent,
+              follow_up_updates: !!formValues.consent,
+            },
+          },
+        };
+
+        // Call new API function that posts to /web/eventform
+        const resp = await submitGuestEvent(eventPayload);
+
+        // API success handling
+        toast.success(resp?.message ?? "Guest registration submitted. Thank you!");
+        // Optionally redirect or clear form
+        setLoading(false);
+        navigate("/", { replace: true });
+        return;
+      }
+
+      // === Non-guest (regular) registration via existing endpoint ===
       const response = await registerUser({
         firstName: formValues.firstName,
         lastName: formValues.lastName,
@@ -171,14 +225,13 @@ export default function Register() {
         state: { email: registeredEmail, phone: registeredPhone, userlogin },
       });
     } catch (apiError) {
-      setLoading(false)
       console.log("API Response (Error):", apiError);
+
       const apiFieldErrors = {};
 
       // Check if API returned validation errors
       if (apiError.data?.data && typeof apiError.data.data === "object") {
         const data = apiError.data.data;
-        setLoading(false)
         // Dynamically assign each field error
         for (const key in data) {
           if (Array.isArray(data[key])) {
@@ -189,21 +242,17 @@ export default function Register() {
         }
       } else if (apiError.data?.message) {
         // Fallback: show generic message
-        setLoading(false)
         toast.error(apiError.data.message);
       } else if (apiError.message) {
         toast.error(apiError.message);
-        setLoading(false)
       }
 
       // Set field errors so they show next to inputs
       setFieldErrors(apiFieldErrors);
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-
-
   };
-
 
   const activeTabLabel =
     selectedRole === "group"
