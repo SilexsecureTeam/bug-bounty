@@ -455,18 +455,23 @@ export default function Register() {
           {loading ? "Submitting..." : "Join the Hunt"}
         </button>
 
-        <div className="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[#8F96A7]">
-          <span className="h-px flex-1 bg-white/10" />
-          OR
-          <span className="h-px flex-1 bg-white/10" />
-        </div>
+        {/* Hide Sign In button for guests */}
+        {selectedRole !== "guest" && (
+          <>
+            <div className="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[#8F96A7]">
+              <span className="h-px flex-1 bg-white/10" />
+              OR
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
 
-        <Link
-          to="/signin"
-          className="block w-full rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-center text-sm font-semibold uppercase tracking-[0.3em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white"
-        >
-          Sign In
-        </Link>
+            <Link
+              to="/signin"
+              className="block w-full rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-center text-sm font-semibold uppercase tracking-[0.3em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white"
+            >
+              Sign In
+            </Link>
+          </>
+        )}
       </form>
     </AuthLayout>
   );
@@ -485,4 +490,4 @@ function FormField({ label, required, children, error }) {
       )}
     </label>
   );
-}
+      }
