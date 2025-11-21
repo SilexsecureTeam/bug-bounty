@@ -264,18 +264,31 @@ export default function Register() {
     }
   };
 
+  // Determine which tabs to show and which one is active
   const activeTabLabel =
-    selectedRole === "group"
-      ? "Register a New Group"
-      : selectedRole === "company"
-        ? "Register a New Company"
-        : "Create a User Account";
+    selectedRole === "guest"
+      ? "Guest Registration"
+      : selectedRole === "group"
+        ? "Register a New Group"
+        : selectedRole === "company"
+          ? "Register a New Company"
+          : "Create a User Account";
+
+  const guestTabs = [
+    {
+      label: "Guest Registration",
+      to: "/register/create",
+      state: { role: "guest" },
+    },
+  ];
 
   return (
     <AuthLayout
       title="Sign Up"
       infoText="Bug hunters and security teams, welcome! Join the Defcomm community of cybersecurity enthusiasts and help us build a safer digital world."
       activeTab={activeTabLabel}
+      // Pass custom tabs if guest, otherwise AuthLayout uses defaults
+      tabs={selectedRole === "guest" ? guestTabs : undefined}
     >
       <form
         onSubmit={handleSubmit}
@@ -490,4 +503,4 @@ function FormField({ label, required, children, error }) {
       )}
     </label>
   );
-      }
+        }
