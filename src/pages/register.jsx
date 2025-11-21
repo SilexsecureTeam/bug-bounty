@@ -484,5 +484,5 @@ function FormField({ label, required, children, error }) {
         <p className="mt-1 text-xs text-[#F2B3C8]">{error}</p>
       )}
     </label>
-  ):
+  );
 }
