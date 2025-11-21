@@ -107,12 +107,22 @@ export default function Register() {
     if (!selectedRole) errors.role = "Please select a registration type.";
     if (!formValues.firstName) errors.firstName = "First name is required.";
     if (!formValues.lastName) errors.lastName = "Last name is required.";
-    if (!formValues.username) errors.username = "Username is required.";
+    
+    // Username is not required for guests
+    if (selectedRole !== "guest") {
+      if (!formValues.username) errors.username = "Username is required.";
+    }
+
     if (!formValues.email) errors.email = "Email is required.";
     if (!formValues.phone) errors.phone = "Phone number is required.";
-    if (!formValues.password) errors.password = "Password is required.";
-    if (formValues.password !== formValues.confirmPassword)
-      errors.confirmPassword = "Passwords do not match.";
+
+    // Password is not required for guests
+    if (selectedRole !== "guest") {
+      if (!formValues.password) errors.password = "Password is required.";
+      if (formValues.password !== formValues.confirmPassword)
+        errors.confirmPassword = "Passwords do not match.";
+    }
+
     if (!formValues.consent)
       errors.consent = "You must accept the general conditions.";
 
@@ -309,16 +319,19 @@ export default function Register() {
             />
           </FormField>
 
-          <FormField label="Username" required error={fieldErrors.username}>
-            <input
-              type="text"
-              name="username"
-              placeholder="Type here"
-              className={inputClasses}
-              value={formValues.username}
-              onChange={handleChange}
-            />
-          </FormField>
+          {/* Hide username for guests */}
+          {selectedRole !== "guest" && (
+            <FormField label="Username" required error={fieldErrors.username}>
+              <input
+                type="text"
+                name="username"
+                placeholder="Type here"
+                className={inputClasses}
+                value={formValues.username}
+                onChange={handleChange}
+              />
+            </FormField>
+          )}
 
           {selectedRole === "group" && (
             <FormField label="Group Name" required error={fieldErrors.groupname}>
@@ -369,29 +382,32 @@ export default function Register() {
           </FormField>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <FormField label="Password" required error={fieldErrors.password}>
-            <input
-              type="password"
-              name="password"
-              placeholder="Type here"
-              className={inputClasses}
-              value={formValues.password}
-              onChange={handleChange}
-            />
-          </FormField>
+        {/* Hide password fields for guests */}
+        {selectedRole !== "guest" && (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <FormField label="Password" required error={fieldErrors.password}>
+              <input
+                type="password"
+                name="password"
+                placeholder="Type here"
+                className={inputClasses}
+                value={formValues.password}
+                onChange={handleChange}
+              />
+            </FormField>
 
-          <FormField label="Confirm Password" required error={fieldErrors.confirmPassword}>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Type here"
-              className={inputClasses}
-              value={formValues.confirmPassword}
-              onChange={handleChange}
-            />
-          </FormField>
-        </div>
+            <FormField label="Confirm Password" required error={fieldErrors.confirmPassword}>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Type here"
+                className={inputClasses}
+                value={formValues.confirmPassword}
+                onChange={handleChange}
+              />
+            </FormField>
+          </div>
+        )}
 
         <FormField label="Country of Residence" required error={fieldErrors.country}>
           <select
@@ -468,5 +484,5 @@ function FormField({ label, required, children, error }) {
         <p className="mt-1 text-xs text-[#F2B3C8]">{error}</p>
       )}
     </label>
-  );
+  ):
 }
