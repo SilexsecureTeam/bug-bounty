@@ -315,8 +315,13 @@ export default function SubmitReport() {
                     <option value="">Select Category</option>
                     <option>Authentication</option>
                     <option>XSS</option>
-                    <option>API Vulv</option>
+                    <option>API Vuln</option>
                     <option>Auth Bypass</option>
+                    <option>Sensitive Data exposure</option>
+                    <option>Broken Access Control</option>
+                    <option>Security Misconfiguration</option>
+                    <option>Cryptographic Failures</option>
+                    <option>Others</option>
                   </select>
                 </label>
 
