@@ -1,3 +1,4 @@
+// File: silexsecureteam/bug-bounty/bug-bounty-86d2703b9fd03cf2ec01b67e3ba89360fd29ceed/src/pages/signin.jsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -17,6 +18,8 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showVerifyButton, setShowVerifyButton] = useState(false);
+  // Store successful login response to allow continuing past the restriction
+  const [pendingLoginData, setPendingLoginData] = useState(null);
 
   useEffect(() => {
     const savedEmail = window.localStorage.getItem("defcommRememberEmail");
@@ -37,9 +40,57 @@ export default function SignIn() {
     }));
   };
 
+  // Helper to process success logic (storage + navigation)
+  const processLoginSuccess = (responseData, rawResponse) => {
+    if (formValues.remember) {
+      window.localStorage.setItem("defcommRememberEmail", formValues.userlogin);
+    } else {
+      window.localStorage.removeItem("defcommRememberEmail");
+    }
+
+    window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
+    window.localStorage.setItem("defcommOtpPassword", formValues.password);
+
+    const emailFromResponse = responseData.email ?? responseData.user?.email;
+    const phoneFromResponse = responseData.phone ?? responseData.user?.phone;
+
+    if (emailFromResponse) {
+      window.localStorage.setItem("defcommOtpEmail", emailFromResponse);
+    } else {
+      window.localStorage.removeItem("defcommOtpEmail");
+    }
+
+    if (phoneFromResponse) {
+      window.localStorage.setItem("defcommOtpPhone", phoneFromResponse);
+    } else {
+      window.localStorage.removeItem("defcommOtpPhone");
+    }
+
+    const token = responseData.token ?? rawResponse?.token;
+    if (token) {
+      window.localStorage.setItem("defcommAuthToken", token);
+    }
+
+    const successMessage =
+      responseData?.message ?? "OTP sent. Please verify to continue.";
+    toast.success(successMessage);
+
+    navigate("/otp", {
+      replace: true,
+      state: {
+        userlogin: formValues.userlogin,
+        email: emailFromResponse,
+        phone: phoneFromResponse,
+        // login flow -> verify via loginVerify by default (no flag)
+      },
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
+    setShowVerifyButton(false);
+    setPendingLoginData(null);
 
     if (!formValues.userlogin || !formValues.password) {
       const message = "Please enter your username or email and password.";
@@ -56,69 +107,27 @@ export default function SignIn() {
         password: formValues.password,
       });
 
-      // ----------------- TEMPORARY ACCESS RESTRICTION -----------------
-      // Only show if login is successful (status 200)
       const responseData = response?.data ?? response ?? {};
       const status = responseData?.status ?? "200";
+
+      // ----------------- TEMPORARY ACCESS RESTRICTION -----------------
+      // Only show if login is successful (status 200)
       if (status === "200") {
-        toast.error(
-          "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon."
-        );
-        setError(
-          "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon."
-        );
+        const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon.";
+        
+        toast.error(restrictedMsg);
+        setError(restrictedMsg);
+        
+        // Store the data so user can continue if they click the button
+        setPendingLoginData({ responseData, rawResponse: response });
+        
         setLoading(false);
-        return;
+        return; 
       }
 
-      // ----------------- ORIGINAL LOGIN IMPLEMENTATION -----------------
-      if (formValues.remember) {
-        window.localStorage.setItem(
-          "defcommRememberEmail",
-          formValues.userlogin
-        );
-      } else {
-        window.localStorage.removeItem("defcommRememberEmail");
-      }
+      // If for some reason status isn't 200 but successful (or if we remove the block above later)
+      processLoginSuccess(responseData, response);
 
-      window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
-      window.localStorage.setItem("defcommOtpPassword", formValues.password);
-
-      const emailFromResponse =
-        responseData.email ?? responseData.user?.email;
-      const phoneFromResponse =
-        responseData.phone ?? responseData.user?.phone;
-
-      if (emailFromResponse) {
-        window.localStorage.setItem("defcommOtpEmail", emailFromResponse);
-      } else {
-        window.localStorage.removeItem("defcommOtpEmail");
-      }
-
-      if (phoneFromResponse) {
-        window.localStorage.setItem("defcommOtpPhone", phoneFromResponse);
-      } else {
-        window.localStorage.removeItem("defcommOtpPhone");
-      }
-
-      const token = responseData.token ?? response?.token;
-      if (token) {
-        window.localStorage.setItem("defcommAuthToken", token);
-      }
-
-      const successMessage =
-        responseData?.message ?? "OTP sent. Please verify to continue.";
-      toast.success(successMessage);
-
-      navigate("/otp", {
-        replace: true,
-        state: {
-          userlogin: formValues.userlogin,
-          email: emailFromResponse,
-          phone: phoneFromResponse,
-          // login flow -> verify via loginVerify by default (no flag)
-        },
-      });
     } catch (apiError) {
       const apiMsg = apiError?.message ?? "";
       if (apiError?.status === "400" || apiMsg.includes("not verify yet")) {
@@ -148,6 +157,12 @@ export default function SignIn() {
     }
   };
 
+  const handleRestrictedContinue = () => {
+    if (pendingLoginData) {
+      processLoginSuccess(pendingLoginData.responseData, pendingLoginData.rawResponse);
+    }
+  };
+
   return (
     <AuthLayout
       title="Sign In"
@@ -159,8 +174,10 @@ export default function SignIn() {
         className="flex flex-col gap-7 text-sm text-[#E8EAF2]"
       >
         {error && (
-          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8]">
+          <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8] whitespace-pre-wrap">
             {error}
+            
+            {/* Show "Verify Account" if the error was about verification */}
             {showVerifyButton && (
               <button
                 type="button"
@@ -168,6 +185,17 @@ export default function SignIn() {
                 className="mt-3 w-full rounded-full bg-[#9DB347] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black hover:bg-[#b6ca60] transition-colors"
               >
                 Verify Account
+              </button>
+            )}
+
+            {/* Show "Continue" if we are in the Restricted Access state but login was valid */}
+            {pendingLoginData && (
+              <button
+                type="button"
+                onClick={handleRestrictedContinue}
+                className="mt-3 w-full rounded-full border border-[#9DB347] bg-transparent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB347] hover:bg-[#9DB347] hover:text-black transition-colors"
+              >
+                Continue Anyway
               </button>
             )}
           </div>

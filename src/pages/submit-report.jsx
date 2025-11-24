@@ -1,8 +1,11 @@
+// File: silexsecureteam/bug-bounty/bug-bounty-bb57d079c471742ea46b7bae3d1271853610cc72/src/pages/submit-report.jsx
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
 import { fetchPrograms, submitReport } from "../api";
+
+const DEFAULT_PROGRAM_ID = "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
 const queueTabs = [
   { label: "Open", active: true },
@@ -58,7 +61,7 @@ export default function SubmitReport() {
         } else {
           // no programs found -> keep programs empty; program_id will be ""
           setPrograms([]);
-          toast("No programs available — report will be submitted without a program.", { icon: "ℹ️" });
+          toast("No programs available — report will be submitted to the default program.", { icon: "ℹ️" });
         }
       } catch (error) {
         setPrograms([]); // explicitly keep empty so program_id will be ""
@@ -88,18 +91,25 @@ export default function SubmitReport() {
     // program_id, title, detail, category, severity, attachment (file)
     const payload = new FormData();
 
-    // If there are no programs, ensure program_id is an empty string
-    const programIdToSend = programs.length === 0 ? "" : formData.program_id || "";
-
+    // Use the user's selected program, or the default constant if none selected
+    const programIdToSend = formData.program_id || DEFAULT_PROGRAM_ID;
     payload.append("program_id", programIdToSend);
+
     payload.append("title", formData.title || "");
+    
     // compose 'detail' from description + steps to preserve all content
     const detail = `${formData.description || ""}` + (formData.steps ? `\n\nSteps to reproduce:\n${formData.steps}` : "");
     payload.append("detail", detail);
+    
     // category should be one of the expected values (Authentication, XSS, API Vulv, Auth Bypass)
     payload.append("category", formData.category || "");
-    payload.append("severity", formData.severity || "");
-    if (formData.attachment) {
+    
+    // Fix: Ensure severity is lowercase to match Postman success (low, medium, high)
+    // Default to 'low' if empty to prevent validation error.
+    payload.append("severity", (formData.severity || "low").toLowerCase());
+
+    // Fix: Only append attachment if it is a valid File object
+    if (formData.attachment instanceof File) {
       payload.append("attachment", formData.attachment);
     }
 
@@ -117,6 +127,7 @@ export default function SubmitReport() {
         attachment: null
       });
     } catch (error) {
+      console.error(error);
       toast.error(error.message || "Failed to submit report");
     } finally {
       setLoading(false);
@@ -318,10 +329,11 @@ export default function SubmitReport() {
                     className="w-full rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-3 text-sm text-white-50 focus:border-[#A3CB4F] focus:outline-none"
                   >
                     <option value="">Select Severity</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                    <option value="Critical">Critical</option>
+                    {/* Updated values to lowercase to match backend expectation */}
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
                   </select>
                 </label>
 
