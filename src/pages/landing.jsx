@@ -80,17 +80,17 @@ const impactBullets = [
 
 const agendaItems = [
   {
-    label: "Nov 2025",
+    label: "February 2026",
     title: "Pre Event",
     time: "Private briefings and threat modelling"
   },
   {
-    label: "Dec 4",
+    label: "March 5",
     title: "Event Day",
     time: "Strategy labs · 09:30 – 18:00"
   },
   {
-    label: "Dec 5, 2025",
+    label: "March 6, 2025",
     title: "Event Day",
     time: "CTF finals · 09:30 – 18:00"
   }
@@ -181,7 +181,7 @@ const contactDetails = {
     "+234 703 220 5576"
   ],
   email: "business@defcomm.ng",
-  address: "The Shehu Musa Yar'Adua Center, Memorial Drive, Central Business District, Abuja, Nigeria."
+  // address: "The Shehu Musa Yar'Adua Center, Memorial Drive, Central Business District, Abuja, Nigeria."
 };
 
 export default function Landing() {
@@ -201,7 +201,7 @@ export default function Landing() {
   const contactRef = useReveal({ threshold: 0.2 });
 
   useEffect(() => {
-    const target = new Date("2025-12-04T09:30:00").getTime();
+    const target = new Date("2026-03-05T09:30:00").getTime();
 
     const timer = setInterval(() => {
       const now = Date.now();
@@ -435,8 +435,9 @@ export default function Landing() {
                   Two days engineered around reconnaissance, live testing, and collaborative defence frameworks across the continent.
                 </p>
               </div>
+              {/* Shehu Musa Yar'Adua Center · Abuja */}
               <p className="text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
-                December 4-5, 2025 · Shehu Musa Yar'Adua Center · Abuja
+                March 5-6, 2026 · 
               </p>
             </div>
 

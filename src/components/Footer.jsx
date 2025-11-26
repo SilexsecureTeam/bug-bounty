@@ -33,8 +33,9 @@ const navColumns = [
 
 const contactDetails = {
   email: "business@defcomm.ng",
-  phone: "+234 803 697 5198",
-  hq: "Shehu Musa Yar'Adua Center, Abuja, Nigeria"
+  phone: "+234 803 507 5198",
+  hq: ""
+  // Shehu Musa Yar'Adua Center, Abuja, Nigeria
 };
 
 const socialLinks = [
@@ -53,8 +54,8 @@ export default function Footer() {
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex max-w-md flex-col gap-6">
             <img src={bugBountyLogo} alt="Bug Bounty" className="w-48" />
-            <div className="space-y-2 text-sm text-[#C7D2B7]">
-              <p>Operation Iron Shield · December 4-5, 2025</p>
+            <div className="space-y-2 text-sm text-[hsl(84,23%,77%)]">
+              <p>Operation Iron Shield · March 5-6, 2026</p>
               <p className="text-[#9ECB32]">Africa's strategic defence innovation arena.</p>
             </div>
           </div>
