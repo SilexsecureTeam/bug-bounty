@@ -104,7 +104,7 @@ export default function OtpVerification() {
         window.localStorage.removeItem("defcommOtpPassword");
 
         setTimeout(() => {
-          navigate("/", { replace: true });
+          navigate("/dashboard", { replace: true });
         }, 900);
       }
     } catch (apiError) {
