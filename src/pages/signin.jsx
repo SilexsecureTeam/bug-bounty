@@ -193,7 +193,7 @@ export default function SignIn() {
               <button
                 type="button"
                 onClick={handleRestrictedContinue}
-                className="mt-3 w-full rounded-full hidden border border-[#9DB347] bg-transparent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB347] hover:bg-[#9DB347] hover:text-black transition-colors"
+                className="mt-3 w-full rounded-full border border-[#9DB347] bg-transparent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB347] hover:bg-[#9DB347] hover:text-black transition-colors"
               >
                 Continue Anyway
               </button>
