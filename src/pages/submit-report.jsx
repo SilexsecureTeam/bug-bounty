@@ -91,14 +91,14 @@ export default function SubmitReport() {
     title: "",
     category: "",
     severity: "low",
-    description: REPORT_TEMPLATE,
+    detail: REPORT_TEMPLATE,
     steps: "",
     attachment: null
   });
 
   const [descriptionBlocks, setDescriptionBlocks] = useState({
     summary: "",
-    descriptioned: "",
+    detailed: "",
     endpoints: "",
     impact: "",
     severity_analysis: "",
@@ -156,8 +156,8 @@ export default function SubmitReport() {
     setFormData(prev => ({ ...prev, category: "" }));
   };
 
-  const handledescriptionChange = (content) => {
-    setFormData(prev => ({ ...prev, description: content }));
+  const handleDetailChange = (content) => {
+    setFormData(prev => ({ ...prev, detail: content }));
   };
 
   const handleFileChange = (e) => {
@@ -181,7 +181,7 @@ export default function SubmitReport() {
     payload.append("title", formData.title);
     payload.append("category", formData.category);
     payload.append("severity", formData.severity);
-    payload.append("description", formData.description); // Sending HTML content as the description
+    payload.append("detail", formData.detail); // Sending HTML content as the detail
 
     if (formData.attachment) {
       payload.append("attachment", formData.attachment);
@@ -198,7 +198,7 @@ export default function SubmitReport() {
         title: "",
         category: "",
         severity: "low",
-        description: REPORT_TEMPLATE,
+        detail: REPORT_TEMPLATE,
         attachment: null
       });
     } catch (error) {
@@ -351,7 +351,7 @@ export default function SubmitReport() {
     // Only include sections that have content to keep final output tidy.
     const parts = [];
     if (blocks.summary?.trim()) parts.push(`# Summary\n${blocks.summary.trim()}`);
-    if (blocks.descriptioned?.trim()) parts.push(`# descriptioned description\n${blocks.descriptioned.trim()}`);
+    if (blocks.detailed?.trim()) parts.push(`# Detailed description\n${blocks.detailed.trim()}`);
     if (blocks.endpoints?.trim()) parts.push(`# Affected endpoints\n${blocks.endpoints.trim()}`);
     if (blocks.impact?.trim()) parts.push(`# Impact & potential risk\n${blocks.impact.trim()}`);
     if (blocks.severity_analysis?.trim()) parts.push(`# Severity analysis\n${blocks.severity_analysis.trim()}`);
@@ -372,7 +372,7 @@ export default function SubmitReport() {
     });
     setDescriptionBlocks({
       summary: "",
-      descriptioned: "",
+      detailed: "",
       endpoints: "",
       impact: "",
       severity_analysis: "",
@@ -399,7 +399,7 @@ export default function SubmitReport() {
             title: formData.title,
             category: formData.category,
             severity: formData.severity,
-            description: formData.description,
+            detail: formData.detail,
             steps: formData.steps,
             // store attachment metadata only
             attachmentMeta: formData.attachment
@@ -434,7 +434,7 @@ export default function SubmitReport() {
           title: formData.title,
           category: formData.category,
           severity: formData.severity,
-          description: formData.description,
+          detail: formData.detail,
           steps: formData.steps,
           attachmentMeta: formData.attachment
             ? { name: formData.attachment.name, size: formData.attachment.size, type: formData.attachment.type }
@@ -541,7 +541,7 @@ export default function SubmitReport() {
 
     setDescriptionBlocks({
       summary: "",
-      descriptioned: "",
+      detailed: "",
       endpoints: "",
       impact: "",
       severity_analysis: "",
@@ -771,7 +771,7 @@ export default function SubmitReport() {
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Description Preview</p>
                       <div className="h-40 overflow-hidden text-xs text-[#949EB5] leading-relaxed relative whitespace-pre-wrap">
-                        {formData.description ? formData.description : "No description provided yet..."}
+                        {formData.detail ? formData.detail : "No description provided yet..."}
                         <div className="absolute bottom-0 left-0 w-full h-8 bg-linear-to-t from-[#0B1018] to-transparent" />
                       </div>
                     </div>
@@ -846,8 +846,8 @@ export default function SubmitReport() {
                   <div className="overflow-hidden rounded-xl border border-[#202634] bg-[#0E131D] transition-colors focus-within:border-[#9FC24D]">
                     <ReactQuill
                       theme="snow"
-                      value={formData.description}
-                      onChange={handledescriptionChange}
+                      value={formData.detail}
+                      onChange={handleDetailChange}
                       modules={{
                         toolbar: {
                           container: "#toolbar",
