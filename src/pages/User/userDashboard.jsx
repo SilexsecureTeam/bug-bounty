@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import PortalHeader from "../../components/user components/portalHeader";
 import Sidebar from "../../components/user components/portalSidebar";
+import { Link } from "react-router-dom";
 
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function UserDashboard() {
                 <div className="text-sm font-semibold text-[#cfe3b1]">Your public link</div>
                 <div className="relative flex items-center w-full">
                   <input className="mt-2 w-full rounded-md border border-[#222528] bg-[#0b0d10] px-3 py-3 text-sm text-[#bcd6a6]" value={"https://loremipsum@chikesamuel"} readOnly />
-                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3">New Post</button>
+                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">New Post</Link></button>
                 </div>
               </div>
             <p className="mt-3 text-xs text-[#98a1ad]">If you want to change address, go to <span className="text-[#9fc24d]">settings</span> and change your nickname.</p>
@@ -98,7 +99,7 @@ export default function UserDashboard() {
             <p className="mt-3">Browse Defcomm's live bounty programs, hunt for vulnerabilities, and submit</p>
             <div className="mt-6 flex items-center justify-center gap-3">
               <button className="rounded-md border border-[#2b2f33] px-4 py-2 text-sm">Browse programs</button>
-              <button className="rounded-md bg-[#9fc24d] px-4 py-2 text-sm font-semibold text-[#071000]">Submit Report</button>
+              <button className="rounded-md bg-[#9fc24d] px-4 py-2 text-sm font-semibold text-[#071000]"><Link to="/submit-report">Submit Report</Link></button>
             </div>
           </div>
 
