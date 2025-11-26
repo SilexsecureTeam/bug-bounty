@@ -10,22 +10,19 @@ import {
   HelpCircle,
   ChevronDown,
   Paperclip,
-  Image as ImageIcon
+  Image as ImageIcon,
+  RefreshCw
 } from "lucide-react";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
-import { fetchPrograms, submitReport } from "../api";
+import { fetchPrograms, submitReport, fetchReportLogs } from "../api";
 
+// Default ID provided in prompt/previous context
 const DEFAULT_PROGRAM_ID =
   "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
-const DRAFT_KEY = "reportDraft"; // autosave / last draft
-const DRAFTS_LIST_KEY = "reportDrafts"; // saved named drafts list
-
-const queueTabs = [
-  { label: "Open", active: true },
-  { label: "Closed" }
-];
+const DRAFT_KEY = "reportDraft";
+const DRAFTS_LIST_KEY = "reportDrafts";
 
 const creditProfiles = [{ initials: "CS", name: "Chike Samuel" }];
 
@@ -59,6 +56,13 @@ const PLATFORM_CATEGORIES = {
   ]
 };
 
+const SEVERITY_OPTIONS = [
+  { label: "Low", value: "low" },
+  { label: "Medium", value: "medium" },
+  { label: "High", value: "high" },
+  { label: "Critical", value: "critical" }
+];
+
 const REPORT_TEMPLATE = `
 <p><strong>#Summary</strong></p>
 <p><br></p>
@@ -78,81 +82,145 @@ const REPORT_TEMPLATE = `
 export default function SubmitReport() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // Data for sidebar logs
+  const [reportLogs, setReportLogs] = useState([]);
+  const [activeQueueTab, setActiveQueueTab] = useState("Open"); // "Open" or "Closed"
 
   // Selection States
-  const [selectedPlatform, setSelectedPlatform] = useState("web"); // 'device', 'software', 'web'
+  const [selectedPlatform, setSelectedPlatform] = useState("web");
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-
   const fileInputRef = useRef(null);
+  const autosaveRef = useRef(null);
 
+  // Form State
   const [formData, setFormData] = useState({
     program_id: "",
     title: "",
     category: "",
     severity: "low",
-    detail: REPORT_TEMPLATE,
-    steps: "",
+    detail: REPORT_TEMPLATE, // Default template
     attachment: null
   });
 
-  const [descriptionBlocks, setDescriptionBlocks] = useState({
-    summary: "",
-    detailed: "",
-    endpoints: "",
-    impact: "",
-    severity_analysis: "",
-    remediation: ""
-  });
-
+  // UI State
+  const [attachmentPreview, setAttachmentPreview] = useState(null);
+  const [drafts, setDrafts] = useState([]);
+  const [lastAutosave, setLastAutosave] = useState(null);
 
   // --- Effects ---
 
+  // 1. Fetch Programs & Logs on Mount
   useEffect(() => {
-    const loadPrograms = async () => {
+    const initData = async () => {
       try {
-        const data = await fetchPrograms();
-        if (Array.isArray(data.programs) && data.programs.length) {
-          setPrograms(data.programs);
+        const progData = await fetchPrograms();
+        if (Array.isArray(progData.programs) && progData.programs.length) {
+          setPrograms(progData.programs);
         }
       } catch (error) {
         console.error("Failed to fetch programs", error);
       }
-    };
-    loadPrograms();
 
-    // Load Autosave
+      try {
+        const logData = await fetchReportLogs();
+        if (logData?.data) {
+          setReportLogs(logData.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch report logs", error);
+      }
+    };
+
+    initData();
+
+    // Load Named Drafts List
+    try {
+      const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
+      setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
+    } catch {
+      setDrafts([]);
+    }
+
+    // Check for Autosave
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Attachments can't be restored from LS, so we exclude it
-        setFormData(prev => ({ ...prev, ...parsed, attachment: null }));
-        if (parsed.selectedPlatform) setSelectedPlatform(parsed.selectedPlatform);
+        // We do NOT modify state here immediately to avoid overwriting if user wants a fresh start,
+        // but standard behavior for "continue where you left off" implies restoring.
+        // Given requirements, let's just notify or allow user to restore. 
+        // For smooth UX, we will restore if it exists and looks valid.
+        if (parsed && parsed.title) {
+           // We restore text fields, but attachment must be null (can't stringify File)
+           setFormData(prev => ({
+             ...prev,
+             ...parsed,
+             attachment: null 
+           }));
+           if(parsed.selectedPlatform) setSelectedPlatform(parsed.selectedPlatform);
+           setLastAutosave(new Date().toISOString());
+           toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+        }
       } catch (e) {
         console.error("Failed to load draft", e);
       }
     }
   }, []);
 
-  // Autosave Logic
+  // 2. Autosave Logic
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    if (autosaveRef.current) clearTimeout(autosaveRef.current);
+    
+    autosaveRef.current = setTimeout(() => {
+      // Don't autosave if empty or just template
+      if (formData.title === "" && formData.detail === REPORT_TEMPLATE) return;
+
       const draftData = {
-        ...formData,
-        selectedPlatform,
-        attachment: null // Don't save file object
+        program_id: formData.program_id,
+        title: formData.title,
+        category: formData.category,
+        severity: formData.severity,
+        detail: formData.detail,
+        selectedPlatform: selectedPlatform
+        // NOTE: We explicitly do NOT save formData.attachment because File objects
+        // cannot be serialized to JSON.
       };
+      
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-    }, 2000);
-    return () => clearTimeout(timeout);
+      setLastAutosave(new Date().toISOString());
+    }, 3000); // Autosave every 3 seconds of inactivity
+
+    return () => clearTimeout(autosaveRef.current);
   }, [formData, selectedPlatform]);
+
+  // 3. Attachment Preview
+  useEffect(() => {
+    if (formData.attachment instanceof File) {
+      if (attachmentPreview) URL.revokeObjectURL(attachmentPreview);
+      try {
+        const url = URL.createObjectURL(formData.attachment);
+        setAttachmentPreview(url);
+      } catch {
+        setAttachmentPreview(null);
+      }
+    } else {
+      if (attachmentPreview) {
+        URL.revokeObjectURL(attachmentPreview);
+        setAttachmentPreview(null);
+      }
+    }
+    return () => {
+      if (attachmentPreview) URL.revokeObjectURL(attachmentPreview);
+    };
+  }, [formData.attachment]);
+
 
   // --- Handlers ---
 
   const handlePlatformChange = (platform) => {
     setSelectedPlatform(platform);
-    // Reset category when platform changes to ensure consistency
     setFormData(prev => ({ ...prev, category: "" }));
   };
 
@@ -172,41 +240,121 @@ export default function SubmitReport() {
     fileInputRef.current.click();
   };
 
+  const resetForm = () => {
+    setFormData({
+      program_id: "",
+      title: "",
+      category: "",
+      severity: "low",
+      detail: REPORT_TEMPLATE, // Keep placeholders
+      attachment: null
+    });
+    setAttachmentPreview(null);
+    localStorage.removeItem(DRAFT_KEY); // Clear autosave
+    toast.success("Form reset for new post");
+  };
+
+  const saveNamedDraft = () => {
+    if (!formData.title) {
+      toast.error("Please enter a title to save a draft");
+      return;
+    }
+    const newDraft = {
+      id: Date.now(),
+      name: formData.title,
+      savedAt: new Date().toISOString(),
+      data: {
+        ...formData,
+        selectedPlatform,
+        attachment: null // Files can't be saved
+      }
+    };
+
+    const updatedDrafts = [newDraft, ...drafts];
+    setDrafts(updatedDrafts);
+    localStorage.setItem(DRAFTS_LIST_KEY, JSON.stringify(updatedDrafts));
+    toast.success("Draft saved successfully");
+  };
+
+  const loadDraft = (draft) => {
+    setFormData({
+      ...draft.data,
+      attachment: null
+    });
+    if(draft.data.selectedPlatform) setSelectedPlatform(draft.data.selectedPlatform);
+    toast.success(`Loaded draft: ${draft.name}`);
+  };
+
+  const deleteDraft = (id, e) => {
+    e.stopPropagation();
+    const updated = drafts.filter(d => d.id !== id);
+    setDrafts(updated);
+    localStorage.setItem(DRAFTS_LIST_KEY, JSON.stringify(updated));
+    toast.success("Draft deleted");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    // Construct Payload exactly as requested
     const payload = new FormData();
-    payload.append("program_id", formData.program_id || DEFAULT_PROGRAM_ID);
+    
+    // Use existing program ID if selected, else default or first available
+    const progId = formData.program_id || (programs[0]?.id || DEFAULT_PROGRAM_ID);
+    
+    payload.append("program_id", progId);
     payload.append("title", formData.title);
+    payload.append("detail", formData.detail); // Sending HTML content
     payload.append("category", formData.category);
     payload.append("severity", formData.severity);
-    payload.append("detail", formData.detail); // Sending HTML content as the detail
 
     if (formData.attachment) {
       payload.append("attachment", formData.attachment);
+    } else {
+        // Sometimes backend expects an empty array or null if no file, 
+        // but FormData usually just omits it. 
+        // If strict array needed: payload.append("attachment[]", "");
     }
 
     try {
       await submitReport(payload);
       toast.success("Report submitted successfully!");
-      localStorage.removeItem(DRAFT_KEY);
+      
+      // Refresh logs
+      const logData = await fetchReportLogs();
+      if(logData?.data) setReportLogs(logData.data);
 
-      // Reset form
-      setFormData({
-        program_id: "",
-        title: "",
-        category: "",
-        severity: "low",
-        detail: REPORT_TEMPLATE,
-        attachment: null
-      });
+      resetForm();
     } catch (error) {
       toast.error(error?.message || "Failed to submit report");
     } finally {
       setLoading(false);
     }
   };
+
+  // --- Helpers ---
+  const selectedProgramName =
+    programs.find((p) => p.id.toString() === formData.program_id)?.program_name ||
+    (programs.length > 0 ? "Select Program" : "Default Program");
+
+  const isImageFile = (fileOrUrl) => {
+    if (!fileOrUrl) return false;
+    if (typeof fileOrUrl === "string") return /\.(jpe?g|png|gif|webp|bmp)$/i.test(fileOrUrl);
+    return fileOrUrl.type?.startsWith("image/");
+  };
+
+  // Filter logs for sidebar based on tab
+  // Open = 'new', 'under review', 'accepted'
+  // Closed = 'closed', 'resolved'
+  const filteredLogs = reportLogs.filter(log => {
+    const status = log.status?.toLowerCase() || "";
+    if (activeQueueTab === "Open") {
+      return ["new", "under review", "accepted", "triaged"].includes(status);
+    } else {
+      return ["closed", "resolved", "rejected"].includes(status);
+    }
+  });
 
   // --- Components ---
 
@@ -224,7 +372,6 @@ export default function SubmitReport() {
     </button>
   );
 
-  // Custom Toolbar for React Quill to match screenshot
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
       <span className="ql-formats">
@@ -241,13 +388,11 @@ export default function SubmitReport() {
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats">
         <button className="ql-link" />
-        {/* We repurpose the image button to trigger our file upload for the main attachment to match UI behavior */}
         <button type="button" onClick={triggerFileUpload} className="flex items-center justify-center text-[#7F8698] hover:text-white">
           <ImageIcon size={18} />
         </button>
       </span>
 
-      {/* Attachment Indicator */}
       {formData.attachment && (
         <div className="ml-auto flex items-center gap-2 rounded-md bg-[#9FC24D]/10 px-3 py-1 text-xs text-[#9FC24D]">
           <Paperclip size={12} />
@@ -263,306 +408,6 @@ export default function SubmitReport() {
     </div>
   );
 
-  const [fetchingPrograms, setFetchingPrograms] = useState(false);
-
-  // UI state
-  const [attachmentPreview, setAttachmentPreview] = useState(null);
-  const [drafts, setDrafts] = useState([]); // array of saved drafts (metadata)
-  const [lastAutosave, setLastAutosave] = useState(null);
-  const autosaveRef = useRef(null);
-
-  // Load saved drafts list and last autosave on mount
-  useEffect(() => {
-    try {
-      const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
-    } catch {
-      setDrafts([]);
-    }
-
-    // Load last autosave (if any) and restore automatically (preferred behavior)
-    try {
-      const last = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-      if (last) {
-        // We auto-restore the autosave to improve UX (professional client expectation).
-        // Attachments cannot be restored automatically because File cannot be persisted to localStorage.
-        setFormData((prev) => ({
-          ...prev,
-          ...last.formData,
-          attachment: null // user must re-attach
-        }));
-        setDescriptionBlocks(last.descriptionBlocks || {});
-        setLastAutosave(last.savedAt || null);
-        toast("Draft restored from your last autosave.", { icon: "📄" });
-      }
-    } catch {
-      // ignore malformed data
-    }
-  }, []);
-
-  // create attachment preview when file selected; revoke previous url on change
-  useEffect(() => {
-    if (formData.attachment instanceof File) {
-      if (attachmentPreview) {
-        URL.revokeObjectURL(attachmentPreview);
-      }
-      try {
-        const url = URL.createObjectURL(formData.attachment);
-        setAttachmentPreview(url);
-      } catch {
-        setAttachmentPreview(null);
-      }
-    } else {
-      // no file selected
-      if (attachmentPreview) {
-        URL.revokeObjectURL(attachmentPreview);
-        setAttachmentPreview(null);
-      }
-    }
-    // cleanup on unmount
-    return () => {
-      if (attachmentPreview) URL.revokeObjectURL(attachmentPreview);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.attachment]);
-
-  // helper to set form fields
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files?.length) {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  // structured description block updates -> also update combined description in memory
-  const handleDescriptionBlockChange = (field, value) => {
-    setDescriptionBlocks((prev) => {
-      const next = { ...prev, [field]: value };
-      // update combined description text in the main formData (keeps preview in sync)
-      setFormData((f) => ({ ...f, description: buildCombinedDescription(next) }));
-      return next;
-    });
-  };
-
-  // combine structured blocks into a single string (professional layout)
-  const buildCombinedDescription = (blocks = descriptionBlocks) => {
-    // Only include sections that have content to keep final output tidy.
-    const parts = [];
-    if (blocks.summary?.trim()) parts.push(`# Summary\n${blocks.summary.trim()}`);
-    if (blocks.detailed?.trim()) parts.push(`# Detailed description\n${blocks.detailed.trim()}`);
-    if (blocks.endpoints?.trim()) parts.push(`# Affected endpoints\n${blocks.endpoints.trim()}`);
-    if (blocks.impact?.trim()) parts.push(`# Impact & potential risk\n${blocks.impact.trim()}`);
-    if (blocks.severity_analysis?.trim()) parts.push(`# Severity analysis\n${blocks.severity_analysis.trim()}`);
-    if (blocks.remediation?.trim()) parts.push(`# Recommended remediation\n${blocks.remediation.trim()}`);
-    return parts.join("\n\n");
-  };
-
-  // clear form state
-  const clearForm = () => {
-    setFormData({
-      program_id: "",
-      title: "",
-      category: "",
-      severity: "",
-      description: "",
-      steps: "",
-      attachment: null
-    });
-    setDescriptionBlocks({
-      summary: "",
-      detailed: "",
-      endpoints: "",
-      impact: "",
-      severity_analysis: "",
-      remediation: ""
-    });
-    if (attachmentPreview) {
-      try {
-        URL.revokeObjectURL(attachmentPreview);
-      } catch { }
-      setAttachmentPreview(null);
-    }
-  };
-
-  // AUTOSAVE: persist a draft snapshot to localStorage every X ms after changes
-  useEffect(() => {
-    // Debounced autosave (3s after last change)
-    if (autosaveRef.current) clearTimeout(autosaveRef.current);
-    autosaveRef.current = setTimeout(() => {
-      try {
-        const snapshot = {
-          formData: {
-            // store textual fields only; File objects cannot be stored
-            program_id: formData.program_id,
-            title: formData.title,
-            category: formData.category,
-            severity: formData.severity,
-            detail: formData.detail,
-            steps: formData.steps,
-            // store attachment metadata only
-            attachmentMeta: formData.attachment
-              ? { name: formData.attachment.name, size: formData.attachment.size, type: formData.attachment.type }
-              : null
-          },
-          descriptionBlocks,
-          savedAt: new Date().toISOString()
-        };
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(snapshot));
-        setLastAutosave(snapshot.savedAt);
-      } catch (err) {
-        console.warn("Autosave failed", err);
-      }
-    }, 10000);
-
-    return () => {
-      if (autosaveRef.current) clearTimeout(autosaveRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.title, formData.category, formData.severity, formData.program_id, formData.steps, descriptionBlocks]);
-
-  // Save a named draft (explicit)
-  const saveNamedDraft = (name) => {
-    try {
-      const existing = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      const draft = {
-        id: `draft_${Date.now()}`,
-        name: name || formData.title || `Draft ${new Date().toLocaleString()}`,
-        formData: {
-          program_id: formData.program_id,
-          title: formData.title,
-          category: formData.category,
-          severity: formData.severity,
-          detail: formData.detail,
-          steps: formData.steps,
-          attachmentMeta: formData.attachment
-            ? { name: formData.attachment.name, size: formData.attachment.size, type: formData.attachment.type }
-            : null
-        },
-        descriptionBlocks,
-        savedAt: new Date().toISOString()
-      };
-      const updated = [draft, ...(Array.isArray(existing) ? existing : [])].slice(0, 25); // keep up to 25 drafts
-      localStorage.setItem(DRAFTS_LIST_KEY, JSON.stringify(updated));
-      setDrafts(updated);
-      toast.success("Draft saved");
-    } catch (err) {
-      toast.error("Failed to save draft");
-    }
-  };
-
-  // Load a saved draft (named or autosave)
-  const loadDraft = (source) => {
-    try {
-      if (source === "autosave") {
-        const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-        if (!saved) {
-          toast("No autosave found", { icon: "ℹ️" });
-          return;
-        }
-        const s = saved;
-        setFormData((prev) => ({
-          ...prev,
-          ...s.formData,
-          attachment: null // cannot restore actual file
-        }));
-        setDescriptionBlocks(s.descriptionBlocks || {});
-        toast("Autosave restored", { icon: "📄" });
-        return;
-      }
-
-      // named draft
-      const existing = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      const found = (existing || []).find((d) => d.id === source);
-      if (!found) {
-        toast("Draft not found", { icon: "⚠️" });
-        return;
-      }
-      setFormData((prev) => ({
-        ...prev,
-        ...found.formData,
-        attachment: null
-      }));
-      setDescriptionBlocks(found.descriptionBlocks || {});
-      toast("Draft loaded", { icon: "📄" });
-    } catch (err) {
-      toast.error("Failed to load draft");
-    }
-  };
-
-  // Delete a named draft
-  const deleteDraft = (id) => {
-    try {
-      const existing = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      const updated = (existing || []).filter((d) => d.id !== id);
-      localStorage.setItem(DRAFTS_LIST_KEY, JSON.stringify(updated));
-      setDrafts(updated);
-      toast.success("Draft deleted");
-    } catch {
-      toast.error("Could not delete draft");
-    }
-  };
-
-  // Small helper: human friendly date
-  const niceDate = (iso) => {
-    if (!iso) return null;
-    try {
-      const d = new Date(iso);
-      return d.toLocaleString();
-    } catch {
-      return iso;
-    }
-  };
-
-  // helper to detect image mime types; also accepts object URLs if string
-  const isImageFile = (fileOrUrl) => {
-    if (!fileOrUrl) return false;
-    if (typeof fileOrUrl === "string") {
-      return /\.(jpe?g|png|gif|webp|bmp)$/i.test(fileOrUrl);
-    }
-    return fileOrUrl.type?.startsWith("image/");
-  };
-
-  // Derived: selected program name for preview
-  const selectedProgramName =
-    programs.find((p) => p.id.toString() === formData.program_id)?.program_name ||
-    (programs.length > 0 ? "Select Program" : "Default Program");
-
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      category: "",
-      severity: "",
-      program_id: "",
-      attachment: null,
-      description: "",
-    });
-
-    setDescriptionBlocks({
-      summary: "",
-      detailed: "",
-      endpoints: "",
-      impact: "",
-      severity_analysis: "",
-    });
-
-    setAttachments([]);
-    setAttachmentPreview(null);
-
-    setSubmitting(false);
-  };
-
-  const quillModules = {
-    toolbar: {
-      container: "#toolbar"
-    }
-  };
-
-
-
-
-  // Render
   return (
     <div className="min-h-screen bg-[#05070C] text-white">
       <PortalHeader activeLabel="Submit a report" />
@@ -575,10 +420,7 @@ export default function SubmitReport() {
             <button
               type="button"
               className="rounded-full bg-[#97C94F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
-              onClick={() => {
-                // quick save named draft with title
-                saveNamedDraft();
-              }}
+              onClick={saveNamedDraft}
             >
               Save Draft
             </button>
@@ -603,87 +445,90 @@ export default function SubmitReport() {
           {/* Queue Tabs */}
           <div className="mt-6 flex items-center justify-between gap-3">
             <div className="flex overflow-hidden rounded-full border border-[#202634] bg-[#111722] text-xs font-semibold uppercase tracking-[0.3em] text-[#70788F]">
-              {queueTabs.map(({ label, active }) => (
+              {["Open", "Closed"].map((label) => (
                 <button
                   key={label}
                   type="button"
-                  className={`px-4 py-2 transition-colors duration-150 ${active ? "bg-[#96C74B] text-[#131C09]" : "hover:text-[#E2E8F6]"}`}
+                  onClick={() => setActiveQueueTab(label)}
+                  className={`px-4 py-2 transition-colors duration-150 ${activeQueueTab === label ? "bg-[#96C74B] text-[#131C09]" : "hover:text-[#E2E8F6]"}`}
                 >
                   {label}
                 </button>
               ))}
             </div>
             <button
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               type="button" className="rounded-full border border-[#2A3141] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#E4E9F6] hover:bg-[#101622]">
               New Post
             </button>
           </div>
 
-          {/* Draft Tickets */}
-          <div className="mt-6 space-y-2 text-xs text-[#9097AB]">
-            {/* Autosave quick item */}
-            {localStorage.getItem(DRAFT_KEY) && (
-              <div
-                className="flex w-full flex-col gap-1 rounded-2xl border px-4 py-4 text-left transition-colors duration-150 border-[#96C74B] bg-[#131B0F] text-[#DDE8C4]"
-                role="button"
-                onClick={() => loadDraft("autosave")}
-              >
-                <div className="flex justify-between items-start gap-3">
-                  <div>
-                    <span className="text-sm font-semibold text-white">Last autosave</span>
-                    <div className="truncate text-[10px] uppercase tracking-[0.12em] text-[#8991A6]">{niceDate(JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}")?.savedAt)}</div>
-                  </div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#96C74B]">Restore</div>
-                </div>
-              </div>
+          {/* Report Logs List (Aside Section) */}
+          <div className="mt-6 flex-1 overflow-y-auto no-scrollbar space-y-2 text-xs text-[#9097AB]">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5E667B] mb-2">
+                {activeQueueTab} Reports ({filteredLogs.length})
+            </h3>
+            
+            {filteredLogs.length === 0 ? (
+                <p className="text-center py-4 opacity-50">No reports found.</p>
+            ) : (
+                filteredLogs.map((log) => (
+                    <div key={log.id || log.ref} className="flex flex-col gap-1 rounded-2xl border border-[#232936] bg-[#0E131D] px-4 py-3 hover:border-[#97C94F]/50 transition-colors cursor-pointer">
+                        <div className="flex justify-between items-start">
+                            <span className="font-semibold text-white truncate w-3/4">{log.title}</span>
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase ${
+                                log.severity === 'critical' ? 'bg-red-900 text-red-200' :
+                                log.severity === 'high' ? 'bg-orange-900 text-orange-200' :
+                                'bg-gray-800 text-gray-300'
+                            }`}>
+                                {log.severity?.substring(0,1)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-1">
+                            <span className="text-[10px] text-[#5E667B]">#{log.ref}</span>
+                            <span className="text-[10px] capitalize text-[#97C94F]">{log.status}</span>
+                        </div>
+                    </div>
+                ))
             )}
 
-            {drafts.length === 0 && !localStorage.getItem(DRAFT_KEY) ? (
-              <div className="text-[12px] text-[#7F8698]">No drafts yet — your work autosaves while you type.</div>
-            ) : null}
-
-            {drafts.map((d) => (
-              <div key={d.id} className="flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 bg-[#0E131D]">
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold text-white truncate">{d.name}</div>
-                  <div className="text-[10px] text-[#8991A6] mt-1">{niceDate(d.savedAt)}</div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => loadDraft(d.id)}
-                    className="text-[11px] px-2 py-1 rounded-md bg-[#A3CB4F]/10 border border-[#A3CB4F]/20 text-[#A3CB4F]"
-                  >
-                    Load
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteDraft(d.id)}
-                    className="text-[11px] px-2 py-1 rounded-md bg-transparent border border-[#2A3141] text-[#C5CBD8]"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+            {/* Drafts Section Below Logs */}
+            {drafts.length > 0 && (
+                <>
+                    <div className="border-t border-[#232936] my-4"></div>
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5E667B] mb-2">
+                        Saved Drafts
+                    </h3>
+                    {drafts.map((d) => (
+                    <div key={d.id} onClick={() => loadDraft(d)} className="flex items-center justify-between gap-3 rounded-2xl border border-[#232936] px-4 py-3 bg-[#131B0F]/30 cursor-pointer hover:bg-[#131B0F]">
+                        <div className="min-w-0">
+                        <div className="text-sm font-semibold text-white truncate">{d.name}</div>
+                        <div className="text-[9px] text-[#5E667B] mt-0.5">{new Date(d.savedAt).toLocaleDateString()}</div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={(e) => deleteDraft(d.id, e)}
+                            className="text-[#7F8698] hover:text-red-400 px-2"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    ))}
+                </>
+            )}
           </div>
 
           {/* Credit Profiles */}
-          <div className="mt-auto pt-8">
+          <div className="mt-auto pt-4 border-t border-[#202634]">
             {creditProfiles.map(({ initials, name }) => (
-              <div key={name} className="flex items-center justify-between rounded-2xl border border-[#202634] bg-[#0E131D] px-4 py-4 text-xs text-[#E2E8F6]">
+              <div key={name} className="flex items-center justify-between rounded-2xl bg-[#0E131D] px-3 py-3 text-xs text-[#E2E8F6]">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A2334] text-sm font-semibold text-[#DDE4F7]">{initials}</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1A2334] text-xs font-semibold text-[#DDE4F7]">{initials}</span>
                   <div className="leading-tight">
                     <p className="text-sm font-semibold text-white">{name}</p>
-                    <span className="text-[10px] uppercase tracking-[0.32em] text-[#70788F]">Draft owner</span>
+                    <span className="text-[9px] uppercase tracking-[0.32em] text-[#70788F]">Hunter</span>
                   </div>
                 </div>
-                <button type="button" className="text-[#5E667B]">···</button>
               </div>
             ))}
           </div>
@@ -729,7 +574,7 @@ export default function SubmitReport() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               {/* Left column: preview card */}
-              <div className="lg:col-span-6">
+              <div className="lg:col-span-6 order-2 lg:order-1">
                 <div className="sticky top-28 rounded-3xl border border-[#232936] bg-[#0B1018] p-6 shadow-2xl">
                   <div className="flex items-center justify-between border-b border-[#1D2230] pb-4 mb-5">
                     <h3 className="text-sm font-bold uppercase tracking-widest text-white">Report Preview</h3>
@@ -771,7 +616,8 @@ export default function SubmitReport() {
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Description Preview</p>
                       <div className="h-40 overflow-hidden text-xs text-[#949EB5] leading-relaxed relative whitespace-pre-wrap">
-                        {formData.detail ? formData.detail : "No description provided yet..."}
+                        {/* Render raw html for preview purposes, stripping tags could be better but simple text for now */}
+                        <div dangerouslySetInnerHTML={{ __html: formData.detail || "No description provided yet..." }} />
                         <div className="absolute bottom-0 left-0 w-full h-8 bg-linear-to-t from-[#0B1018] to-transparent" />
                       </div>
                     </div>
@@ -796,7 +642,7 @@ export default function SubmitReport() {
               </div>
 
               {/* Right column: inputs, including structured description */}
-              <div className="lg:col-span-6 space-y-8">
+              <div className="lg:col-span-6 space-y-8 order-1 lg:order-2">
 
                 {/* 1. Affected Platform */}
                 <section className="space-y-4">
@@ -808,32 +654,57 @@ export default function SubmitReport() {
                   </div>
                 </section>
 
-                {/* 2. Affected Area (Dynamic Category) */}
-                <section className="space-y-2">
-                  <div className="relative">
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full appearance-none rounded-xl border border-[#202634] bg-[#0E131D] px-5 py-4 text-sm text-white placeholder-gray-500 focus:border-[#9FC24D] focus:outline-none"
-                    >
-                      <option value="">Affected area</option>
-                      {PLATFORM_CATEGORIES[selectedPlatform]?.map((cat) => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-[#7F8698]" size={18} />
-                  </div>
-                </section>
+                <div className="grid grid-cols-2 gap-4">
+                    {/* 2. Affected Area (Dynamic Category) */}
+                    <section className="space-y-2">
+                    <div className="relative">
+                        <select
+                        name="category"
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        className="w-full appearance-none rounded-xl border border-[#202634] bg-[#0E131D] px-5 py-4 text-sm text-white placeholder-gray-500 focus:border-[#9FC24D] focus:outline-none"
+                        required
+                        >
+                        <option value="">Affected area</option>
+                        {PLATFORM_CATEGORIES[selectedPlatform]?.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-[#7F8698]" size={18} />
+                    </div>
+                    </section>
+
+                    {/* 2b. Severity Selector (ADDED) */}
+                    <section className="space-y-2">
+                    <div className="relative">
+                        <select
+                        name="severity"
+                        value={formData.severity}
+                        onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
+                        className="w-full appearance-none rounded-xl border border-[#202634] bg-[#0E131D] px-5 py-4 text-sm text-white placeholder-gray-500 focus:border-[#9FC24D] focus:outline-none"
+                        required
+                        >
+                        <option value="">Select Severity</option>
+                        {SEVERITY_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-[#7F8698]" size={18} />
+                    </div>
+                    </section>
+                </div>
 
                 {/* 3. Title */}
                 <section className="space-y-2">
                   <div className="relative">
                     <input
                       type="text"
+                      name="title"
                       placeholder="Title"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       className="w-full rounded-xl border border-[#202634] bg-[#0E131D] px-5 py-4 text-sm text-white placeholder-[#7F8698] focus:border-[#9FC24D] focus:outline-none"
+                      required
                     />
                     <HelpCircle className="absolute right-5 top-1/2 -translate-y-1/2 text-[#7F8698] cursor-help" size={18} />
                   </div>
@@ -871,7 +742,7 @@ export default function SubmitReport() {
                       ref={fileInputRef}
                       className="hidden"
                       onChange={handleFileChange}
-                      accept="image/*,video/*,.pdf"
+                      accept="image/*,video/*,.pdf,.txt"
                     />
                   </div>
 
@@ -930,7 +801,7 @@ export default function SubmitReport() {
 
                   <button
                     type="button"
-                    onClick={() => saveNamedDraft()}
+                    onClick={saveNamedDraft}
                     className="mt-2 w-full rounded-full border border-[#2A3141] px-6 py-3 text-sm font-semibold text-[#E4E9F6] hover:bg-[#0F1620]"
                   >
                     Save Draft
