@@ -148,12 +148,7 @@ export default function SubmitReport() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // We do NOT modify state here immediately to avoid overwriting if user wants a fresh start,
-        // but standard behavior for "continue where you left off" implies restoring.
-        // Given requirements, let's just notify or allow user to restore. 
-        // For smooth UX, we will restore if it exists and looks valid.
         if (parsed && parsed.title) {
-           // We restore text fields, but attachment must be null (can't stringify File)
            setFormData(prev => ({
              ...prev,
              ...parsed,
@@ -184,8 +179,6 @@ export default function SubmitReport() {
         severity: formData.severity,
         detail: formData.detail,
         selectedPlatform: selectedPlatform
-        // NOTE: We explicitly do NOT save formData.attachment because File objects
-        // cannot be serialized to JSON.
       };
       
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
@@ -311,10 +304,6 @@ export default function SubmitReport() {
 
     if (formData.attachment) {
       payload.append("attachment", formData.attachment);
-    } else {
-        // Sometimes backend expects an empty array or null if no file, 
-        // but FormData usually just omits it. 
-        // If strict array needed: payload.append("attachment[]", "");
     }
 
     try {
@@ -345,8 +334,6 @@ export default function SubmitReport() {
   };
 
   // Filter logs for sidebar based on tab
-  // Open = 'new', 'under review', 'accepted'
-  // Closed = 'closed', 'resolved'
   const filteredLogs = reportLogs.filter(log => {
     const status = log.status?.toLowerCase() || "";
     if (activeQueueTab === "Open") {
@@ -372,23 +359,24 @@ export default function SubmitReport() {
     </button>
   );
 
+  // Custom Toolbar for React Quill
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
       <span className="ql-formats flex gap-1">
-        <button className="ql-bold text-[#7F8698] hover:text-white transition-colors" />
-        <button className="ql-italic text-[#7F8698] hover:text-white transition-colors" />
-        <button className="ql-underline text-[#7F8698] hover:text-white transition-colors" />
-        <button className="ql-strike text-[#7F8698] hover:text-white transition-colors" />
+        <button className="ql-bold" />
+        <button className="ql-italic" />
+        <button className="ql-underline" />
+        <button className="ql-strike" />
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
-        <button className="ql-list text-[#7F8698] hover:text-white transition-colors" value="ordered" />
-        <button className="ql-list text-[#7F8698] hover:text-white transition-colors" value="bullet" />
+        <button className="ql-list" value="ordered" />
+        <button className="ql-list" value="bullet" />
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
-      <span className="ql-formats">
+      <span className="ql-formats flex gap-1">
         <button className="ql-link" />
-        <button type="button" onClick={triggerFileUpload} className="flex items-center justify-center text-[#7F8698] hover:text-white">
+        <button type="button" onClick={triggerFileUpload} className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors">
           <ImageIcon size={18} />
         </button>
       </span>
@@ -616,7 +604,7 @@ export default function SubmitReport() {
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Description Preview</p>
                       <div className="h-40 overflow-hidden text-xs text-[#949EB5] leading-relaxed relative whitespace-pre-wrap">
-                        {/* Render raw html for preview purposes, stripping tags could be better but simple text for now */}
+                        {/* Render raw html for preview purposes */}
                         <div dangerouslySetInnerHTML={{ __html: formData.detail || "No description provided yet..." }} />
                         <div className="absolute bottom-0 left-0 w-full h-8 bg-linear-to-t from-[#0B1018] to-transparent" />
                       </div>
@@ -845,26 +833,27 @@ export default function SubmitReport() {
           font-style: normal;
         }
         /* Toolbar overrides */
-        .ql-toolbar {
+        #toolbar {
           border: none !important;
           border-top: 1px solid #202634 !important;
         }
-        .ql-toolbar button {
-          color: #7F8698 !important;
-        }
-        /* Use currentColor to allow Tailwind classes to control the SVGs */
+        
+        /* Default state for Quill icons */
         #toolbar button svg .ql-stroke {
-          stroke: currentColor !important;
+          stroke: #7F8698 !important;
         }
         #toolbar button svg .ql-fill {
-          fill: currentColor !important;
+          fill: #7F8698 !important;
         }
-        /* When hover/active, we rely on the text-color class change (hover:text-white) */
-        .ql-toolbar button:hover, .ql-toolbar button.ql-active {
-          color: #FFFFFF !important;
+        
+        /* Hover and Active states */
+        #toolbar button:hover svg .ql-stroke,
+        #toolbar button.ql-active svg .ql-stroke {
+          stroke: #FFFFFF !important;
         }
-        .ql-toolbar .ql-stroke {
-          stroke: #7F8698 !important;
+        #toolbar button:hover svg .ql-fill,
+        #toolbar button.ql-active svg .ql-fill {
+          fill: #FFFFFF !important;
         }
       `}</style>
     </div >
