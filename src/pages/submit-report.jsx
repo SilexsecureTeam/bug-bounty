@@ -16,6 +16,7 @@ import {
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
 import { fetchPrograms, submitReport, fetchReportLogs } from "../api";
+import { getUser } from "../hooks/useAuthToken";
 
 // Default ID provided in prompt/previous context
 const DEFAULT_PROGRAM_ID =
@@ -23,8 +24,6 @@ const DEFAULT_PROGRAM_ID =
 
 const DRAFT_KEY = "reportDraft";
 const DRAFTS_LIST_KEY = "reportDrafts";
-
-const creditProfiles = [{ initials: "CS", name: "Chike Samuel" }];
 
 const getSeverityColor = (severity) => {
   switch (severity?.toLowerCase()) {
@@ -82,6 +81,7 @@ const REPORT_TEMPLATE = `
 export default function SubmitReport() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   
   // Data for sidebar logs
   const [reportLogs, setReportLogs] = useState([]);
@@ -111,9 +111,15 @@ export default function SubmitReport() {
 
   // --- Effects ---
 
-  // 1. Fetch Programs & Logs on Mount
+  // 1. Fetch User, Programs & Logs on Mount
   useEffect(() => {
     const initData = async () => {
+      // Get User
+      const userData = getUser();
+      if (userData) {
+        setUser(userData);
+      }
+
       try {
         const progData = await fetchPrograms();
         if (Array.isArray(progData.programs) && progData.programs.length) {
@@ -342,6 +348,14 @@ export default function SubmitReport() {
       return ["closed", "resolved", "rejected"].includes(status);
     }
   });
+  
+  // User Profile Data
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Guest Hunter";
+  const userInitials = user && user.firstName && user.lastName
+    ? `${user.firstName[0]}${user.lastName[0]}`
+    : "GH";
+    
+  const creditProfiles = [{ initials: userInitials, name: userName }];
 
   // --- Components ---
 
@@ -746,11 +760,15 @@ export default function SubmitReport() {
                     {/* User Credit */}
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151A23] border border-[#2A303C]">
-                        <span className="text-xs font-bold text-[#C5CBD8]">CS</span>
+                        <span className="text-xs font-bold text-[#C5CBD8]">
+                          {userInitials}
+                        </span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[10px] uppercase tracking-wider text-[#7F8698]">Credit</span>
-                        <span className="text-sm font-medium text-white">Chike Samuel</span>
+                        <span className="text-sm font-medium text-white">
+                          {userName}
+                        </span>
                       </div>
                       <div className="ml-auto text-right text-sm text-[#7F8698] font-mono">200</div>
                     </div>
@@ -768,7 +786,7 @@ export default function SubmitReport() {
                         className={`flex h-9 items-center gap-2 rounded-lg px-4 text-xs font-medium transition-colors ${!isAnonymous ? "bg-[#151A23] text-white border border-[#2A303C]" : "bg-transparent text-[#7F8698]"
                           }`}
                       >
-                        Chike Samuel
+                        {userName}
                       </button>
                     </div>
 
