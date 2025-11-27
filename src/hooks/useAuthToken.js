@@ -3,11 +3,11 @@
 export function getAuthToken() {
   try {
     const data = localStorage.getItem("userData");
-    console.log("LocalStorage userData:", data);
+    // console.log("LocalStorage userData:", data);
     if (!data) return null;
 
     const parsed = JSON.parse(data);
-    console.log("Parsed token:", parsed?.token);
+    // console.log("Parsed token:", parsed?.token);
     return parsed?.token || null;
   } catch (error) {
     console.error("Error reading token from localStorage:", error);
@@ -28,4 +28,17 @@ export function saveAuthToken(token, user) {
 export function clearAuthToken() {
   localStorage.removeItem("userData");
   console.log("Token cleared from localStorage");
+}
+
+// ✅ New helper to get the full user object
+export function getUser() {
+  try {
+    const data = localStorage.getItem("userData");
+    if (!data) return null;
+    const parsed = JSON.parse(data);
+    return parsed?.user || null;
+  } catch (error) {
+    console.error("Error reading user from localStorage:", error);
+    return null;
+  }
 }
