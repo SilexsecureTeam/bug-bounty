@@ -227,27 +227,25 @@ export default function SubmitReport() {
   // Custom Toolbar for React Quill to match screenshot
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
-      <span className="ql-formats">
-        <button className="ql-bold" />
-        <button className="ql-italic" />
-        <button className="ql-underline" />
-        <button className="ql-strike" />
+      <span className="ql-formats flex gap-1">
+        <button className="ql-bold text-[#7F8698] hover:text-white transition-colors" />
+        <button className="ql-italic text-[#7F8698] hover:text-white transition-colors" />
+        <button className="ql-underline text-[#7F8698] hover:text-white transition-colors" />
+        <button className="ql-strike text-[#7F8698] hover:text-white transition-colors" />
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
-      <span className="ql-formats">
-        <button className="ql-list" value="ordered" />
-        <button className="ql-list" value="bullet" />
+      <span className="ql-formats flex gap-1">
+        <button className="ql-list text-[#7F8698] hover:text-white transition-colors" value="ordered" />
+        <button className="ql-list text-[#7F8698] hover:text-white transition-colors" value="bullet" />
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
-      <span className="ql-formats">
-        <button className="ql-link" />
-        {/* We repurpose the image button to trigger our file upload for the main attachment to match UI behavior */}
-        <button type="button" onClick={triggerFileUpload} className="flex items-center justify-center text-[#7F8698] hover:text-white">
+      <span className="ql-formats flex gap-1">
+        <button className="ql-link text-[#7F8698] hover:text-white transition-colors" />
+        <button type="button" onClick={triggerFileUpload} className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors">
           <ImageIcon size={18} />
         </button>
       </span>
 
-      {/* Attachment Indicator */}
       {formData.attachment && (
         <div className="ml-auto flex items-center gap-2 rounded-md bg-[#9FC24D]/10 px-3 py-1 text-xs text-[#9FC24D]">
           <Paperclip size={12} />
@@ -981,14 +979,19 @@ export default function SubmitReport() {
         .ql-toolbar button {
           color: #7F8698 !important;
         }
+        /* Use currentColor to allow Tailwind classes to control the SVGs */
+        #toolbar button svg .ql-stroke {
+          stroke: currentColor !important;
+        }
+        #toolbar button svg .ql-fill {
+          fill: currentColor !important;
+        }
+        /* When hover/active, we rely on the text-color class change (hover:text-white) */
         .ql-toolbar button:hover, .ql-toolbar button.ql-active {
-          color: #9FC24D !important;
+          color: #FFFFFF !important;
         }
         .ql-toolbar .ql-stroke {
           stroke: #7F8698 !important;
-        }
-        .ql-toolbar button:hover .ql-stroke, .ql-toolbar button.ql-active .ql-stroke {
-          stroke: #9FC24D !important;
         }
       `}</style>
     </div >

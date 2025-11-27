@@ -23,7 +23,7 @@ const defaultTabs = [
 
 const navLinks = [
   { label: "Program", href: "#" },
-  { label: "Dashboard", href: "#" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Submit a report", href: "#" },
   { label: "Leaderboard", href: "#" },
   { label: "Resources", href: "#", withChevron: true },
