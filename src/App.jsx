@@ -9,7 +9,7 @@ import OtpVerification from "./pages/otp";
 import SubmitReport from "./pages/submit-report";
 // import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
-// import Reports from "./pages/Reports";
+import Reports from "./pages/Reports";
 
 export default function App() {
   const location = useLocation();
@@ -38,7 +38,7 @@ export default function App() {
           <Route path="/submit-report" element={<SubmitReport />} />
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           <Route path="/dashboard" element={<UserDashboard />} />
-          {/* <Route path="/reports" element={<Reports />} /> */}
+          <Route path="/reports" element={<Reports />} />
         </Routes>
       </main>
     </div>
