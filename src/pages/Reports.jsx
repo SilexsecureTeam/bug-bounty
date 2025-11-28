@@ -126,7 +126,7 @@ export default function Reports() {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full sm:ml-64 p-6 sm:p-8 overflow-y-auto">
+        <main className="flex-1 w-full p-6 sm:p-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto space-y-6">
             
             <div>
