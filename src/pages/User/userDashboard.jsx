@@ -18,7 +18,7 @@ export default function UserDashboard() {
   }, []);
 
   const stats = {
-    rank: "#9084",
+    rank: "#0",
     reputation: 0,
     balance: 0,
     reportsFound: 0,
