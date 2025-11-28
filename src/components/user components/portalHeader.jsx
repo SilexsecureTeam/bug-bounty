@@ -33,18 +33,13 @@ export default function PortalHeader({ onToggleSidebar }) {
                         <div className="flex items-center gap-3">
                             <img src={DefcommLogo} alt="Defcomm Logo" className="md:-ml-5!" />
                             <div className="hidden md:block">
-                                <div className="text-sm font-semibold text-white">Welcome back, {firstName}</div>
+                                
                                  </div>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="hidden items-center gap-2 rounded-full bg-[#26321a] px-3 py-2 text-sm font-semibold text-[#cfe292] sm:flex">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                            Export data
-                        </button>
-
-                        <button className="rounded-full bg-[#94bf3a] px-3 py-2 text-sm font-semibold text-[#071000]">Get Started</button>
+                       <div className="text-sm font-semibold text-white">Welcome back, {firstName}</div>
                     </div>
                 </div>
             </div>
