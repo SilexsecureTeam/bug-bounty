@@ -80,7 +80,7 @@ export default function UserDashboard() {
                     value={`https://loremipsum@${publicLinkName}`} 
                     readOnly 
                   />
-                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">New Post</Link></button>
+                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">Submit Report</Link></button>
                 </div>
               </div>
             <p className="mt-3 text-xs text-[#98a1ad]">If you want to change address, go to <span className="text-[#9fc24d]">settings</span> and change your nickname.</p>
