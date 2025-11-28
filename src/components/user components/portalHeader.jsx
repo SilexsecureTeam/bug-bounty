@@ -34,8 +34,7 @@ export default function PortalHeader({ onToggleSidebar }) {
                             <img src={DefcommLogo} alt="Defcomm Logo" className="md:-ml-5!" />
                             <div className="hidden md:block">
                                 <div className="text-sm font-semibold text-white">Welcome back, {firstName}</div>
-                                {*<div className="text-xs text-wrap text-[#9ba0ad]">Track your submissions, monitor bounty rewards,<br></br> and stay updated on Defcomm security reports.</div>*}
-                            </div>
+                                 </div>
                         </div>
                     </div>
 
