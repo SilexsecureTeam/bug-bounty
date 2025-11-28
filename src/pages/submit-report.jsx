@@ -575,76 +575,10 @@ export default function SubmitReport() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              {/* Left column: preview card */}
-              <div className="lg:col-span-6 order-2 lg:order-1">
-                <div className="sticky top-28 rounded-3xl border border-[#232936] bg-[#0B1018] p-6 shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-[#1D2230] pb-4 mb-5">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Report Preview</h3>
-                    <span className="h-2 w-2 rounded-full bg-[#A3CB4F] animate-pulse" />
-                  </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Title</p>
-                      <p className={`text-sm font-medium ${formData.title ? "text-white" : "text-[#363C4A] italic"}`}>
-                        {formData.title || "Untitled Report"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Target</p>
-                      <p className="text-sm text-[#A3CB4F] font-mono">{selectedProgramName}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-2">Category</p>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-[#151A24] text-[#C5CBD8] border border-[#2A303C]">
-                          {formData.category || "Uncategorized"}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-2">Severity</p>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider border ${getSeverityColor(
-                            formData.severity
-                          )}`}
-                        >
-                          {formData.severity || "None"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Description Preview</p>
-                      <div className="h-40 overflow-hidden text-xs text-[#949EB5] leading-relaxed relative whitespace-pre-wrap">
-                        {/* Render raw html for preview purposes */}
-                        <div dangerouslySetInnerHTML={{ __html: formData.detail || "No description provided yet..." }} />
-                        <div className="absolute bottom-0 left-0 w-full h-8 bg-linear-to-t from-[#0B1018] to-transparent" />
-                      </div>
-                    </div>
-
-                    {formData.attachment && (
-                      <div className="flex items-center gap-3 text-xs text-[#A3CB4F] bg-[#A3CB4F]/5 p-3 rounded-xl border border-[#A3CB4F]/10">
-                        <div className="shrink-0">
-                          {attachmentPreview && isImageFile(attachmentPreview) ? (
-                            <img src={attachmentPreview} alt="attachment-preview" className="h-14 w-14 rounded-md object-cover border border-[#202634]" />
-                          ) : (
-                            <span className="text-2xl">📎</span>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate font-medium">{formData.attachment.name}</div>
-                          <div className="text-[11px] text-[#9FB98B]">{Math.round((formData.attachment.size || 0) / 1024)} KB</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              
 
               {/* Right column: inputs, including structured description */}
-              <div className="lg:col-span-6 space-y-8 order-1 lg:order-2">
+              <div className="lg:col-span-12 space-y-8 order-1">
 
                 {/* 1. Affected Platform */}
                 <section className="space-y-4">
