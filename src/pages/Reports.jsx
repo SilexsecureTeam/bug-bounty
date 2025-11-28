@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import PortalHeader from "../components/PortalHeader"; // Ensure this path matches your file structure
+import PortalHeader from "../components/user components/portalHeader";
+import Sidebar from "../components/user components/portalSidebar";
 import ReportFilters from "../components/user components/ReportsFilter";
 import ReportStatusTabs from "../components/user components/ReportStatusTabs";
 import ReportTable from "../components/user components/ReportTable";
@@ -7,6 +8,9 @@ import { fetchReportLogs } from "../api";
 import { toast } from "react-hot-toast";
 
 export default function Reports() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState("Reports"); // Highlights 'Reports' in sidebar
+  
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -31,16 +35,14 @@ export default function Reports() {
         // Handle different API response structures defensively
         const reportsList = Array.isArray(data) ? data : (data.reports || data.data || []);
         
-        // Normalize the data to match table expectations, using N/A for missing fields
         const normalizedReports = reportsList.map(item => ({
             date: item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : "N/A",
-            id: item.id ? `DF-${String(item.id).padStart(3, '0')}` : "N/A", // Generate ID format if simple ID comes back
+            id: item.id ? `DF-${String(item.id).padStart(3, '0')}` : "N/A",
             title: item.title || "N/A",
-            program: item.program_name || item.program || "Defcomm", // Adjust based on actual API key
+            program: item.program_name || item.program || "Defcomm",
             reward: item.reward !== null && item.reward !== undefined ? item.reward : "N/A",
             cvss: item.severity_score || item.cvss || "N/A",
             status: item.status || "N/A",
-            // Keep original object for advanced filtering if needed
             ...item 
         }));
 
@@ -75,28 +77,20 @@ export default function Reports() {
 
   // Filter Logic
   const filteredReports = reports.filter((r) => {
-    // 1. Search Filter (ID or Title)
     const searchLower = filters.search.toLowerCase();
     const title = r.title ? r.title.toLowerCase() : "";
     const id = r.id ? r.id.toLowerCase() : "";
     
     const matchesSearch = !filters.search || title.includes(searchLower) || id.includes(searchLower);
-
-    // 2. Program Filter
     const matchesProgram = !filters.program || r.program === filters.program;
-
-    // 3. Status Filter (Tab + Dropdown)
-    // Note: Normalize status comparison (API might return "Pending" while tabs use "pending")
+    
     const reportStatus = r.status ? r.status.toLowerCase() : "";
     const filterStatus = filters.status ? filters.status.toLowerCase() : "";
     
     const matchesTab = activeTab === "all" || reportStatus === activeTab;
     const matchesDropdownStatus = !filters.status || reportStatus === filterStatus;
-
-    // 4. Severity Filter
     const matchesSeverity = !filters.severity || (r.severity && r.severity.toLowerCase() === filters.severity.toLowerCase());
 
-    // 5. Date Filter (Range)
     let matchesDate = true;
     if (filters.startDate || filters.endDate) {
        const rDate = new Date(r.date);
@@ -111,7 +105,6 @@ export default function Reports() {
     return matchesSearch && matchesProgram && matchesTab && matchesDropdownStatus && matchesSeverity && matchesDate;
   });
 
-  // Calculate Counts dynamically from the fetched data
   const counts = reports.reduce((acc, cur) => {
     const statusKey = cur.status ? cur.status.toLowerCase() : "unknown";
     acc[statusKey] = (acc[statusKey] || 0) + 1;
@@ -121,27 +114,49 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen bg-[#06060a] text-white">
-      <PortalHeader />
-      <main className="mx-auto max-w-7xl px-4 py-6">
-        <ReportFilters
-          filters={filters}
-          onChange={handleFilterChange}
-          onReset={handleReset}
-          onAddFilter={() => alert('Add filter feature coming soon')}
+      <PortalHeader onToggleSidebar={() => setSidebarOpen((s) => !s)} />
+
+      <div className="flex pt-16">
+        {/* Sidebar Component */}
+        <Sidebar 
+          open={sidebarOpen} 
+          onClose={() => setSidebarOpen(false)} 
+          active={activeNav} 
+          setActive={setActiveNav} 
         />
-        <ReportStatusTabs
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          counts={counts}
-        />
-        
-        {loading ? (
-           <div className="mt-10 text-center text-[#9aa4b0]">Loading reports...</div>
-        ) : (
-           <ReportTable reports={filteredReports} />
-        )}
-        
-      </main>
+
+        {/* Main Content Area */}
+        <main className="flex-1 w-full sm:ml-64 p-6 sm:p-8 overflow-y-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            
+            <div>
+              <h1 className="text-2xl font-bold text-white">Reports</h1>
+              <p className="text-sm text-[#9ba0ad] mt-1">
+                View and manage your vulnerability submissions and payouts.
+              </p>
+            </div>
+
+            <ReportFilters
+              filters={filters}
+              onChange={handleFilterChange}
+              onReset={handleReset}
+              onAddFilter={() => alert('Add filter feature coming soon')}
+            />
+            
+            <ReportStatusTabs
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              counts={counts}
+            />
+            
+            {loading ? (
+               <div className="mt-10 text-center text-[#9aa4b0] animate-pulse">Loading reports...</div>
+            ) : (
+               <ReportTable reports={filteredReports} />
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
