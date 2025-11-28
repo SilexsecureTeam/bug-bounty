@@ -36,7 +36,7 @@ export default function UserDashboard() {
       <div className="flex pt-16">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} active={activeNav} setActive={setActiveNav} />
 
-        <main className="flex-1 max-w-[82%] ml-[18%] overflow-y-auto p-6 sm:p-8">
+        <main className="flex-1 lg:w-[82%] max-w-[82%] ml-[18%] overflow-y-auto p-6 sm:p-8">
           {/* top stat cards */}
           <div className="mb-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
