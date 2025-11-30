@@ -37,10 +37,10 @@ export default function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/otp" element={<OtpVerification />} />
           {/* <Route path="/bounty/broken-authentication" element={<BountyDetails />} /> */}
-          <Route path="/submit-report" element={<SubmitReport />} />
+          {/* <Route path="/submit-report" element={<SubmitReport />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports" element={<Reports />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
