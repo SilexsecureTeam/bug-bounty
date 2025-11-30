@@ -16,6 +16,7 @@ import {
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
 import { fetchPrograms, submitReport, fetchReportLogs } from "../api";
+import { getUser } from "../hooks/useAuthToken";
 
 // Default ID provided in prompt/previous context
 const DEFAULT_PROGRAM_ID =
@@ -23,8 +24,6 @@ const DEFAULT_PROGRAM_ID =
 
 const DRAFT_KEY = "reportDraft";
 const DRAFTS_LIST_KEY = "reportDrafts";
-
-const creditProfiles = [{ initials: "CS", name: "Chike Samuel" }];
 
 const getSeverityColor = (severity) => {
   switch (severity?.toLowerCase()) {
@@ -82,6 +81,7 @@ const REPORT_TEMPLATE = `
 export default function SubmitReport() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   
   // Data for sidebar logs
   const [reportLogs, setReportLogs] = useState([]);
@@ -111,9 +111,15 @@ export default function SubmitReport() {
 
   // --- Effects ---
 
-  // 1. Fetch Programs & Logs on Mount
+  // 1. Fetch User, Programs & Logs on Mount
   useEffect(() => {
     const initData = async () => {
+      // Get User
+      const userData = getUser();
+      if (userData) {
+        setUser(userData);
+      }
+
       try {
         const progData = await fetchPrograms();
         if (Array.isArray(progData.programs) && progData.programs.length) {
@@ -342,6 +348,14 @@ export default function SubmitReport() {
       return ["closed", "resolved", "rejected"].includes(status);
     }
   });
+  
+  // User Profile Data
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Guest Hunter";
+  const userInitials = user && user.firstName && user.lastName
+    ? `${user.firstName[0]}${user.lastName[0]}`
+    : "GH";
+    
+  const creditProfiles = [{ initials: userInitials, name: userName }];
 
   // --- Components ---
 
@@ -561,76 +575,10 @@ export default function SubmitReport() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              {/* Left column: preview card */}
-              <div className="lg:col-span-6 order-2 lg:order-1">
-                <div className="sticky top-28 rounded-3xl border border-[#232936] bg-[#0B1018] p-6 shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-[#1D2230] pb-4 mb-5">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Report Preview</h3>
-                    <span className="h-2 w-2 rounded-full bg-[#A3CB4F] animate-pulse" />
-                  </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Title</p>
-                      <p className={`text-sm font-medium ${formData.title ? "text-white" : "text-[#363C4A] italic"}`}>
-                        {formData.title || "Untitled Report"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Target</p>
-                      <p className="text-sm text-[#A3CB4F] font-mono">{selectedProgramName}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-2">Category</p>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-[#151A24] text-[#C5CBD8] border border-[#2A303C]">
-                          {formData.category || "Uncategorized"}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-2">Severity</p>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider border ${getSeverityColor(
-                            formData.severity
-                          )}`}
-                        >
-                          {formData.severity || "None"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-[#687182] mb-1">Description Preview</p>
-                      <div className="h-40 overflow-hidden text-xs text-[#949EB5] leading-relaxed relative whitespace-pre-wrap">
-                        {/* Render raw html for preview purposes */}
-                        <div dangerouslySetInnerHTML={{ __html: formData.detail || "No description provided yet..." }} />
-                        <div className="absolute bottom-0 left-0 w-full h-8 bg-linear-to-t from-[#0B1018] to-transparent" />
-                      </div>
-                    </div>
-
-                    {formData.attachment && (
-                      <div className="flex items-center gap-3 text-xs text-[#A3CB4F] bg-[#A3CB4F]/5 p-3 rounded-xl border border-[#A3CB4F]/10">
-                        <div className="shrink-0">
-                          {attachmentPreview && isImageFile(attachmentPreview) ? (
-                            <img src={attachmentPreview} alt="attachment-preview" className="h-14 w-14 rounded-md object-cover border border-[#202634]" />
-                          ) : (
-                            <span className="text-2xl">📎</span>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate font-medium">{formData.attachment.name}</div>
-                          <div className="text-[11px] text-[#9FB98B]">{Math.round((formData.attachment.size || 0) / 1024)} KB</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              
 
               {/* Right column: inputs, including structured description */}
-              <div className="lg:col-span-6 space-y-8 order-1 lg:order-2">
+              <div className="lg:col-span-12 space-y-8 order-1">
 
                 {/* 1. Affected Platform */}
                 <section className="space-y-4">
@@ -746,11 +694,15 @@ export default function SubmitReport() {
                     {/* User Credit */}
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#151A23] border border-[#2A303C]">
-                        <span className="text-xs font-bold text-[#C5CBD8]">CS</span>
+                        <span className="text-xs font-bold text-[#C5CBD8]">
+                          {userInitials}
+                        </span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[10px] uppercase tracking-wider text-[#7F8698]">Credit</span>
-                        <span className="text-sm font-medium text-white">Chike Samuel</span>
+                        <span className="text-sm font-medium text-white">
+                          {userName}
+                        </span>
                       </div>
                       <div className="ml-auto text-right text-sm text-[#7F8698] font-mono">200</div>
                     </div>
@@ -768,7 +720,7 @@ export default function SubmitReport() {
                         className={`flex h-9 items-center gap-2 rounded-lg px-4 text-xs font-medium transition-colors ${!isAnonymous ? "bg-[#151A23] text-white border border-[#2A303C]" : "bg-transparent text-[#7F8698]"
                           }`}
                       >
-                        Chike Samuel
+                        {userName}
                       </button>
                     </div>
 

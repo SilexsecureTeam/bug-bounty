@@ -18,6 +18,17 @@ export default function ReportTable({ reports }) {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
+  // Helper to truncate long IDs
+  const truncateId = (id) => {
+    if (!id) return "";
+    const str = String(id);
+    // Show first 18 characters then ... if longer
+    if (str.length > 18) {
+      return `${str.substring(0, 18)}...`;
+    }
+    return str;
+  };
+
   return (
     <div className="mt-4 w-full overflow-x-auto rounded-xl border border-[#1b1f24] bg-[#0c0f12]">
       {/* Table */}
@@ -37,7 +48,12 @@ export default function ReportTable({ reports }) {
           {currentReports.map((r, i) => (
             <tr key={i} className="text-[#c6d0c0] hover:bg-[#0f1418]">
               <td className="px-4 py-4 whitespace-nowrap">{r.date}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.id}</td>
+              
+              {/* Truncated ID with tooltip for full value */}
+              <td className="px-4 py-2 whitespace-nowrap font-mono text-xs text-[#a3c64d]" title={r.id}>
+                {truncateId(r.id)}
+              </td>
+
               <td className="px-4 py-2 whitespace-nowrap">{r.title}</td>
               <td className="px-4 py-2 whitespace-nowrap">{r.program}</td>
               <td className="px-4 py-2 whitespace-nowrap">${r.reward}</td>

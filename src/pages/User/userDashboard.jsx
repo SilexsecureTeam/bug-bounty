@@ -1,19 +1,33 @@
 // File: src/pages/UserDashboard.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PortalHeader from "../../components/user components/portalHeader";
 import Sidebar from "../../components/user components/portalSidebar";
 import { Link } from "react-router-dom";
+import { getUser } from "../../hooks/useAuthToken";
 
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeNav, setActiveNav] = useState("My Dashboard");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = getUser();
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
 
   const stats = {
-    rank: "#9084",
+    rank: "#0",
     reputation: 0,
     balance: 0,
     reportsFound: 0,
   };
+
+  // Construct dynamic public link name
+  const publicLinkName = user 
+    ? (user.username || `${user.firstName}${user.lastName}`).toLowerCase().replace(/\s+/g, '') 
+    : "username";
 
   return (
     <div className="min-h-screen bg-[#06060a] text-white">
@@ -22,7 +36,7 @@ export default function UserDashboard() {
       <div className="flex pt-16">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} active={activeNav} setActive={setActiveNav} />
 
-        <main className="flex-1 max-w-[82%] ml-[18%] overflow-y-auto p-6 sm:p-8">
+        <main className="flex-1 lg:w-[82%] max-w-[82%] overflow-y-auto p-6 sm:p-8">
           {/* top stat cards */}
           <div className="mb-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
@@ -61,8 +75,12 @@ export default function UserDashboard() {
             <div className="flex flex-col">
                 <div className="text-sm font-semibold text-[#cfe3b1]">Your public link</div>
                 <div className="relative flex items-center w-full">
-                  <input className="mt-2 w-full rounded-md border border-[#222528] bg-[#0b0d10] px-3 py-3 text-sm text-[#bcd6a6]" value={"https://loremipsum@chikesamuel"} readOnly />
-                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">New Post</Link></button>
+                  <input 
+                    className="mt-2 w-full rounded-md border border-[#222528] bg-[#0b0d10] px-3 py-3 text-sm text-[#bcd6a6]" 
+                    value={`https://loremipsum@${publicLinkName}`} 
+                    readOnly 
+                  />
+                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">Submit Report</Link></button>
                 </div>
               </div>
             <p className="mt-3 text-xs text-[#98a1ad]">If you want to change address, go to <span className="text-[#9fc24d]">settings</span> and change your nickname.</p>
@@ -107,4 +125,4 @@ export default function UserDashboard() {
       </div>
     </div>
   );
-}
+          }
