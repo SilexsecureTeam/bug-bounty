@@ -10,6 +10,7 @@ import SubmitReport from "./pages/submit-report";
 import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
 import Reports from "./pages/Reports";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   const location = useLocation();
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
