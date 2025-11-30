@@ -182,11 +182,18 @@ export async function verifyLoginOtp({ userlogin, otp }) {
   return data;
 }
 
+// ------------------ Public APIs ------------------
+
+export async function fetchLeaderboard() {
+  return request("/bounty/leaderboard", {
+    method: "GET",
+  });
+}
+
 // ------------------ Protected APIs ------------------
 
 export async function fetchPrograms() {
   const token = getAuthToken();
-  console.log("Fetching programs with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/program", {
@@ -195,10 +202,30 @@ export async function fetchPrograms() {
   });
 }
 
-// ✅ New function to fetch report logs for the sidebar
+// ✅ Fetch User Profile
+export async function fetchUserProfile() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/profile", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// ✅ Fetch Report Info (Stats)
+export async function fetchReportInfo() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/reportInfo", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function fetchReportLogs() {
   const token = getAuthToken();
-  console.log("Fetching report logs with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/reportlog", {
@@ -209,21 +236,16 @@ export async function fetchReportLogs() {
 
 export async function submitReport(formData) {
   const token = getAuthToken();
-  console.log("Submitting report with token:", token);
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/report", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
-    skipContentType: true, // Required for FormData to set boundary automatically
+    skipContentType: true,
   });
 }
 
-/**
- * Submit guest/event form
- * POST /web/eventform
- */
 export async function submitGuestEvent(payload) {
   return request("/web/eventform", {
     method: "POST",

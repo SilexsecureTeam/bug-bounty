@@ -7,7 +7,7 @@ import SignIn from "./pages/signin";
 import OtpVerification from "./pages/otp";
 // import BountyDetails from "./pages/bounty-details";
 import SubmitReport from "./pages/submit-report";
-// import Leaderboard from "./pages/leaderboard";
+import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
 import Reports from "./pages/Reports";
 
@@ -22,10 +22,11 @@ export default function App() {
     "/submit-report",
     "/dashboard",
     "/reports",
+    "/leaderboard",
   ].includes(location.pathname);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen w-full! flex flex-col">
       {!hideNavbar && <Navbar />}
       <main className={hideNavbar ? "flex-1" : "flex-1 mt-16"}>
         <Routes>
@@ -36,7 +37,7 @@ export default function App() {
           <Route path="/otp" element={<OtpVerification />} />
           {/* <Route path="/bounty/broken-authentication" element={<BountyDetails />} /> */}
           <Route path="/submit-report" element={<SubmitReport />} />
-          {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/reports" element={<Reports />} />
         </Routes>

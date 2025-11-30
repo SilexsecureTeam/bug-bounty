@@ -1,33 +1,62 @@
-// File: src/pages/UserDashboard.jsx
+// File: src/pages/User/userDashboard.jsx
 import React, { useState, useEffect } from "react";
 import PortalHeader from "../../components/user components/portalHeader";
 import Sidebar from "../../components/user components/portalSidebar";
 import { Link } from "react-router-dom";
-import { getUser } from "../../hooks/useAuthToken";
+import { fetchUserProfile, fetchReportInfo } from "../../api";
+import { toast } from "react-hot-toast";
 
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeNav, setActiveNav] = useState("My Dashboard");
-  const [user, setUser] = useState(null);
+  
+  const [profile, setProfile] = useState(null);
+  const [reportStats, setReportStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userData = getUser();
-    if (userData) {
-      setUser(userData);
-    }
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch both profile and report info in parallel
+        const [profileData, statsData] = await Promise.all([
+          fetchUserProfile(),
+          fetchReportInfo()
+        ]);
+
+        setProfile(profileData?.user || null);
+        setReportStats(statsData?.data || null);
+        
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+        toast.error("Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // Calculate Derived Stats
+  const activeReportsCount = reportStats 
+    ? (reportStats.reportnew || 0) + (reportStats.reportreview || 0) + (reportStats.reportfix || 0) 
+    : 0;
+
+  const resolvedReportsCount = reportStats
+    ? (reportStats.reportaccept || 0) + (reportStats.reportclose || 0)
+    : 0;
+
   const stats = {
-    rank: "#0",
-    reputation: 0,
-    balance: 0,
-    reportsFound: 0,
+    rank: "N/A", // Not in API yet
+    reputation: reportStats?.reportpoint ? Number(reportStats.reportpoint).toLocaleString() : 0,
+    balance: reportStats?.reportamount ? Number(reportStats.reportamount).toLocaleString() : "0.00",
+    reportsFound: reportStats?.report || 0,
   };
 
-  // Construct dynamic public link name
-  const publicLinkName = user 
-    ? (user.username || `${user.firstName}${user.lastName}`).toLowerCase().replace(/\s+/g, '') 
-    : "username";
+  const publicLink = profile?.username 
+    ? `https://defcomm.ng/${profile.username}` 
+    : "Loading...";
 
   return (
     <div className="min-h-screen bg-[#06060a] text-white">
@@ -36,7 +65,7 @@ export default function UserDashboard() {
       <div className="flex pt-16">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} active={activeNav} setActive={setActiveNav} />
 
-        <main className="flex-1 lg:w-[82%] max-w-[82%] overflow-y-auto p-6 sm:p-8">
+        <main className="flex-1 w-full sm:ml-64 p-6 sm:p-8 overflow-y-auto">
           {/* top stat cards */}
           <div className="mb-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
@@ -49,7 +78,7 @@ export default function UserDashboard() {
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Balance</div>
-              <div className="mt-2 text-lg font-bold">${stats.balance}</div>
+              <div className="mt-2 text-lg font-bold">₦{stats.balance}</div>
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Reports Found</div>
@@ -76,11 +105,13 @@ export default function UserDashboard() {
                 <div className="text-sm font-semibold text-[#cfe3b1]">Your public link</div>
                 <div className="relative flex items-center w-full">
                   <input 
-                    className="mt-2 w-full rounded-md border border-[#222528] bg-[#0b0d10] px-3 py-3 text-sm text-[#bcd6a6]" 
-                    value={`https://loremipsum@${publicLinkName}`} 
+                    className="mt-2 w-full rounded-md border border-[#222528] bg-[#0b0d10] px-3 py-3 text-sm text-[#bcd6a6] outline-none" 
+                    value={publicLink} 
                     readOnly 
                   />
-                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3"><Link to="/submit-report">Submit Report</Link></button>
+                  <button className="absolute right-0 rounded-md bg-[#97c44a] px-3 py-2 font-semibold text-[#071000] top-3">
+                    <Link to="/submit-report">New Post</Link>
+                  </button>
                 </div>
               </div>
             <p className="mt-3 text-xs text-[#98a1ad]">If you want to change address, go to <span className="text-[#9fc24d]">settings</span> and change your nickname.</p>
@@ -91,21 +122,21 @@ export default function UserDashboard() {
             <div className="rounded-2xl border border-[#15171a] bg-[#0d0f12] p-4">
               <div className="text-xs text-[#9aa4b0]">Total Reports</div>
               <div className="mt-2 flex items-end justify-between">
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">{stats.reportsFound}</div>
                 <div className="h-2 w-24 rounded-full bg-[#24302a]"></div>
               </div>
             </div>
             <div className="rounded-2xl border border-[#15171a] bg-[#0d0f12] p-4">
               <div className="text-xs text-[#9aa4b0]">Active Reports</div>
               <div className="mt-2 flex items-end justify-between">
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">{activeReportsCount}</div>
                 <div className="h-2 w-24 rounded-full bg-[#2b2030]"></div>
               </div>
             </div>
             <div className="rounded-2xl border border-[#15171a] bg-[#0d0f12] p-4">
               <div className="text-xs text-[#9aa4b0]">Resolved Reports</div>
               <div className="mt-2 flex items-end justify-between">
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">{resolvedReportsCount}</div>
                 <div className="h-2 w-24 rounded-full bg-[#24302a]"></div>
               </div>
             </div>
@@ -125,4 +156,4 @@ export default function UserDashboard() {
       </div>
     </div>
   );
-          }
+}

@@ -13,8 +13,9 @@ export default function Navbar() {
     { name: "Programme", href: "#hero" },
     { name: "Highlights", href: "#highlights" },
     { name: "Sponsors", href: "#sponsors" },
-    { name: "Contact", href: "#contact" },
+    // { name: "Contact", href: "#contact" },
     { name: "Leaderboard", to: "/leaderboard" },
+    { name: "Login", to: "/signin" },
     { name: "Registration", to: "/register" },
   ];
 
@@ -23,7 +24,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full fixed top-0 left-0 z-50 shadow-lg">
+    <nav className="fixed w-full! top-0 left-0 z-50 shadow-lg">
       <div
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
         style={{

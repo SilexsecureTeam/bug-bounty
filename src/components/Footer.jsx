@@ -55,7 +55,7 @@ export default function Footer() {
           <div className="flex max-w-md flex-col gap-6">
             <img src={bugBountyLogo} alt="Bug Bounty" className="w-48" />
             <div className="space-y-2 text-sm text-[hsl(84,23%,77%)]">
-              <p>Operation Iron Shield · March 5-6, 2026</p>
+              <p>Operation Iron Shield · March 5, 2026</p>
               <p className="text-[#9ECB32]">Africa's strategic defence innovation arena.</p>
             </div>
           </div>

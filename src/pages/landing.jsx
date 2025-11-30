@@ -14,7 +14,7 @@ import Footer from "../components/Footer";
 import sponsor2 from '../assets/images/sponsor2.png';
 import sponsor3 from '../assets/images/sponsor4.png';
 import sponsor5 from '../assets/images/sponsor5.png';
-import sponsor6 from '../assets/images/sponsor6.png';
+// import sponsor6 from '../assets/images/sponsor6.png';
 import { useReveal } from "../hooks/useReveal";
 // import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
@@ -33,25 +33,17 @@ const sponsors = [
   }, {
     id: 3,
     img: sponsor5
-  },
-  {
-    id: 4,
-    img: sponsor6
   }, {
-    id: 5,
+    id: 4,
     img: sponsor3
   }, 
   {
-    id: 6,
+    id: 5,
     img: sponsor2
   },
   {
-    id: 7,
+    id: 6,
     img: sponsor5
-  },
-  {
-    id: 8,
-    img: sponsor6
   },
   // {
   //   id: 6,
@@ -90,7 +82,7 @@ const agendaItems = [
     time: "Strategy labs · 09:30 – 18:00"
   },
   {
-    label: "March 6, 2025",
+    label: "March 5, 2025",
     title: "Event Day",
     time: "CTF finals · 09:30 – 18:00"
   }
@@ -437,7 +429,7 @@ export default function Landing() {
               </div>
               {/* Shehu Musa Yar'Adua Center · Abuja */}
               <p className="text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
-                March 5-6, 2026 · 
+                March 5, 2026 · 
               </p>
             </div>
 
