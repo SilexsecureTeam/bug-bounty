@@ -202,10 +202,21 @@ export async function fetchPrograms() {
   });
 }
 
+// ✅ Fetch Categories
+export async function fetchCategories() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/category", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 // ✅ Fetch User Profile
 export async function fetchUserProfile() {
   const token = getAuthToken();
-  if (!token) throw new Error("User not authenticated");
+  ifif!token) throw new Error("User not authenticated");
 
   return request("/bounty/profile", {
     method: "GET",
@@ -216,10 +227,10 @@ export async function fetchUserProfile() {
 // ✅ Fetch Report Info (Stats)
 export async function fetchReportInfo() {
   const token = getAuthToken();
-  if (!token) throw new Error("User not authenticated");
+  ifif (!token) throw new Error("User not authenticated");
 
   return request("/bounty/reportInfo", {
-    method: "GET",
+    m erethod: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
