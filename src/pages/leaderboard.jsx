@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PortalHeader from "../components/PortalHeader";
 import { fetchLeaderboard } from "../api";
@@ -70,39 +70,66 @@ export default function Leaderboard() {
   const navigate = useNavigate();
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const refreshIntervalRef = useRef(null);
+
+  // Fetch function separated for re-use
+  const fetchData = async () => {
+    try {
+      // Only set loading true on initial fetch, not on background refresh
+      if (leaderboardData.length === 0) setLoading(true);
+      
+      const response = await fetchLeaderboard();
+      
+      const records = Array.isArray(response) ? response : (response.data || []);
+
+      const formattedData = records
+        .map((item) => ({
+          rank: item.no,
+          handle: `@${item.username || 'user'}`,
+          name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Anonymous',
+          points: item.total_points || 0,
+          bugsFound: item.total_reports || 0,
+          reward: item.total_amount ? `₦${Number(item.total_amount).toLocaleString()}` : "₦0"
+        }))
+        .sort((a, b) => a.rank - b.rank);
+
+      setLeaderboardData(formattedData);
+    } catch (error) {
+      console.error("Failed to fetch leaderboard:", error);
+      // Don't toast on every background refresh failure to avoid spam
+      if (leaderboardData.length === 0) {
+        toast.error("Unable to load leaderboard data");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchLeaderboard();
-        
-        // Handle different response structures gracefully
-        const records = Array.isArray(response) ? response : (response.data || []);
+    fetchData();
 
-        const formattedData = records
-          .map((item) => ({
-            rank: item.no,
-            handle: `@${item.username || 'user'}`,
-            name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Anonymous',
-            points: item.total_points || 0,
-            bugsFound: item.total_reports || 0,
-            reward: item.total_amount ? `₦${Number(item.total_amount).toLocaleString()}` : "₦0"
-          }))
-          // ✅ Explicitly sort by rank ascending (1, 2, 3...)
-          .sort((a, b) => a.rank - b.rank);
+    // Auto-refresh every 30 seconds
+    refreshIntervalRef.current = setInterval(fetchData, 30000);
 
-        setLeaderboardData(formattedData);
-      } catch (error) {
-        console.error("Failed to fetch leaderboard:", error);
-        toast.error("Unable to load leaderboard data");
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
     };
-
-    getData();
   }, []);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(leaderboardData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = leaderboardData.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
 
   return (
     <div className="min-h-screen bg-[#04070F] text-white">
@@ -129,7 +156,7 @@ export default function Leaderboard() {
                 >
                   Submit a report
                 </button>
-                <button className="inline-flex items-center gap-3 rounded-full border border-[#26314A] bg-[#11172A] px-5 py-3 text-sm font-semibold text-[#E4E9F2]">
+                <button className="inline-flex items-center gap-3 rounded-full border border-[#26314A] bg-[#11172A] px-5 py-3 text-sm font-semibold text-[#E4E9F6]">
                   Year 2025
                   <ChevronDownIcon />
                 </button>
@@ -150,10 +177,10 @@ export default function Leaderboard() {
             <div className="divide-y divide-[#141C2F]/80">
               {loading ? (
                 <div className="py-20 text-center text-[#8E97B2]">Loading leaderboard...</div>
-              ) : leaderboardData.length === 0 ? (
+              ) : currentData.length === 0 ? (
                 <div className="py-20 text-center text-[#8E97B2]">No records found.</div>
               ) : (
-                leaderboardData.map((row) => (
+                currentData.map((row) => (
                   <article
                     key={row.rank}
                     className="grid grid-cols-12 items-center px-6 py-6 transition-colors duration-150 hover:bg-[#111A2C]/60"
@@ -187,6 +214,31 @@ export default function Leaderboard() {
                 ))
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {!loading && leaderboardData.length > 0 && (
+              <div className="flex items-center justify-between border-t border-[#141C2F] px-6 py-4">
+                <div className="text-xs text-[#697394]">
+                  Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, leaderboardData.length)} of {leaderboardData.length}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    className={`rounded-lg border border-[#26314A] px-4 py-2 text-xs font-medium text-[#E4E9F6] transition-colors ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-[#111722]"}`}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`rounded-lg border border-[#26314A] px-4 py-2 text-xs font-medium text-[#E4E9F6] transition-colors ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-[#111722]"}`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </div>

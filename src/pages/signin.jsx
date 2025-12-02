@@ -1,9 +1,9 @@
-// File: silexsecureteam/bug-bounty/bug-bounty-86d2703b9fd03cf2ec01b67e3ba89360fd29ceed/src/pages/signin.jsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
 import { loginUser } from "../api";
+import { getAuthToken, getUser, clearAuthToken } from "../hooks/useAuthToken";
 
 const inputClasses =
   "w-full rounded-xl border border-white/12 bg-[#0A0D13] px-4 py-3.5 text-sm text-[#E8EAF2] placeholder:text-[#6A7283] focus:border-[#A1B84D] focus:outline-none focus:ring-0";
@@ -18,10 +18,20 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showVerifyButton, setShowVerifyButton] = useState(false);
-  // Store successful login response to allow continuing past the restriction
-  const [pendingLoginData, setPendingLoginData] = useState(null);
+
+  // Logged in user state
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   useEffect(() => {
+    // Check if user is already logged in
+    const token = getAuthToken();
+    const user = getUser();
+    
+    if (token && user) {
+      setLoggedInUser(user);
+    }
+
+    // Pre-fill email if remember me was used
     const savedEmail = window.localStorage.getItem("defcommRememberEmail");
     if (savedEmail) {
       setFormValues((previous) => ({
@@ -40,7 +50,13 @@ export default function SignIn() {
     }));
   };
 
-  // Helper to process success logic (storage + navigation)
+  // Handle "Login to another account"
+  const handleLogoutAndContinue = () => {
+    clearAuthToken();
+    setLoggedInUser(null);
+    toast("Logged out. Please sign in to your other account.", { icon: "👋" });
+  };
+
   const processLoginSuccess = (responseData, rawResponse) => {
     if (formValues.remember) {
       window.localStorage.setItem("defcommRememberEmail", formValues.userlogin);
@@ -81,7 +97,6 @@ export default function SignIn() {
         userlogin: formValues.userlogin,
         email: emailFromResponse,
         phone: phoneFromResponse,
-        // login flow -> verify via loginVerify by default (no flag)
       },
     });
   };
@@ -90,7 +105,6 @@ export default function SignIn() {
     event.preventDefault();
     setError(null);
     setShowVerifyButton(false);
-    setPendingLoginData(null);
 
     if (!formValues.userlogin || !formValues.password) {
       const message = "Please enter your username or email and password.";
@@ -108,24 +122,8 @@ export default function SignIn() {
       });
 
       const responseData = response?.data ?? response ?? {};
-      const status = responseData?.status ?? "200";
-
-      // ----------------- TEMPORARY ACCESS RESTRICTION -----------------
-      // Only show if login is successful (status 200)
-      if (status === "200") {
-        const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon.";
-        
-        toast.error(restrictedMsg);
-        setError(restrictedMsg);
-        
-        // Store the data so user can continue if they click the button
-        setPendingLoginData({ responseData, rawResponse: response });
-        
-        setLoading(false);
-        return; 
-      }
-
-      // If for some reason status isn't 200 but successful (or if we remove the block above later)
+      
+      // Removed Access Restriction Check - Proceed directly
       processLoginSuccess(responseData, response);
 
     } catch (apiError) {
@@ -146,7 +144,6 @@ export default function SignIn() {
 
   const handleVerifyRedirect = () => {
     if (formValues.userlogin) {
-      // mark that the OTP page is for account verification
       window.localStorage.setItem("defcommOtpUserLogin", formValues.userlogin);
       navigate("/otp", {
         replace: true,
@@ -157,11 +154,45 @@ export default function SignIn() {
     }
   };
 
-  const handleRestrictedContinue = () => {
-    if (pendingLoginData) {
-      processLoginSuccess(pendingLoginData.responseData, pendingLoginData.rawResponse);
-    }
-  };
+  // If user is already logged in, show the switch account UI
+  if (loggedInUser) {
+    return (
+      <AuthLayout
+        title="Welcome Back"
+        infoText="You are currently logged in."
+        activeTab="Create a User Account"
+      >
+        <div className="flex flex-col gap-6 text-center items-center justify-center py-10">
+          <div className="h-20 w-20 rounded-full bg-[#1A2334] flex items-center justify-center text-2xl font-bold text-[#DDE4F7] mb-2 border border-[#2A303C]">
+            {loggedInUser.firstName?.[0]}{loggedInUser.lastName?.[0]}
+          </div>
+          
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-white">
+              {loggedInUser.firstName} {loggedInUser.lastName}
+            </h3>
+            <p className="text-sm text-[#8F96A7]">@{loggedInUser.username}</p>
+          </div>
+
+          <div className="flex flex-col gap-3 w-full max-w-xs mt-4">
+            <Link
+              to="/dashboard"
+              className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_20px_40px_rgba(67,104,18,0.3)] transition-transform duration-150 hover:-translate-y-0.5"
+            >
+              Go to Dashboard
+            </Link>
+
+            <button
+              onClick={handleLogoutAndContinue}
+              className="w-full rounded-full border border-[#3D4330] bg-transparent px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#B4BC92] transition-colors duration-150 hover:border-[#607046] hover:text-white hover:bg-[#1A1D21]"
+            >
+              Login to another account
+            </button>
+          </div>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
@@ -177,7 +208,6 @@ export default function SignIn() {
           <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8] whitespace-pre-wrap">
             {error}
             
-            {/* Show "Verify Account" if the error was about verification */}
             {showVerifyButton && (
               <button
                 type="button"
@@ -187,21 +217,9 @@ export default function SignIn() {
                 Verify Account
               </button>
             )}
-
-            {/* Show "Continue" if we are in the Restricted Access state but login was valid */}
-            {pendingLoginData && (
-              <button
-                type="button"
-                onClick={handleRestrictedContinue}
-                className="mt-3 w-full rounded-full border border-[#9DB347] bg-transparent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB347] hover:bg-[#9DB347] hover:text-black transition-colors"
-              >
-                Continue Anyway
-              </button>
-            )}
           </div>
         )}
 
-        {/* Username / Email */}
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
           <span>
             Username or Email <span className="text-[#C77661]">*</span>
@@ -216,7 +234,6 @@ export default function SignIn() {
           />
         </label>
 
-        {/* Password */}
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
           <span>
             Password <span className="text-[#C77661]">*</span>

@@ -33,11 +33,11 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
-            to="/"
+            to="/dashboard"
             className="group flex items-center justify-center gap-2 rounded-full bg-[#9FC24D] px-8 py-3 text-sm font-bold text-[#0B0F05] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(159,194,77,0.2)]"
           >
             <ArrowLeft size={18} className="transition-transform duration-200 group-hover:-translate-x-1" />
-            Back to Home
+            Back to Dashboard
           </Link>
           
           <Link
