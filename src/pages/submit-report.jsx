@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -70,6 +71,8 @@ export default function SubmitReport() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
   
   // Data for sidebar logs
   const [reportLogs, setReportLogs] = useState([]);
@@ -292,6 +295,11 @@ export default function SubmitReport() {
       return;
     }
 
+    if (formData.attachments.length < 1) {
+      toast.error("Please attach a file");
+      return;
+    }
+
     setLoading(true);
 
     const payload = new FormData();
@@ -317,6 +325,7 @@ export default function SubmitReport() {
     try {
       await submitReport(payload);
       toast.success("Report submitted successfully!");
+      navigate('/reports')
       
       const logData = await fetchReportLogs();
       if(logData?.data) setReportLogs(logData.data);
@@ -656,6 +665,7 @@ export default function SubmitReport() {
                       ref={fileInputRef}
                       className="hidden"
                       onChange={handleFileChange}
+                      // required
                       multiple
                       accept="image/*,video/*,.pdf,.txt"
                     />

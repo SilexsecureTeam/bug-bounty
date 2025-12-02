@@ -108,7 +108,7 @@ export default function Leaderboard() {
     <div className="min-h-screen bg-[#04070F] text-white">
       <PortalHeader activeLabel="Leaderboard" />
       
-      <div className="py-20 px-4 lg:px-0">
+      <div className="py-8 px-4 lg:px-0">
         <div className="max-w-6xl mx-auto space-y-8">
           <header className={`flex flex-col gap-6 rounded-3xl border border-[#1C2538]/80 ${baseCardGradient} p-8 shadow-[0_30px_90px_rgba(4,7,15,0.55)] backdrop-blur-md`}
             style={{ boxShadow: "0 30px 90px rgba(5, 9, 20, 0.55)", borderImage: "linear-gradient(145deg, rgba(41,55,84,0.7), rgba(23,31,52,0.3)) 1" }}>
