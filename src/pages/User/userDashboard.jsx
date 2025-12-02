@@ -48,9 +48,9 @@ export default function UserDashboard() {
     : 0;
 
   const stats = {
-    rank: "N/A", // Not in API yet
+    rank: reportStats?.rank || "N/A",
     reputation: reportStats?.reportpoint ? Number(reportStats.reportpoint).toLocaleString() : 0,
-    balance: reportStats?.reportamount ? Number(reportStats.reportamount).toLocaleString() : "0.00",
+    balance: reportStats?.balance ? Number(reportStats.reportamount).toLocaleString() : "0.00",
     reportsFound: reportStats?.report || 0,
   };
 
@@ -70,7 +70,7 @@ export default function UserDashboard() {
           <div className="mb-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Your rank</div>
-              <div className="mt-2 text-lg font-bold">{stats.rank}</div>
+              <div className="mt-2 text-lg font-bold">{stats.rank}{profile.rank}</div>
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Reputation</div>
@@ -78,7 +78,7 @@ export default function UserDashboard() {
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Balance</div>
-              <div className="mt-2 text-lg font-bold">₦{stats.balance}</div>
+              <div className="mt-2 text-lg font-bold">₦{stats.balance} {profile.balance} </div>
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Reports Found</div>
