@@ -4,10 +4,10 @@ export default function ReportStatusTabs({ activeTab, onTabChange, counts }) {
   const statuses = [
     { label: "All", color: "", key: "all" },
     { label: "New", color: "bg-red-700", key: "new" },
-    { label: "Under review", color: "bg-yellow-700", key: "under review" },
+    { label: "Under review", color: "bg-yellow-700", key: "review" },
     { label: "Need more info", color: "bg-yellow-600", key: "need info" },
     { label: "Accepted", color: "bg-green-600", key: "accepted" },
-    { label: "Fix Verification", color: "bg-blue-700", key: "fix verification" },
+    { label: "Fix Verification", color: "bg-blue-700", key: "fix" },
     { label: "Closed", color: "bg-gray-600", key: "closed" },
   ];
 

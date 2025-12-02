@@ -202,6 +202,17 @@ export async function fetchPrograms() {
   });
 }
 
+// ✅ Fetch Categories
+export async function fetchCategories() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/category", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 // ✅ Fetch User Profile
 export async function fetchUserProfile() {
   const token = getAuthToken();
@@ -242,7 +253,7 @@ export async function submitReport(formData) {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
-    skipContentType: true,
+    skipContentType: true, // Required for FormData to set boundary automatically
   });
 }
 

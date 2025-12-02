@@ -15,6 +15,7 @@ import sponsor2 from '../assets/images/sponsor2.png';
 import sponsor3 from '../assets/images/sponsor4.png';
 import sponsor5 from '../assets/images/sponsor5.png';
 // import sponsor6 from '../assets/images/sponsor6.png';
+import sponsor7 from '../assets/images/sponsor7.png';
 import { useReveal } from "../hooks/useReveal";
 // import facebook from '../assets/images/facebook.svg';
 import linkedIn from '../assets/images/linkedIn.svg';
@@ -35,20 +36,24 @@ const sponsors = [
     img: sponsor5
   }, {
     id: 4,
-    img: sponsor3
+    img: sponsor7
   }, 
   {
     id: 5,
+    img: sponsor3
+  },
+  {
+    id: 6,
     img: sponsor2
   },
   {
     id: 6,
     img: sponsor5
   },
-  // {
-  //   id: 6,
-  //   img: sponsor2
-  // },
+  {
+    id: 6,
+    img: sponsor7
+  },
 ]
 const socialLinks = [
   { label: "Twitter", href: "https://x.com/defcomms?s=21" },

@@ -52,8 +52,9 @@ export default function ReportFilters({
       >
         <option value="">Status</option>
         <option value="new">New</option>
-        <option value="under review">Under review</option>
+        <option value="review">Under review</option>
         <option value="accepted">Accepted</option>
+        <option value="fix">Fix Verification</option>
         <option value="closed">Closed</option>
       </select>
 
