@@ -68,9 +68,9 @@ export default function ReportTable({ reports }) {
               </td>
 
               <td className="px-4 py-2 whitespace-nowrap">{r.title}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.program}</td>
-              <td className="px-4 py-2 whitespace-nowrap">${r.amount}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.point}</td>
+              <td className="px-4 py-2 whitespace-nowrap">{r.program || 'N/A'}</td>
+              <td className="px-4 py-2 whitespace-nowrap">${r.amount || 'N/A'}</td>
+              <td className="px-4 py-2 whitespace-nowrap">{r.point || 'N/A'}</td>
               <td className="px-4 py-2 whitespace-nowrap capitalize">
                 {r.status}
               </td>
