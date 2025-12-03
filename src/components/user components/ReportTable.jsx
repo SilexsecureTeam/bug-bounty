@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 export default function ReportTable({ reports }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const navigate = useNavigate();
 
   // Calculate pagination
   const totalReports = reports.length;
@@ -18,15 +21,25 @@ export default function ReportTable({ reports }) {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  // Helper to truncate long IDs
   const truncateId = (id) => {
     if (!id) return "";
     const str = String(id);
-    // Show first 18 characters then ... if longer
     if (str.length > 18) {
       return `${str.substring(0, 18)}...`;
     }
     return str;
+  };
+
+  const handleEdit = (report) => {
+    // Only allow editing if not in a closed/final state
+    const forbiddenStatuses = ["closed", "resolved", "rejected"];
+    if (forbiddenStatuses.includes(report.status?.toLowerCase())) {
+        toast.error("This report cannot be edited.");
+        return;
+    }
+    
+    // Navigate to submit-report with the report data
+    navigate("/submit-report", { state: { reportToEdit: report } });
   };
 
   return (
@@ -42,6 +55,7 @@ export default function ReportTable({ reports }) {
             <th className="px-4 py-3 text-left">REWARDS</th>
             <th className="px-4 py-3 text-left">CVSS</th>
             <th className="px-4 py-3 text-left">STATUS</th>
+            <th className="px-4 py-3 text-center">ACTION</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[#1b1f24]">
@@ -49,17 +63,28 @@ export default function ReportTable({ reports }) {
             <tr key={i} className="text-[#c6d0c0] hover:bg-[#0f1418]">
               <td className="px-4 py-4 whitespace-nowrap">{r.date}</td>
               
-              {/* Truncated ID with tooltip for full value */}
               <td className="px-4 py-2 whitespace-nowrap font-mono text-xs text-[#a3c64d]" title={r.id}>
                 {truncateId(r.id)}
               </td>
 
               <td className="px-4 py-2 whitespace-nowrap">{r.title}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.program === null ? 'N/A' : r.program}</td>
-              <td className="px-4 py-2 whitespace-nowrap">${r.amount || 'N/A'}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.point || "N/A"}</td>
+              <td className="px-4 py-2 whitespace-nowrap">{r.program}</td>
+              <td className="px-4 py-2 whitespace-nowrap">${r.reward}</td>
+              <td className="px-4 py-2 whitespace-nowrap">{r.cvss}</td>
               <td className="px-4 py-2 whitespace-nowrap capitalize">
                 {r.status}
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-center">
+                {!["closed", "resolved", "rejected"].includes(r.status?.toLowerCase()) ? (
+                    <button 
+                        onClick={() => handleEdit(r)}
+                        className="text-xs font-semibold text-[#a3c64d] hover:text-[#bce06b] border border-[#a3c64d] rounded px-3 py-1 transition-colors"
+                    >
+                        Edit
+                    </button>
+                ) : (
+                    <span className="text-xs text-gray-600">-</span>
+                )}
               </td>
             </tr>
           ))}
