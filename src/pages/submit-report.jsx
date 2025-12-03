@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom"; // Import routing hooks
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
-import { fetchPrograms, fetchCategories, submitReport, fetchReportLogs } from "../api";
+import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api"; // Added updateReport
 import { getUser } from "../hooks/useAuthToken";
 
 // --- Constants ---
@@ -67,12 +67,13 @@ const getCategoryIcon = (label) => {
 };
 
 export default function SubmitReport() {
+  const location = useLocation(); // Get router location for state
+  const navigate = useNavigate();
+  
   const [programs, setPrograms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-
-  const navigate = useNavigate();
   
   // Data for sidebar logs
   const [reportLogs, setReportLogs] = useState([]);
@@ -80,6 +81,7 @@ export default function SubmitReport() {
 
   // Selection States
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [editingReportId, setEditingReportId] = useState(null); // Track if editing
 
   const fileInputRef = useRef(null);
   const autosaveRef = useRef(null);
@@ -119,12 +121,58 @@ export default function SubmitReport() {
       }
 
       try {
+        const logData = await fetchReportLogs();
+        if (logData?.data) {
+          setReportLogs(logData.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch report logs", error);
+      }
+
+      // Fetch categories AND THEN check for edit mode
+      try {
         const catData = await fetchCategories();
         if (catData.status === "200" && Array.isArray(catData.data)) {
           setCategories(catData.data);
           
-          // Set default main category if available and none selected
-          if (catData.data.length > 0 && !formData.main_category_id) {
+          // --- EDIT MODE LOGIC ---
+          const reportToEdit = location.state?.reportToEdit;
+          if (reportToEdit) {
+             console.log("Editing Report:", reportToEdit);
+             setEditingReportId(reportToEdit.id);
+             
+             // Match Category Labels to IDs
+             let matchedMainId = "";
+             let matchedSubId = "";
+
+             // Find Main Category ID by label
+             const mainCat = catData.data.find(c => 
+                c.label.toLowerCase() === reportToEdit.category?.toLowerCase()
+             );
+             if (mainCat) {
+                 matchedMainId = mainCat.id;
+                 
+                 // Find Sub Category ID by label within the matched main category
+                 const subCat = mainCat.sub?.find(s => 
+                    s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase()
+                 );
+                 if (subCat) matchedSubId = subCat.id;
+             }
+
+             setFormData({
+                 program_id: reportToEdit.program || DEFAULT_PROGRAM_ID,
+                 title: reportToEdit.title,
+                 main_category_id: matchedMainId,
+                 sub_category_id: matchedSubId,
+                 severity: reportToEdit.severity?.toLowerCase() || "low",
+                 detail: reportToEdit.detail,
+                 attachments: [] // Attachments are not pre-filled for security/technical reasons
+             });
+             
+             toast("Editing report: " + reportToEdit.title, { icon: "✏️" });
+          } 
+          // --- DEFAULT MODE ---
+          else if (catData.data.length > 0 && !formData.main_category_id) {
              setFormData(prev => ({
                  ...prev,
                  main_category_id: catData.data[0].id
@@ -133,15 +181,6 @@ export default function SubmitReport() {
         }
       } catch (error) {
         console.error("Failed to fetch categories", error);
-      }
-
-      try {
-        const logData = await fetchReportLogs();
-        if (logData?.data) {
-          setReportLogs(logData.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch report logs", error);
       }
     };
 
@@ -155,28 +194,32 @@ export default function SubmitReport() {
       setDrafts([]);
     }
 
-    // Check for Autosave
-    const saved = localStorage.getItem(DRAFT_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed && parsed.title) {
-           setFormData(prev => ({
-             ...prev,
-             ...parsed,
-             attachments: [] // Attachments cannot be restored
-           }));
-           setLastAutosave(new Date().toISOString());
-           toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+    // Check for Autosave (Only if NOT editing an existing report)
+    if (!location.state?.reportToEdit) {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed && parsed.title) {
+               setFormData(prev => ({
+                 ...prev,
+                 ...parsed,
+                 attachments: [] // Attachments cannot be restored
+               }));
+               setLastAutosave(new Date().toISOString());
+               toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+            }
+          } catch (e) {
+            console.error("Failed to load draft", e);
+          }
         }
-      } catch (e) {
-        console.error("Failed to load draft", e);
-      }
     }
-  }, []);
+  }, [location.state]); // Re-run if location state changes
 
-  // Autosave Logic
+  // Autosave Logic (Disabled in edit mode to prevent overwriting new report drafts)
   useEffect(() => {
+    if (editingReportId) return; 
+    
     if (autosaveRef.current) clearTimeout(autosaveRef.current);
     
     autosaveRef.current = setTimeout(() => {
@@ -196,7 +239,7 @@ export default function SubmitReport() {
     }, 3000);
 
     return () => clearTimeout(autosaveRef.current);
-  }, [formData]);
+  }, [formData, editingReportId]);
 
 
   // --- Handlers ---
@@ -242,11 +285,18 @@ export default function SubmitReport() {
       detail: REPORT_TEMPLATE,
       attachments: []
     });
+    setEditingReportId(null); // Clear edit mode
+    // Clear location state without reload
+    window.history.replaceState({}, document.title);
     localStorage.removeItem(DRAFT_KEY);
     toast.success("Form reset for new post");
   };
 
   const saveNamedDraft = () => {
+    if (editingReportId) {
+        toast.error("Cannot save drafts while editing an existing report.");
+        return;
+    }
     if (!formData.title) {
       toast.error("Please enter a title to save a draft");
       return;
@@ -272,6 +322,7 @@ export default function SubmitReport() {
       ...draft.data,
       attachments: []
     });
+    setEditingReportId(null); // Ensure we leave edit mode if loading a draft
     toast.success(`Loaded draft: ${draft.name}`);
   };
 
@@ -292,11 +343,6 @@ export default function SubmitReport() {
     
     if (hasSubCategories && !formData.sub_category_id) {
       toast.error("Please select a specific Affected Area (Sub-category)");
-      return;
-    }
-
-    if (formData.attachments.length < 1) {
-      toast.error("Please attach a file");
       return;
     }
 
@@ -323,9 +369,17 @@ export default function SubmitReport() {
     });
 
     try {
-      await submitReport(payload);
-      toast.success("Report submitted successfully!");
-      navigate('/reports')
+      if (editingReportId) {
+          // Add ID for update endpoint
+          payload.append("id", editingReportId);
+          await updateReport(payload);
+          toast.success("Report updated successfully!");
+          // After update, maybe navigate back or just reset? 
+          // Resetting for now to allow new submissions
+      } else {
+          await submitReport(payload);
+          toast.success("Report submitted successfully!");
+      }
       
       const logData = await fetchReportLogs();
       if(logData?.data) setReportLogs(logData.data);
@@ -344,9 +398,9 @@ export default function SubmitReport() {
   const filteredLogs = reportLogs.filter(log => {
     const status = log.status?.toLowerCase() || "";
     if (activeQueueTab === "Open") {
-      return ["new", "review", "accepted", "triaged", "fix"].includes(status);
+      return ["new", "under review", "accepted", "triaged"].includes(status);
     } else {
-      return ["closed", "resolved", "rejected"].includes(status); 
+      return ["closed", "resolved", "rejected"].includes(status);
     }
   });
   
@@ -418,13 +472,15 @@ export default function SubmitReport() {
         <aside className="hidden md:w-[330px] shrink-0 flex-col rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-6 text-sm text-[#C5CBD8] shadow-[0_25px_70px_rgba(5,8,15,0.55)] lg:flex">
           <div className="flex items-center justify-between text-xs font-semibold tracking-[0.32em] text-[#E4E9F6]">
             <span>Security Research</span>
-            <button
-              type="button"
-              className="rounded-full bg-[#97C94F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
-              onClick={saveNamedDraft}
-            >
-              Save Draft
-            </button>
+            {!editingReportId && (
+                <button
+                type="button"
+                className="rounded-full bg-[#97C94F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
+                onClick={saveNamedDraft}
+                >
+                Save Draft
+                </button>
+            )}
           </div>
 
           <div className="mt-5">
@@ -534,7 +590,9 @@ export default function SubmitReport() {
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="flex-1">
                 <div className="flex flex-col gap-3">
-                  <h2 className="text-2xl font-semibold text-white">Report a Vulnerability</h2>
+                  <h2 className="text-2xl font-semibold text-white">
+                    {editingReportId ? "Edit Vulnerability Report" : "Report a Vulnerability"}
+                  </h2>
                   <div className="space-y-4 mt-2 text-[#BFC6D6] leading-relaxed">
                     <p>
                       To report a vulnerability in the bug bounty program, ensure you verify the bug, gather clear evidence, reproduce the issue, document step-by-step instructions, attach evidence (screenshots / PoC / video), provide affected endpoints, explain impact, and include recommended remediation where possible.
@@ -665,7 +723,6 @@ export default function SubmitReport() {
                       ref={fileInputRef}
                       className="hidden"
                       onChange={handleFileChange}
-                      // required
                       multiple
                       accept="image/*,video/*,.pdf,.txt"
                     />
@@ -732,16 +789,18 @@ export default function SubmitReport() {
                     disabled={loading}
                     className="mt-2 w-full rounded-full bg-linear-to-r from-[#3F4E17] via-[#6F8C27] to-[#A4C94F] px-6 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[#0B0F05] shadow-[0_25px_55px_rgba(61,113,16,0.45)] transition-transform duration-150 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {loading ? "Submitting..." : "Submit Report"}
+                    {loading ? (editingReportId ? "Updating..." : "Submitting...") : (editingReportId ? "Update Report" : "Submit Report")}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={saveNamedDraft}
-                    className="mt-2 w-full rounded-full border border-[#2A3141] px-6 py-3 text-sm font-semibold text-[#E4E9F6] hover:bg-[#0F1620]"
-                  >
-                    Save Draft
-                  </button>
+                  {!editingReportId && (
+                    <button
+                        type="button"
+                        onClick={saveNamedDraft}
+                        className="mt-2 w-full rounded-full border border-[#2A3141] px-6 py-3 text-sm font-semibold text-[#E4E9F6] hover:bg-[#0F1620]"
+                    >
+                        Save Draft
+                    </button>
+                  )}
                 </div>
               </div>
             </form>
@@ -765,4 +824,4 @@ export default function SubmitReport() {
       `}</style>
     </div>
   );
-}
+        }
