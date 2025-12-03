@@ -69,8 +69,8 @@ export default function ReportTable({ reports }) {
 
               <td className="px-4 py-2 whitespace-nowrap">{r.title}</td>
               <td className="px-4 py-2 whitespace-nowrap">{r.program}</td>
-              <td className="px-4 py-2 whitespace-nowrap">${r.reward}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{r.cvss}</td>
+              <td className="px-4 py-2 whitespace-nowrap">${r.amount}</td>
+              <td className="px-4 py-2 whitespace-nowrap">{r.point}</td>
               <td className="px-4 py-2 whitespace-nowrap capitalize">
                 {r.status}
               </td>
