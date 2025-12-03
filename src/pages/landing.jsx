@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import bugBounty from "../assets/images/bug bounty logo 4.png";
 import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
@@ -27,32 +28,40 @@ import { FaXTwitter } from "react-icons/fa6";
 const sponsors = [
   {
     id: 1,
-    img: sponsor3
+    img: sponsor3,
+    link: '#'
   }, {
     id: 2,
-    img: sponsor2
+    img: sponsor2,
+    link: '#'
   }, {
     id: 3,
-    img: sponsor5
+    img: sponsor5,
+    link: '#'
   }, {
     id: 4,
-    img: sponsor7
-  }, 
+    img: sponsor7,
+    link: 'https://aipressroom.com'
+  },
   {
     id: 5,
-    img: sponsor3
+    img: sponsor3,
+    link: '#'
   },
   {
     id: 6,
-    img: sponsor2
+    img: sponsor2,
+    link: '#'
   },
   {
-    id: 6,
-    img: sponsor5
+    id: 7,
+    img: sponsor5,
+    link: '#'
   },
   {
-    id: 6,
-    img: sponsor7
+    id: 8,
+    img: sponsor7,
+    link: 'https://aipressroom.com'
   },
 ]
 const socialLinks = [
@@ -228,6 +237,13 @@ export default function Landing() {
 
   return (
     <div className="bg-[#060706] text-white">
+      <Helmet>
+        <title>Defcomm | Africa’s Defense Tech Vision and Bug Bounty Program</title>
+        <meta
+          name="description"
+          content="Defcomm leads Africa’s defense technology vision by accelerating innovation, strengthening cybersecurity, and empowering talented researchers through structured bug bounty challenges and modern defense tech initiatives."
+        />
+      </Helmet>
       <section
         id="hero"
         ref={heroRef}
@@ -345,11 +361,13 @@ export default function Landing() {
           >
             {sponsors.map((spons, index) => (
               <div className="max-h-24">
-                <img
-                  src={spons.img}
-                  alt="Sponsor logos"
-                  className="mx-auto w-full max-w-3xl object-contain grayscale-200 brightness-200"
-                />
+                <a href={spons.link} target="_blank" rel="nonreferrer" className="w-full h-full">
+                  <img
+                    src={spons.img}
+                    alt="Sponsor logos"
+                    className="mx-auto w-full max-w-3xl object-contain grayscale-200 brightness-200"
+                  />
+                </a>
 
               </div>
             ))
@@ -434,7 +452,7 @@ export default function Landing() {
               </div>
               {/* Shehu Musa Yar'Adua Center · Abuja */}
               <p className="text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
-                March 5, 2026 · 
+                March 5, 2026 ·
               </p>
             </div>
 
@@ -494,68 +512,66 @@ export default function Landing() {
               </p>
             </div>
 
-          <div className="py-4">
-  <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
-    {speakerCards.map((card, index) => {
-      const delay = 0.18 + index * 0.06;
+            <div className="py-4">
+              <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
+                {speakerCards.map((card, index) => {
+                  const delay = 0.18 + index * 0.06;
 
-      // Handle text-type cards
-      if (card.type === "text") {
-        const hasName = card.name && card.name.trim() !== "";
+                  // Handle text-type cards
+                  if (card.type === "text") {
+                    const hasName = card.name && card.name.trim() !== "";
 
-        return (
-          <article
-            key={`${card.name || "no-name"}-text-${index}`}
-            className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${
-              speakerCardStyles.text[card.variant ?? "light"]
-            }`}
-            style={{ "--reveal-child-delay": `${delay}s` }}
-          >
-            {hasName ? (
-              <>
-                <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
-                  {card.name}
-                </h3>
-                <p
-                  className={`text-sm sm:text-base leading-relaxed ${
-                    card.variant === "light"
-                      ? "text-[#4A4F58]"
-                      : "text-white/80"
-                  }`}
-                >
-                  {card.role}
-                </p>
-              </>
-            ) : (
-              <div className="flex flex-1 items-center justify-center">
-                <img
-                  src={fallbackImg}
-                  alt="Speaker placeholder"
-                  className="max-h-[70%] max-w-[70%] object-contain opacity-90"
-                />
+                    return (
+                      <article
+                        key={`${card.name || "no-name"}-text-${index}`}
+                        className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.text[card.variant ?? "light"]
+                          }`}
+                        style={{ "--reveal-child-delay": `${delay}s` }}
+                      >
+                        {hasName ? (
+                          <>
+                            <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
+                              {card.name}
+                            </h3>
+                            <p
+                              className={`text-sm sm:text-base leading-relaxed ${card.variant === "light"
+                                ? "text-[#4A4F58]"
+                                : "text-white/80"
+                                }`}
+                            >
+                              {card.role}
+                            </p>
+                          </>
+                        ) : (
+                          <div className="flex flex-1 items-center justify-center">
+                            <img
+                              src={fallbackImg}
+                              alt="Speaker placeholder"
+                              className="max-h-[70%] max-w-[70%] object-contain opacity-90"
+                            />
+                          </div>
+                        )}
+                      </article>
+                    );
+                  }
+
+                  // Handle image-type cards
+                  return (
+                    <article
+                      key={`${card.name || "no-name"}-image-${index}`}
+                      className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
+                      style={{ "--reveal-child-delay": `${delay}s` }}
+                    >
+                      <img
+                        src={card.image || fallbackImg}
+                        alt={card.name || "Speaker"}
+                        className="h-full w-full object-cover"
+                      />
+                    </article>
+                  );
+                })}
               </div>
-            )}
-          </article>
-        );
-      }
-
-      // Handle image-type cards
-      return (
-        <article
-          key={`${card.name || "no-name"}-image-${index}`}
-          className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
-          style={{ "--reveal-child-delay": `${delay}s` }}
-        >
-          <img
-            src={card.image || fallbackImg}
-            alt={card.name || "Speaker"}
-            className="h-full w-full object-cover"
-          />
-        </article>
-      );
-    })}
-  </div>
-</div>
+            </div>
 
 
 
@@ -713,7 +729,7 @@ export default function Landing() {
                           className="reveal-child inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors duration-200 hover:border-[#9ECB32] hover:text-[#9ECB32]"
                           style={{ "--reveal-child-delay": `${0.5 + index * 0.05}s` }}
                         >
-                          { icon ? <img src={icon} alt={label} /> : <FaXTwitter /> }
+                          {icon ? <img src={icon} alt={label} /> : <FaXTwitter />}
                         </a>
                       ))}
                     </div>

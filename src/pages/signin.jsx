@@ -18,6 +18,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showVerifyButton, setShowVerifyButton] = useState(false);
+  const [isRestricted, setIsRestricted] = useState(false);
 
   // Logged in user state
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -105,6 +106,7 @@ export default function SignIn() {
     event.preventDefault();
     setError(null);
     setShowVerifyButton(false);
+    setIsRestricted(false);
 
     if (!formValues.userlogin || !formValues.password) {
       const message = "Please enter your username or email and password.";
@@ -123,12 +125,20 @@ export default function SignIn() {
 
       const responseData = response?.data ?? response ?? {};
       
-      // Removed Access Restriction Check - Proceed directly
+      // Proceed directly to OTP
       processLoginSuccess(responseData, response);
 
     } catch (apiError) {
       const apiMsg = apiError?.message ?? "";
-      if (apiError?.status === "400" || apiMsg.includes("not verify yet")) {
+      
+      // Special check for "blocked" status to show Restricted Access message
+      if (apiMsg.toLowerCase().includes("account is block") || apiError.status === 400) {
+          const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon.";
+          setError(restrictedMsg);
+          setIsRestricted(true);
+          toast.error(restrictedMsg);
+      }
+      else if (apiError?.status === "400" || apiMsg.includes("not verify yet")) {
         setError("Your account is not verified yet.");
         setShowVerifyButton(true);
         toast.error("Account not verified. Please verify your account.");
@@ -220,6 +230,9 @@ export default function SignIn() {
           </div>
         )}
 
+        {/* If restricted, hide inputs to force user to wait or try later (optional UX choice) 
+            For now we keep inputs visible so they can retry if it was a mistake */}
+            
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
           <span>
             Username or Email <span className="text-[#C77661]">*</span>
@@ -231,6 +244,7 @@ export default function SignIn() {
             className={inputClasses}
             value={formValues.userlogin}
             onChange={handleChange}
+            disabled={isRestricted}
           />
         </label>
 
@@ -245,12 +259,13 @@ export default function SignIn() {
             className={inputClasses}
             value={formValues.password}
             onChange={handleChange}
+            disabled={isRestricted}
           />
         </label>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isRestricted}
           className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Signing In..." : "Sign In"}

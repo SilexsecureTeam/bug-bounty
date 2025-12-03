@@ -24,7 +24,7 @@ export default function UserDashboard() {
           fetchReportInfo()
         ]);
 
-        setProfile(profileData?.user || null);
+        setProfile(profileData?.data || null);
         setReportStats(statsData?.data || null);
         
       } catch (error) {
@@ -57,6 +57,7 @@ export default function UserDashboard() {
   const publicLink = profile?.username 
     ? `https://defcomm.ng/${profile.username}` 
     : "Loading...";
+
  const userRank = profile?.rank || stats?.rank
  const userBalance = profile?.balance || stats?.balance
   return (
@@ -75,7 +76,7 @@ export default function UserDashboard() {
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Reputation</div>
-              <div className="mt-2 text-lg font-bold">{stats.reputation}</div>
+              <div className="mt-2 text-lg font-bold">{profile?.point}</div>
             </div>
             <div className="rounded-xl border border-[#1b1f24] bg-[#0c0f12] p-4">
               <div className="text-xs font-semibold text-[#9aa4b0]">Balance</div>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import authImg from "../assets/images/authImg.jpg";
 import DefcommLogo from "../assets/images/Defcomm-04 2.svg";
 import Footer from "./Footer";
@@ -39,6 +40,13 @@ export default function AuthLayout({
 }) {
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#05070B] text-white flex flex-col">
+      <Helmet>
+        <title>Join Defcomm | Register or Log In to Africa’s Defence Tech Program</title>
+        <meta 
+          name="description" 
+          content="Create an account or log in to the Defcomm platform to take part in responsible security research, access innovation challenges, and contribute to Africa’s growing defence technology ecosystem." 
+        />
+      </Helmet>
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-[#090D14] via-[#05070B] to-[#03050A] opacity-95" />
 
       {/* Navbar */}
