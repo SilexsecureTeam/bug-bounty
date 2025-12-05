@@ -257,6 +257,19 @@ export async function submitReport(formData) {
   });
 }
 
+// ✅ Update Report Function
+export async function updateReport(formData) {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/bounty/reportUpdate", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+    skipContentType: true,
+  });
+}
+
 export async function submitGuestEvent(payload) {
   return request("/web/eventform", {
     method: "POST",
