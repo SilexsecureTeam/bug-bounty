@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom"; // Import routing hooks
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -15,11 +15,18 @@ import {
   Server,
   Shield,
   Terminal,
-  Layers
+  Layers,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  List,
+  ListOrdered,
+  Link as LinkIcon
 } from "lucide-react";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
-import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api"; // Added updateReport
+import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api";
 import { getUser } from "../hooks/useAuthToken";
 
 // --- Constants ---
@@ -67,9 +74,13 @@ const getCategoryIcon = (label) => {
 };
 
 export default function SubmitReport() {
-  const location = useLocation(); // Get router location for state
+  const location = useLocation();
   const navigate = useNavigate();
   
+  // Determine if we are editing
+  const reportToEdit = location.state?.reportToEdit;
+  const [editingReportId, setEditingReportId] = useState(null);
+
   const [programs, setPrograms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,7 +92,6 @@ export default function SubmitReport() {
 
   // Selection States
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [editingReportId, setEditingReportId] = useState(null); // Track if editing
 
   const fileInputRef = useRef(null);
   const autosaveRef = useRef(null);
@@ -90,11 +100,12 @@ export default function SubmitReport() {
   const [formData, setFormData] = useState({
     program_id: "",
     title: "",
-    main_category_id: "", // This maps to API category id
-    sub_category_id: "",  // This maps to API sub-category id
+    main_category_id: "", 
+    sub_category_id: "",  
     severity: "low",
     detail: REPORT_TEMPLATE,
-    attachments: [] // Array of File objects
+    attachments: [], // Array of File objects (new uploads)
+    existingAttachments: [] // Array of URLs (for edit mode)
   });
 
   // UI State
@@ -120,6 +131,17 @@ export default function SubmitReport() {
         console.error("Failed to fetch programs", error);
       }
 
+      let cats = [];
+      try {
+        const catData = await fetchCategories();
+        if (catData.status === "200" && Array.isArray(catData.data)) {
+          setCategories(catData.data);
+          cats = catData.data;
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+
       try {
         const logData = await fetchReportLogs();
         if (logData?.data) {
@@ -129,97 +151,77 @@ export default function SubmitReport() {
         console.error("Failed to fetch report logs", error);
       }
 
-      // Fetch categories AND THEN check for edit mode
-      try {
-        const catData = await fetchCategories();
-        if (catData.status === "200" && Array.isArray(catData.data)) {
-          setCategories(catData.data);
+      // If Editing, Pre-fill form
+      if (reportToEdit) {
+          setEditingReportId(reportToEdit.id);
           
-          // --- EDIT MODE LOGIC ---
-          const reportToEdit = location.state?.reportToEdit;
-          if (reportToEdit) {
-             console.log("Editing Report:", reportToEdit);
-             setEditingReportId(reportToEdit.id);
-             
-             // Match Category Labels to IDs
-             let matchedMainId = "";
-             let matchedSubId = "";
+          const foundMain = cats.find(c => c.label.toLowerCase() === reportToEdit.category?.toLowerCase());
+          
+          let foundSubId = "";
+          if (foundMain && reportToEdit.category_sub) {
+              const foundSub = foundMain.sub?.find(s => s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase());
+              if (foundSub) foundSubId = foundSub.id;
+          }
 
-             // Find Main Category ID by label
-             const mainCat = catData.data.find(c => 
-                c.label.toLowerCase() === reportToEdit.category?.toLowerCase()
-             );
-             if (mainCat) {
-                 matchedMainId = mainCat.id;
-                 
-                 // Find Sub Category ID by label within the matched main category
-                 const subCat = mainCat.sub?.find(s => 
-                    s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase()
-                 );
-                 if (subCat) matchedSubId = subCat.id;
-             }
-
-             setFormData({
-                 program_id: reportToEdit.program || DEFAULT_PROGRAM_ID,
-                 title: reportToEdit.title,
-                 main_category_id: matchedMainId,
-                 sub_category_id: matchedSubId,
-                 severity: reportToEdit.severity?.toLowerCase() || "low",
-                 detail: reportToEdit.detail,
-                 attachments: [] // Attachments are not pre-filled for security/technical reasons
-             });
-             
-             toast("Editing report: " + reportToEdit.title, { icon: "✏️" });
-          } 
-          // --- DEFAULT MODE ---
-          else if (catData.data.length > 0 && !formData.main_category_id) {
+          setFormData(prev => ({
+              ...prev,
+              program_id: reportToEdit.program || "", 
+              title: reportToEdit.title,
+              main_category_id: foundMain ? foundMain.id : "",
+              sub_category_id: foundSubId,
+              severity: reportToEdit.severity?.toLowerCase() || "low",
+              detail: reportToEdit.detail || REPORT_TEMPLATE,
+              existingAttachments: reportToEdit.attachment || []
+          }));
+          toast("Editing Report #" + (reportToEdit.ref || ""), { icon: "✏️" });
+      } else {
+         // Set default main category only if creating new
+         if (cats.length > 0 && !formData.main_category_id) {
              setFormData(prev => ({
                  ...prev,
-                 main_category_id: catData.data[0].id
+                 main_category_id: cats[0].id
              }));
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
+         }
       }
+
     };
 
     initData();
 
-    // Load Named Drafts List
-    try {
-      const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
-    } catch {
-      setDrafts([]);
-    }
+    // Load Named Drafts List (Only if not editing)
+    if (!reportToEdit) {
+        try {
+        const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
+        setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
+        } catch {
+        setDrafts([]);
+        }
 
-    // Check for Autosave (Only if NOT editing an existing report)
-    if (!location.state?.reportToEdit) {
+        // Check for Autosave
         const saved = localStorage.getItem(DRAFT_KEY);
         if (saved) {
-          try {
+        try {
             const parsed = JSON.parse(saved);
             if (parsed && parsed.title) {
-               setFormData(prev => ({
-                 ...prev,
-                 ...parsed,
-                 attachments: [] // Attachments cannot be restored
-               }));
-               setLastAutosave(new Date().toISOString());
-               toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+            setFormData(prev => ({
+                ...prev,
+                ...parsed,
+                attachments: [] // Attachments cannot be restored
+            }));
+            setLastAutosave(new Date().toISOString());
+            toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
             }
-          } catch (e) {
+        } catch (e) {
             console.error("Failed to load draft", e);
-          }
+        }
         }
     }
-  }, [location.state]); // Re-run if location state changes
+  }, [reportToEdit]); 
 
-  // Autosave Logic (Disabled in edit mode to prevent overwriting new report drafts)
+  // Autosave Logic (Disable in Edit Mode)
   useEffect(() => {
     if (editingReportId) return; 
-    
+
     if (autosaveRef.current) clearTimeout(autosaveRef.current);
     
     autosaveRef.current = setTimeout(() => {
@@ -268,6 +270,11 @@ export default function SubmitReport() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // 1. Define function first
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   const removeAttachment = (index) => {
     setFormData(prev => ({
       ...prev,
@@ -283,13 +290,18 @@ export default function SubmitReport() {
       sub_category_id: "",
       severity: "low",
       detail: REPORT_TEMPLATE,
-      attachments: []
+      attachments: [],
+      existingAttachments: []
     });
-    setEditingReportId(null); // Clear edit mode
-    // Clear location state without reload
-    window.history.replaceState({}, document.title);
-    localStorage.removeItem(DRAFT_KEY);
-    toast.success("Form reset for new post");
+    
+    if (editingReportId) {
+        setEditingReportId(null);
+        navigate("/submit-report", { replace: true, state: {} });
+        toast.success("Exited edit mode");
+    } else {
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("Form reset for new post");
+    }
   };
 
   const saveNamedDraft = () => {
@@ -322,7 +334,7 @@ export default function SubmitReport() {
       ...draft.data,
       attachments: []
     });
-    setEditingReportId(null); // Ensure we leave edit mode if loading a draft
+    setEditingReportId(null);
     toast.success(`Loaded draft: ${draft.name}`);
   };
 
@@ -337,12 +349,16 @@ export default function SubmitReport() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
     const selectedMain = categories.find(c => c.id === formData.main_category_id);
     const hasSubCategories = selectedMain?.sub && selectedMain.sub.length > 0;
     
     if (hasSubCategories && !formData.sub_category_id) {
       toast.error("Please select a specific Affected Area (Sub-category)");
+      return;
+    }
+
+    if (!editingReportId && formData.attachments.length < 1) {
+      toast.error("Please attach at least one proof of concept or evidence file.");
       return;
     }
 
@@ -354,7 +370,6 @@ export default function SubmitReport() {
     payload.append("program_id", progId);
     payload.append("title", formData.title);
     
-    // API Requirements for Categories
     payload.append("category", formData.main_category_id);
     if (formData.sub_category_id) {
         payload.append("category_sub", formData.sub_category_id);
@@ -363,28 +378,29 @@ export default function SubmitReport() {
     payload.append("severity", formData.severity);
     payload.append("detail", formData.detail);
 
-    // Append attachments as raw files
     formData.attachments.forEach((file, index) => {
       payload.append(`attachment[${index}]`, file);
     });
+    
+    if (editingReportId) {
+        payload.append("id", editingReportId);
+    }
 
     try {
       if (editingReportId) {
-          // Add ID for update endpoint
-          payload.append("id", editingReportId);
           await updateReport(payload);
           toast.success("Report updated successfully!");
-          // After update, maybe navigate back or just reset? 
-          // Resetting for now to allow new submissions
+          navigate("/reports");
       } else {
           await submitReport(payload);
           toast.success("Report submitted successfully!");
+          
+          const logData = await fetchReportLogs();
+          if(logData?.data) setReportLogs(logData.data);
+
+          resetForm();
       }
       
-      const logData = await fetchReportLogs();
-      if(logData?.data) setReportLogs(logData.data);
-
-      resetForm();
     } catch (error) {
       toast.error(error?.message || "Failed to submit report");
     } finally {
@@ -394,17 +410,15 @@ export default function SubmitReport() {
 
   // --- Helpers ---
   
-  // Filter sidebar logs
   const filteredLogs = reportLogs.filter(log => {
     const status = log.status?.toLowerCase() || "";
     if (activeQueueTab === "Open") {
-      return ["new", "under review", "accepted", "triaged"].includes(status);
+      return ["new", "under review", "accepted", "triaged", "fix", "review"].includes(status);
     } else {
       return ["closed", "resolved", "rejected"].includes(status);
     }
   });
   
-  // User Profile
   const userName = user ? `${user.firstName} ${user.lastName}` : "Guest Hunter";
   const userInitials = user && user.firstName && user.lastName
     ? `${user.firstName[0]}${user.lastName[0]}`
@@ -412,7 +426,6 @@ export default function SubmitReport() {
     
   const creditProfiles = [{ initials: userInitials, name: userName }];
 
-  // Derived Data for Sub-Categories
   const selectedMainCategory = categories.find(c => c.id === formData.main_category_id);
   const subCategories = selectedMainCategory?.sub || [];
 
@@ -440,24 +453,45 @@ export default function SubmitReport() {
     );
   };
 
+  // 2. Use explicit icons inside buttons to force visibility
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
       <span className="ql-formats flex gap-1">
-        <button className="ql-bold" />
-        <button className="ql-italic" />
-        <button className="ql-underline" />
-        <button className="ql-strike" />
+        <button className="ql-bold" type="button">
+            <Bold size={16} strokeWidth={2.5} />
+        </button>
+        <button className="ql-italic" type="button">
+            <Italic size={16} strokeWidth={2.5} />
+        </button>
+        <button className="ql-underline" type="button">
+            <Underline size={16} strokeWidth={2.5} />
+        </button>
+        <button className="ql-strike" type="button">
+            <Strikethrough size={16} strokeWidth={2.5} />
+        </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
-        <button className="ql-list" value="ordered" />
-        <button className="ql-list" value="bullet" />
+        <button className="ql-list" value="ordered" type="button">
+            <ListOrdered size={16} strokeWidth={2.5} />
+        </button>
+        <button className="ql-list" value="bullet" type="button">
+            <List size={16} strokeWidth={2.5} />
+        </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
-        <button className="ql-link" />
-        <button type="button" onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors">
-          <ImageIcon size={18} />
+        <button className="ql-link" type="button">
+            <LinkIcon size={16} strokeWidth={2.5} />
+        </button>
+        {/* Custom Image Upload Trigger */}
+        <button 
+          type="button" 
+          onClick={triggerFileUpload} 
+          className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors"
+          title="Attach Files"
+        >
+          <ImageIcon size={16} strokeWidth={2.5} />
         </button>
       </span>
     </div>
@@ -544,7 +578,7 @@ export default function SubmitReport() {
             )}
 
             {/* Saved Drafts List */}
-            {drafts.length > 0 && (
+            {!editingReportId && drafts.length > 0 && (
                 <>
                     <div className="border-t border-[#232936] my-4"></div>
                     <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5E667B] mb-2">
@@ -591,15 +625,21 @@ export default function SubmitReport() {
               <div className="flex-1">
                 <div className="flex flex-col gap-3">
                   <h2 className="text-2xl font-semibold text-white">
-                    {editingReportId ? "Edit Vulnerability Report" : "Report a Vulnerability"}
+                    {editingReportId ? "Edit Report" : "Report a Vulnerability"}
                   </h2>
                   <div className="space-y-4 mt-2 text-[#BFC6D6] leading-relaxed">
-                    <p>
-                      To report a vulnerability in the bug bounty program, ensure you verify the bug, gather clear evidence, reproduce the issue, document step-by-step instructions, attach evidence (screenshots / PoC / video), provide affected endpoints, explain impact, and include recommended remediation where possible.
-                    </p>
-                    <a href="/Rules of Engagement.pdf" target="_blank" rel="noopener noreferrer" className="inline-block text-[#A4C94F] font-semibold uppercase tracking-wider text-xs border-b border-[#A4C94F] pb-0.5 hover:text-[#C5E86C] transition-colors">
-                      Please click here for RULES OF ENGAGEMENT
-                    </a>
+                    {editingReportId ? (
+                         <p>You are currently editing an existing report. Please review your changes carefully before submitting.</p>
+                    ) : (
+                        <p>
+                        To report a vulnerability in the bug bounty program, ensure you verify the bug, gather clear evidence, reproduce the issue, document step-by-step instructions, attach evidence (screenshots / PoC / video), provide affected endpoints, explain impact, and include recommended remediation where possible.
+                        </p>
+                    )}
+                    {!editingReportId && (
+                        <a href="/Rules of Engagement.pdf" target="_blank" rel="noopener noreferrer" className="inline-block text-[#A4C94F] font-semibold uppercase tracking-wider text-xs border-b border-[#A4C94F] pb-0.5 hover:text-[#C5E86C] transition-colors">
+                        Please click here for RULES OF ENGAGEMENT
+                        </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -712,6 +752,12 @@ export default function SubmitReport() {
                       modules={{
                         toolbar: { container: "#toolbar" }
                       }}
+                      formats={[
+                        "header", "font", "size",
+                        "bold", "italic", "underline", "strike", "blockquote",
+                        "list", "bullet", "indent",
+                        "link", "image"
+                      ]}
                       className="min-h-[300px] text-sm text-[#C5CBD8]"
                     />
 
@@ -728,9 +774,29 @@ export default function SubmitReport() {
                     />
                   </div>
 
-                  {/* Attachment List Display */}
+                  {/* Existing Attachments (Edit Mode Only) */}
+                  {editingReportId && formData.existingAttachments && formData.existingAttachments.length > 0 && (
+                      <div className="mt-3 mb-2">
+                          <p className="text-xs text-[#7F8698] mb-2 uppercase tracking-wider">Existing Attachments</p>
+                          <div className="grid gap-2">
+                              {formData.existingAttachments.map((url, idx) => (
+                                  <div key={idx} className="flex items-center justify-between rounded-lg border border-[#2A303C] bg-[#151A23] px-4 py-2 text-sm opacity-75">
+                                      <div className="flex items-center gap-3">
+                                          <Paperclip size={16} className="text-[#7F8698]" />
+                                          <a href={url} target="_blank" rel="noreferrer" className="text-white hover:underline truncate max-w-[250px]">
+                                            {url.split('/').pop()}
+                                          </a>
+                                      </div>
+                                  </div>
+                              ))}
+                          </div>
+                      </div>
+                  )}
+
+                  {/* New Attachment List Display */}
                   {formData.attachments.length > 0 && (
                       <div className="mt-3 grid gap-2">
+                          <p className="text-xs text-[#9FC24D] mb-1 uppercase tracking-wider">New Uploads</p>
                           {formData.attachments.map((file, idx) => (
                               <div key={idx} className="flex items-center justify-between rounded-lg border border-[#2A303C] bg-[#151A23] px-4 py-2 text-sm">
                                   <div className="flex items-center gap-3">
@@ -824,4 +890,4 @@ export default function SubmitReport() {
       `}</style>
     </div>
   );
-        }
+}
