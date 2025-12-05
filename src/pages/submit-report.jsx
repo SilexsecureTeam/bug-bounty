@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom"; 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
-import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api"; 
+import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api";
 import { getUser } from "../hooks/useAuthToken";
 
 // --- Constants ---
@@ -74,9 +74,13 @@ const getCategoryIcon = (label) => {
 };
 
 export default function SubmitReport() {
-  const location = useLocation(); 
+  const location = useLocation();
   const navigate = useNavigate();
   
+  // Determine if we are editing
+  const reportToEdit = location.state?.reportToEdit;
+  const [editingReportId, setEditingReportId] = useState(null);
+
   const [programs, setPrograms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -88,9 +92,9 @@ export default function SubmitReport() {
 
   // Selection States
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [editingReportId, setEditingReportId] = useState(null); 
 
   const fileInputRef = useRef(null);
+  const quillRef = useRef(null); // Ref to access Quill instance
   const autosaveRef = useRef(null);
 
   // Form State
@@ -101,8 +105,8 @@ export default function SubmitReport() {
     sub_category_id: "",  
     severity: "low",
     detail: REPORT_TEMPLATE,
-    attachments: [], // Array of File objects
-    existingAttachments: [] // For edit mode
+    attachments: [], // Array of File objects (new uploads)
+    existingAttachments: [] // Array of URLs (for edit mode)
   });
 
   // UI State
@@ -128,6 +132,17 @@ export default function SubmitReport() {
         console.error("Failed to fetch programs", error);
       }
 
+      let cats = [];
+      try {
+        const catData = await fetchCategories();
+        if (catData.status === "200" && Array.isArray(catData.data)) {
+          setCategories(catData.data);
+          cats = catData.data;
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+
       try {
         const logData = await fetchReportLogs();
         if (logData?.data) {
@@ -137,98 +152,77 @@ export default function SubmitReport() {
         console.error("Failed to fetch report logs", error);
       }
 
-      // Fetch categories AND THEN check for edit mode
-      try {
-        const catData = await fetchCategories();
-        if (catData.status === "200" && Array.isArray(catData.data)) {
-          setCategories(catData.data);
+      // If Editing, Pre-fill form
+      if (reportToEdit) {
+          setEditingReportId(reportToEdit.id);
           
-          // --- EDIT MODE LOGIC ---
-          const reportToEdit = location.state?.reportToEdit;
-          if (reportToEdit) {
-             console.log("Editing Report:", reportToEdit);
-             setEditingReportId(reportToEdit.id);
-             
-             // Match Category Labels to IDs
-             let matchedMainId = "";
-             let matchedSubId = "";
+          const foundMain = cats.find(c => c.label.toLowerCase() === reportToEdit.category?.toLowerCase());
+          
+          let foundSubId = "";
+          if (foundMain && reportToEdit.category_sub) {
+              const foundSub = foundMain.sub?.find(s => s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase());
+              if (foundSub) foundSubId = foundSub.id;
+          }
 
-             // Find Main Category ID by label
-             const mainCat = catData.data.find(c => 
-                c.label.toLowerCase() === reportToEdit.category?.toLowerCase()
-             );
-             if (mainCat) {
-                 matchedMainId = mainCat.id;
-                 
-                 // Find Sub Category ID by label within the matched main category
-                 const subCat = mainCat.sub?.find(s => 
-                    s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase()
-                 );
-                 if (subCat) matchedSubId = subCat.id;
-             }
-
-             setFormData({
-                 program_id: reportToEdit.program || DEFAULT_PROGRAM_ID,
-                 title: reportToEdit.title,
-                 main_category_id: matchedMainId,
-                 sub_category_id: matchedSubId,
-                 severity: reportToEdit.severity?.toLowerCase() || "low",
-                 detail: reportToEdit.detail,
-                 attachments: [], // Attachments are not pre-filled for security/technical reasons
-                 existingAttachments: reportToEdit.attachment || []
-             });
-             
-             toast("Editing report: " + reportToEdit.title, { icon: "✏️" });
-          } 
-          // --- DEFAULT MODE ---
-          else if (catData.data.length > 0 && !formData.main_category_id) {
+          setFormData(prev => ({
+              ...prev,
+              program_id: reportToEdit.program || "", 
+              title: reportToEdit.title,
+              main_category_id: foundMain ? foundMain.id : "",
+              sub_category_id: foundSubId,
+              severity: reportToEdit.severity?.toLowerCase() || "low",
+              detail: reportToEdit.detail || REPORT_TEMPLATE,
+              existingAttachments: reportToEdit.attachment || []
+          }));
+          toast("Editing Report #" + (reportToEdit.ref || ""), { icon: "✏️" });
+      } else {
+         // Set default main category only if creating new
+         if (cats.length > 0 && !formData.main_category_id) {
              setFormData(prev => ({
                  ...prev,
-                 main_category_id: catData.data[0].id
+                 main_category_id: cats[0].id
              }));
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
+         }
       }
+
     };
 
     initData();
 
-    // Load Named Drafts List
-    try {
-      const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-      setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
-    } catch {
-      setDrafts([]);
-    }
+    // Load Named Drafts List (Only if not editing)
+    if (!reportToEdit) {
+        try {
+        const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
+        setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
+        } catch {
+        setDrafts([]);
+        }
 
-    // Check for Autosave (Only if NOT editing an existing report)
-    if (!location.state?.reportToEdit) {
+        // Check for Autosave
         const saved = localStorage.getItem(DRAFT_KEY);
         if (saved) {
-          try {
+        try {
             const parsed = JSON.parse(saved);
             if (parsed && parsed.title) {
-               setFormData(prev => ({
-                 ...prev,
-                 ...parsed,
-                 attachments: [] // Attachments cannot be restored
-               }));
-               setLastAutosave(new Date().toISOString());
-               toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+            setFormData(prev => ({
+                ...prev,
+                ...parsed,
+                attachments: [] // Attachments cannot be restored
+            }));
+            setLastAutosave(new Date().toISOString());
+            toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
             }
-          } catch (e) {
+        } catch (e) {
             console.error("Failed to load draft", e);
-          }
+        }
         }
     }
-  }, [location.state]); 
+  }, [reportToEdit]); 
 
-  // Autosave Logic (Disabled in edit mode)
+  // Autosave Logic (Disable in Edit Mode)
   useEffect(() => {
     if (editingReportId) return; 
-    
+
     if (autosaveRef.current) clearTimeout(autosaveRef.current);
     
     autosaveRef.current = setTimeout(() => {
@@ -257,7 +251,7 @@ export default function SubmitReport() {
     setFormData(prev => ({
       ...prev,
       main_category_id: catId,
-      sub_category_id: "" 
+      sub_category_id: "" // Reset sub-category when main changes
     }));
   };
 
@@ -275,6 +269,10 @@ export default function SubmitReport() {
       toast.success(`${newFiles.length} file(s) added`);
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   const removeAttachment = (index) => {
@@ -295,10 +293,15 @@ export default function SubmitReport() {
       attachments: [],
       existingAttachments: []
     });
-    setEditingReportId(null); 
-    window.history.replaceState({}, document.title);
-    localStorage.removeItem(DRAFT_KEY);
-    toast.success("Form reset for new post");
+    
+    if (editingReportId) {
+        setEditingReportId(null);
+        navigate("/submit-report", { replace: true, state: {} });
+        toast.success("Exited edit mode");
+    } else {
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("Form reset for new post");
+    }
   };
 
   const saveNamedDraft = () => {
@@ -354,8 +357,6 @@ export default function SubmitReport() {
       return;
     }
 
-    // In edit mode, attachments are optional if existing attachments are present or irrelevant
-    // But if creating new, enforce it.
     if (!editingReportId && formData.attachments.length < 1) {
       toast.error("Please attach at least one proof of concept or evidence file.");
       return;
@@ -380,20 +381,23 @@ export default function SubmitReport() {
     formData.attachments.forEach((file, index) => {
       payload.append(`attachment[${index}]`, file);
     });
+    
+    if (editingReportId) {
+        payload.append("id", editingReportId);
+    }
 
     try {
       if (editingReportId) {
-          // Add ID for update endpoint
-          payload.append("id", editingReportId);
           await updateReport(payload);
           toast.success("Report updated successfully!");
-          // Resetting or navigating away is good UX
-          navigate("/reports"); 
+          navigate("/reports");
       } else {
           await submitReport(payload);
           toast.success("Report submitted successfully!");
+          
           const logData = await fetchReportLogs();
           if(logData?.data) setReportLogs(logData.data);
+
           resetForm();
           navigate('/reports');
       }
@@ -406,6 +410,28 @@ export default function SubmitReport() {
   };
 
   // --- Helpers ---
+  
+  // Explicit Toolbar Handler Function
+  const handleFormat = (format, value) => {
+    if (quillRef.current) {
+        const quill = quillRef.current.getEditor();
+        const currentFormat = quill.getFormat();
+        
+        if (format === 'list') {
+            quill.format('list', currentFormat.list === value ? false : value);
+        } else if (format === 'link') {
+            const tooltip = quill.theme.tooltip;
+            if (currentFormat.link) {
+                quill.format('link', false);
+            } else {
+                tooltip.edit('link', 'https://defcomm.ng');
+                tooltip.show();
+            }
+        } else {
+            quill.format(format, !currentFormat[format]);
+        }
+    }
+  };
   
   const filteredLogs = reportLogs.filter(log => {
     const status = log.status?.toLowerCase() || "";
@@ -450,40 +476,39 @@ export default function SubmitReport() {
     );
   };
 
-  // Toolbar Component - Defined here to ensure scope access to handlers
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
       <span className="ql-formats flex gap-1">
-        <button className="ql-bold" type="button">
+        <button type="button" onClick={() => handleFormat('bold')} className="hover:text-white transition-colors">
            <Bold size={16} strokeWidth={2.5} />
         </button>
-        <button className="ql-italic" type="button">
+        <button type="button" onClick={() => handleFormat('italic')} className="hover:text-white transition-colors">
            <Italic size={16} strokeWidth={2.5} />
         </button>
-        <button className="ql-underline" type="button">
+        <button type="button" onClick={() => handleFormat('underline')} className="hover:text-white transition-colors">
            <Underline size={16} strokeWidth={2.5} />
         </button>
-        <button className="ql-strike" type="button">
+        <button type="button" onClick={() => handleFormat('strike')} className="hover:text-white transition-colors">
            <Strikethrough size={16} strokeWidth={2.5} />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
-        <button className="ql-list" value="ordered" type="button">
+        <button type="button" onClick={() => handleFormat('list', 'ordered')} className="hover:text-white transition-colors">
            <ListOrdered size={16} strokeWidth={2.5} />
         </button>
-        <button className="ql-list" value="bullet" type="button">
+        <button type="button" onClick={() => handleFormat('list', 'bullet')} className="hover:text-white transition-colors">
            <List size={16} strokeWidth={2.5} />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
-        <button className="ql-link" type="button">
+        <button type="button" onClick={() => handleFormat('link')} className="hover:text-white transition-colors">
            <LinkIcon size={16} strokeWidth={2.5} />
         </button>
         <button 
           type="button" 
-          onClick={() => fileInputRef.current?.click()} 
+          onClick={triggerFileUpload} 
           className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors"
           title="Attach Files"
         >
@@ -742,18 +767,13 @@ export default function SubmitReport() {
 
                   <div className="overflow-hidden rounded-xl border border-[#202634] bg-[#0E131D] transition-colors focus-within:border-[#9FC24D]">
                     <ReactQuill
+                      ref={quillRef}
                       theme="snow"
                       value={formData.detail}
                       onChange={handleDetailChange}
                       modules={{
                         toolbar: { container: "#toolbar" }
                       }}
-                      formats={[
-                        "header", "font", "size",
-                        "bold", "italic", "underline", "strike", "blockquote",
-                        "list", "bullet", "indent",
-                        "link", "image"
-                      ]}
                       className="min-h-[300px] text-sm text-[#C5CBD8]"
                     />
 
