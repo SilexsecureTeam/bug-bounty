@@ -155,21 +155,23 @@ export default function Register() {
       );
       const userType = userTypeByRole[selectedRole] ?? "user";
       const userlogin = formValues.username || formValues.email;
+      const fullName = `${formValues.firstName} ${formValues.lastName}`.trim();
+      const countryName = countryNames[formValues.country] || formValues.country || "";
+
+      // Fixed Form ID for Guest Registration
+      const FIXED_FORM_ID = "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
       // === Guest-specific flow ===
       if (selectedRole === "guest") {
-        const FIXED_FORM_ID =
-          "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
-
         const eventPayload = {
           form_id: FIXED_FORM_ID,
-          name: `${formValues.firstName} ${formValues.lastName}`.trim(),
+          name: fullName,
           email: formValues.email,
           phone: formattedPhone,
           data: {
             personal_information: {
-              full_name: `${formValues.firstName} ${formValues.lastName}`.trim(),
-              country: countryNames[formValues.country] || formValues.country || "",
+              full_name: fullName,
+              country: countryName,
               email: formValues.email,
               phone: formattedPhone,
             },
@@ -178,7 +180,6 @@ export default function Register() {
               registration_type: "Individual Participant",
             },
             professional_background: {
-              // no specific professional fields collected on registration form — send empty array
               fields: [],
               other: null,
             },
@@ -189,12 +190,8 @@ export default function Register() {
           },
         };
 
-        // Call new API function that posts to /web/eventform
         const resp = await submitGuestEvent(eventPayload);
-
-        // API success handling
         toast.success(resp?.message ?? "Guest registration submitted. Thank you!");
-        // Optionally redirect or clear form
         setLoading(false);
         navigate("/", { replace: true });
         return;
@@ -213,6 +210,48 @@ export default function Register() {
         groupname: userType === "group" ? formValues.groupname : undefined,
         companyname: userType === "company" ? formValues.companyname : undefined,
       });
+
+      // === NEW: If Hunter, ALSO register as guest with "hunter: true" ===
+      if (selectedRole === "hunter") {
+        try {
+          const hunterEventPayload = {
+            form_id: FIXED_FORM_ID,
+            name: fullName,
+            email: formValues.email,
+            phone: formattedPhone,
+            data: {
+              personal_information: {
+                full_name: fullName,
+                country: countryName,
+                email: formValues.email,
+                phone: formattedPhone,
+              },
+              participation_details: {
+                attendance_mode: "Physical",
+                registration_type: "Bug Hunter", 
+              },
+              professional_background: {
+                fields: ["Cybersecurity"], 
+                other: null,
+              },
+              consent: {
+                information_use: !!formValues.consent,
+                follow_up_updates: !!formValues.consent,
+              },
+              // ✅ Flag specific to hunters
+              hunter: true 
+            },
+          };
+          
+          // We fire this request but don't block the main flow if it fails slightly, 
+          // or we can await it. Awaiting it is safer to ensure data consistency.
+          await submitGuestEvent(hunterEventPayload);
+          console.log("Hunter successfully registered as guest.");
+        } catch (guestErr) {
+          console.error("Failed to auto-register hunter as guest:", guestErr);
+          // We optionally don't block the main registration success here
+        }
+      }
 
       // Log the API response for debugging
       console.log("API Response (Success):", response);

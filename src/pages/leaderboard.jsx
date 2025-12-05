@@ -169,9 +169,9 @@ export default function Leaderboard() {
             <div className="grid grid-cols-12 border-b border-[#141C2F] px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#697394]">
               <div className="col-span-2">Rank</div>
               <div className="col-span-4">Hacker</div>
-              <div className="col-span-2">Points</div>
-              <div className="col-span-2">Bugs Found</div>
-              <div className="col-span-2 text-right">Rewards</div>
+              <div className="col-span-3">Points</div>
+              <div className="col-span-3">Bugs Found</div>
+              {/* <div className="col-span-2 text-right">Rewards</div> */}
             </div>
 
             <div className="divide-y divide-[#141C2F]/80">
@@ -204,12 +204,12 @@ export default function Leaderboard() {
                         </div>
                       </div>
                     </div>
-                    <div className={`${cellBase} col-span-2 font-semibold tracking-[0.05em] text-[#F3F6FF]`}>{row.points}</div>
-                    <div className={`${cellBase} col-span-2 text-[#CAD2EA]`}>{row.bugsFound}</div>
-                    <div className="col-span-2 flex items-center justify-end gap-3">
+                    <div className={`${cellBase} col-span-3 font-semibold tracking-[0.05em] text-[#F3F6FF]`}>{row.points}</div>
+                    <div className={`${cellBase} col-span-3 text-[#CAD2EA]`}>{row.bugsFound}</div>
+                    {/* <div className="col-span-2 flex items-center justify-end gap-3">
                       <span className="text-sm font-semibold text-[#F5DFAE] tracking-wide">{row.reward}</span>
                       <ExternalIcon />
-                    </div>
+                    </div> */}
                   </article>
                 ))
               )}
