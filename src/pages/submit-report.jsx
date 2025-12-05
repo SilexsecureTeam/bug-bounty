@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom"; 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import Footer from "../components/Footer";
 import PortalHeader from "../components/PortalHeader";
-import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api";
+import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api"; 
 import { getUser } from "../hooks/useAuthToken";
 
 // --- Constants ---
@@ -74,13 +74,9 @@ const getCategoryIcon = (label) => {
 };
 
 export default function SubmitReport() {
-  const location = useLocation();
+  const location = useLocation(); 
   const navigate = useNavigate();
   
-  // Determine if we are editing
-  const reportToEdit = location.state?.reportToEdit;
-  const [editingReportId, setEditingReportId] = useState(null);
-
   const [programs, setPrograms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -92,6 +88,7 @@ export default function SubmitReport() {
 
   // Selection States
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [editingReportId, setEditingReportId] = useState(null); 
 
   const fileInputRef = useRef(null);
   const autosaveRef = useRef(null);
@@ -104,8 +101,8 @@ export default function SubmitReport() {
     sub_category_id: "",  
     severity: "low",
     detail: REPORT_TEMPLATE,
-    attachments: [], // Array of File objects (new uploads)
-    existingAttachments: [] // Array of URLs (for edit mode)
+    attachments: [], // Array of File objects
+    existingAttachments: [] // For edit mode
   });
 
   // UI State
@@ -131,17 +128,6 @@ export default function SubmitReport() {
         console.error("Failed to fetch programs", error);
       }
 
-      let cats = [];
-      try {
-        const catData = await fetchCategories();
-        if (catData.status === "200" && Array.isArray(catData.data)) {
-          setCategories(catData.data);
-          cats = catData.data;
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-
       try {
         const logData = await fetchReportLogs();
         if (logData?.data) {
@@ -151,77 +137,98 @@ export default function SubmitReport() {
         console.error("Failed to fetch report logs", error);
       }
 
-      // If Editing, Pre-fill form
-      if (reportToEdit) {
-          setEditingReportId(reportToEdit.id);
+      // Fetch categories AND THEN check for edit mode
+      try {
+        const catData = await fetchCategories();
+        if (catData.status === "200" && Array.isArray(catData.data)) {
+          setCategories(catData.data);
           
-          const foundMain = cats.find(c => c.label.toLowerCase() === reportToEdit.category?.toLowerCase());
-          
-          let foundSubId = "";
-          if (foundMain && reportToEdit.category_sub) {
-              const foundSub = foundMain.sub?.find(s => s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase());
-              if (foundSub) foundSubId = foundSub.id;
-          }
+          // --- EDIT MODE LOGIC ---
+          const reportToEdit = location.state?.reportToEdit;
+          if (reportToEdit) {
+             console.log("Editing Report:", reportToEdit);
+             setEditingReportId(reportToEdit.id);
+             
+             // Match Category Labels to IDs
+             let matchedMainId = "";
+             let matchedSubId = "";
 
-          setFormData(prev => ({
-              ...prev,
-              program_id: reportToEdit.program || "", 
-              title: reportToEdit.title,
-              main_category_id: foundMain ? foundMain.id : "",
-              sub_category_id: foundSubId,
-              severity: reportToEdit.severity?.toLowerCase() || "low",
-              detail: reportToEdit.detail || REPORT_TEMPLATE,
-              existingAttachments: reportToEdit.attachment || []
-          }));
-          toast("Editing Report #" + (reportToEdit.ref || ""), { icon: "✏️" });
-      } else {
-         // Set default main category only if creating new
-         if (cats.length > 0 && !formData.main_category_id) {
+             // Find Main Category ID by label
+             const mainCat = catData.data.find(c => 
+                c.label.toLowerCase() === reportToEdit.category?.toLowerCase()
+             );
+             if (mainCat) {
+                 matchedMainId = mainCat.id;
+                 
+                 // Find Sub Category ID by label within the matched main category
+                 const subCat = mainCat.sub?.find(s => 
+                    s.label.toLowerCase() === reportToEdit.category_sub?.toLowerCase()
+                 );
+                 if (subCat) matchedSubId = subCat.id;
+             }
+
+             setFormData({
+                 program_id: reportToEdit.program || DEFAULT_PROGRAM_ID,
+                 title: reportToEdit.title,
+                 main_category_id: matchedMainId,
+                 sub_category_id: matchedSubId,
+                 severity: reportToEdit.severity?.toLowerCase() || "low",
+                 detail: reportToEdit.detail,
+                 attachments: [], // Attachments are not pre-filled for security/technical reasons
+                 existingAttachments: reportToEdit.attachment || []
+             });
+             
+             toast("Editing report: " + reportToEdit.title, { icon: "✏️" });
+          } 
+          // --- DEFAULT MODE ---
+          else if (catData.data.length > 0 && !formData.main_category_id) {
              setFormData(prev => ({
                  ...prev,
-                 main_category_id: cats[0].id
+                 main_category_id: catData.data[0].id
              }));
-         }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
       }
-
     };
 
     initData();
 
-    // Load Named Drafts List (Only if not editing)
-    if (!reportToEdit) {
-        try {
-        const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
-        setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
-        } catch {
-        setDrafts([]);
-        }
+    // Load Named Drafts List
+    try {
+      const savedDrafts = JSON.parse(localStorage.getItem(DRAFTS_LIST_KEY) || "[]");
+      setDrafts(Array.isArray(savedDrafts) ? savedDrafts : []);
+    } catch {
+      setDrafts([]);
+    }
 
-        // Check for Autosave
+    // Check for Autosave (Only if NOT editing an existing report)
+    if (!location.state?.reportToEdit) {
         const saved = localStorage.getItem(DRAFT_KEY);
         if (saved) {
-        try {
+          try {
             const parsed = JSON.parse(saved);
             if (parsed && parsed.title) {
-            setFormData(prev => ({
-                ...prev,
-                ...parsed,
-                attachments: [] // Attachments cannot be restored
-            }));
-            setLastAutosave(new Date().toISOString());
-            toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
+               setFormData(prev => ({
+                 ...prev,
+                 ...parsed,
+                 attachments: [] // Attachments cannot be restored
+               }));
+               setLastAutosave(new Date().toISOString());
+               toast("Restored unsaved draft", { icon: "📝", duration: 2000 });
             }
-        } catch (e) {
+          } catch (e) {
             console.error("Failed to load draft", e);
-        }
+          }
         }
     }
-  }, [reportToEdit]); 
+  }, [location.state]); 
 
-  // Autosave Logic (Disable in Edit Mode)
+  // Autosave Logic (Disabled in edit mode)
   useEffect(() => {
     if (editingReportId) return; 
-
+    
     if (autosaveRef.current) clearTimeout(autosaveRef.current);
     
     autosaveRef.current = setTimeout(() => {
@@ -250,7 +257,7 @@ export default function SubmitReport() {
     setFormData(prev => ({
       ...prev,
       main_category_id: catId,
-      sub_category_id: "" // Reset sub-category when main changes
+      sub_category_id: "" 
     }));
   };
 
@@ -268,11 +275,6 @@ export default function SubmitReport() {
       toast.success(`${newFiles.length} file(s) added`);
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  // 1. Define function first
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
   };
 
   const removeAttachment = (index) => {
@@ -293,15 +295,10 @@ export default function SubmitReport() {
       attachments: [],
       existingAttachments: []
     });
-    
-    if (editingReportId) {
-        setEditingReportId(null);
-        navigate("/submit-report", { replace: true, state: {} });
-        toast.success("Exited edit mode");
-    } else {
-        localStorage.removeItem(DRAFT_KEY);
-        toast.success("Form reset for new post");
-    }
+    setEditingReportId(null); 
+    window.history.replaceState({}, document.title);
+    localStorage.removeItem(DRAFT_KEY);
+    toast.success("Form reset for new post");
   };
 
   const saveNamedDraft = () => {
@@ -334,7 +331,7 @@ export default function SubmitReport() {
       ...draft.data,
       attachments: []
     });
-    setEditingReportId(null);
+    setEditingReportId(null); 
     toast.success(`Loaded draft: ${draft.name}`);
   };
 
@@ -357,6 +354,8 @@ export default function SubmitReport() {
       return;
     }
 
+    // In edit mode, attachments are optional if existing attachments are present or irrelevant
+    // But if creating new, enforce it.
     if (!editingReportId && formData.attachments.length < 1) {
       toast.error("Please attach at least one proof of concept or evidence file.");
       return;
@@ -381,24 +380,22 @@ export default function SubmitReport() {
     formData.attachments.forEach((file, index) => {
       payload.append(`attachment[${index}]`, file);
     });
-    
-    if (editingReportId) {
-        payload.append("id", editingReportId);
-    }
 
     try {
       if (editingReportId) {
+          // Add ID for update endpoint
+          payload.append("id", editingReportId);
           await updateReport(payload);
           toast.success("Report updated successfully!");
-          navigate("/reports");
+          // Resetting or navigating away is good UX
+          navigate("/reports"); 
       } else {
           await submitReport(payload);
           toast.success("Report submitted successfully!");
-          
           const logData = await fetchReportLogs();
           if(logData?.data) setReportLogs(logData.data);
-
           resetForm();
+          navigate('/reports');
       }
       
     } catch (error) {
@@ -413,7 +410,7 @@ export default function SubmitReport() {
   const filteredLogs = reportLogs.filter(log => {
     const status = log.status?.toLowerCase() || "";
     if (activeQueueTab === "Open") {
-      return ["new", "under review", "accepted", "triaged", "fix", "review"].includes(status);
+      return ["new", "under review", "accepted", "triaged", "review", "fix"].includes(status);
     } else {
       return ["closed", "resolved", "rejected"].includes(status);
     }
@@ -453,41 +450,40 @@ export default function SubmitReport() {
     );
   };
 
-  // 2. Use explicit icons inside buttons to force visibility
+  // Toolbar Component - Defined here to ensure scope access to handlers
   const CustomToolbar = () => (
     <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
       <span className="ql-formats flex gap-1">
         <button className="ql-bold" type="button">
-            <Bold size={16} strokeWidth={2.5} />
+           <Bold size={16} strokeWidth={2.5} />
         </button>
         <button className="ql-italic" type="button">
-            <Italic size={16} strokeWidth={2.5} />
+           <Italic size={16} strokeWidth={2.5} />
         </button>
         <button className="ql-underline" type="button">
-            <Underline size={16} strokeWidth={2.5} />
+           <Underline size={16} strokeWidth={2.5} />
         </button>
         <button className="ql-strike" type="button">
-            <Strikethrough size={16} strokeWidth={2.5} />
+           <Strikethrough size={16} strokeWidth={2.5} />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
         <button className="ql-list" value="ordered" type="button">
-            <ListOrdered size={16} strokeWidth={2.5} />
+           <ListOrdered size={16} strokeWidth={2.5} />
         </button>
         <button className="ql-list" value="bullet" type="button">
-            <List size={16} strokeWidth={2.5} />
+           <List size={16} strokeWidth={2.5} />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
       <span className="ql-formats flex gap-1">
         <button className="ql-link" type="button">
-            <LinkIcon size={16} strokeWidth={2.5} />
+           <LinkIcon size={16} strokeWidth={2.5} />
         </button>
-        {/* Custom Image Upload Trigger */}
         <button 
           type="button" 
-          onClick={triggerFileUpload} 
+          onClick={() => fileInputRef.current?.click()} 
           className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors"
           title="Attach Files"
         >
