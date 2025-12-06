@@ -25,6 +25,9 @@ import {
   Link as LinkIcon
 } from "lucide-react";
 import Footer from "../components/Footer";
+import { MdOutlineFormatBold, MdOutlineFormatItalic, MdFormatUnderlined, MdOutlineStrikethroughS, MdImage  } from "react-icons/md";
+import { RiListOrdered } from "react-icons/ri";
+import { GoLink } from "react-icons/go";
 import PortalHeader from "../components/PortalHeader";
 import { fetchPrograms, fetchCategories, submitReport, updateReport, fetchReportLogs } from "../api";
 import { getUser } from "../hooks/useAuthToken";
@@ -50,6 +53,7 @@ const REPORT_TEMPLATE = `
 <p><strong>#Expected result</strong></p>
 <p><br></p>
 <p><strong>#Actual result</strong></p>
+<p><br></p>
 <p><br></p>
 `;
 
@@ -424,7 +428,7 @@ export default function SubmitReport() {
             if (currentFormat.link) {
                 quill.format('link', false);
             } else {
-                tooltip.edit('link', 'https://defcomm.ng');
+                tooltip.edit('link', 'https://cloud.defcomm.ng');
                 tooltip.show();
             }
         } else {
@@ -477,42 +481,42 @@ export default function SubmitReport() {
   };
 
   const CustomToolbar = () => (
-    <div id="toolbar" className="flex items-center gap-4 border-t border-[#2A303C] p-3">
-      <span className="ql-formats flex gap-1">
+    <div id="toolbar" className="flex items-center text-[22px] gap-4 font-lora! border-t border-[#2A303C] p-3">
+      <span className="ql-formats flex gap-2">
         <button type="button" onClick={() => handleFormat('bold')} className="hover:text-white transition-colors">
-           <Bold size={16} strokeWidth={2.5} />
+           <MdOutlineFormatBold />
         </button>
         <button type="button" onClick={() => handleFormat('italic')} className="hover:text-white transition-colors">
-           <Italic size={16} strokeWidth={2.5} />
+           <MdOutlineFormatItalic />
         </button>
         <button type="button" onClick={() => handleFormat('underline')} className="hover:text-white transition-colors">
-           <Underline size={16} strokeWidth={2.5} />
+           <MdFormatUnderlined />
         </button>
         <button type="button" onClick={() => handleFormat('strike')} className="hover:text-white transition-colors">
-           <Strikethrough size={16} strokeWidth={2.5} />
+           <MdOutlineStrikethroughS />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
-      <span className="ql-formats flex gap-1">
+      <span className="ql-formats flex gap-2">
         <button type="button" onClick={() => handleFormat('list', 'ordered')} className="hover:text-white transition-colors">
-           <ListOrdered size={16} strokeWidth={2.5} />
+           <RiListOrdered  />
         </button>
         <button type="button" onClick={() => handleFormat('list', 'bullet')} className="hover:text-white transition-colors">
-           <List size={16} strokeWidth={2.5} />
+           <List />
         </button>
       </span>
       <div className="h-4 w-px bg-[#2A303C]" />
-      <span className="ql-formats flex gap-1">
+      <span className="ql-formats flex gap-2">
         <button type="button" onClick={() => handleFormat('link')} className="hover:text-white transition-colors">
-           <LinkIcon size={16} strokeWidth={2.5} />
+           <GoLink size={16} strokeWidth={2.5} />
         </button>
         <button 
           type="button" 
           onClick={triggerFileUpload} 
-          className="flex items-center justify-center text-[#7F8698] hover:text-white transition-colors"
+          className="flex items-center justify-center hover:text-white transition-colors"
           title="Attach Files"
         >
-          <ImageIcon size={16} strokeWidth={2.5} />
+          <MdImage />
         </button>
       </span>
     </div>
@@ -530,7 +534,7 @@ export default function SubmitReport() {
             {!editingReportId && (
                 <button
                 type="button"
-                className="rounded-full bg-[#97C94F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
+                className="rounded-full bg-[#97C94F] px-3 py-1 text-[10px] font-semibold tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
                 onClick={saveNamedDraft}
                 >
                 Save Draft
@@ -556,7 +560,7 @@ export default function SubmitReport() {
                   key={label}
                   type="button"
                   onClick={() => setActiveQueueTab(label)}
-                  className={`px-4 py-2 transition-colors duration-150 ${activeQueueTab === label ? "bg-[#96C74B] text-[#131C09]" : "hover:text-[#E2E8F6]"}`}
+                  className={`px-2 py-2 transition-colors duration-150 text-xs ${activeQueueTab === label ? "bg-[#96C74B] text-[#131C09]" : "hover:text-[#E2E8F6]"}`}
                 >
                   {label}
                 </button>

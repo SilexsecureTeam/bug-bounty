@@ -11,6 +11,9 @@ module.exports = {
       },
       fontFamily: {
         sans: ["'Montserrat Alternates'", "sans-serif"],
+        lora: [
+  				'Lora', 'serif'
+  			]
       },
     },
   },
