@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { getAuthToken } from "./hooks/useAuthToken";
 import Navbar from "./components/Navbar";
 import Landing from "./pages/landing";
 import RegisterSelection from "./pages/register-selection";
@@ -9,8 +10,8 @@ import SubmitReport from "./pages/submit-report";
 import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
 import Reports from "./pages/Reports";
-import NotFound from "./pages/NotFound";
-import { getAuthToken } from "./hooks/useAuthToken";
+import NotFound from "./pages/NotFound";  
+import About from "./pages/about";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -42,6 +43,7 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
           <Route path="/register" element={<RegisterSelection />} />
           <Route path="/register/create" element={<Register />} />
           <Route path="/signin" element={<SignIn />} />
