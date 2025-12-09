@@ -12,6 +12,7 @@ import UserDashboard from "./pages/User/userDashboard";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";  
 import About from "./pages/about";
+import Highlights from "./pages/highlights";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -44,6 +45,7 @@ export default function App() {
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
+          <Route path="/highlights" element={<Highlights />} />
           <Route path="/register" element={<RegisterSelection />} />
           <Route path="/register/create" element={<Register />} />
           <Route path="/signin" element={<SignIn />} />
