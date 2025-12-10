@@ -79,7 +79,7 @@ export default function Sidebar({ open, onClose }) {
     return (
         <>
             <aside
-                className={`fixed inset-y-0 top-20 left-0 z-30 w-64 transform bg-[#0b0f12] border-r border-[#111316] px-4 py-6 transition-transform duration-200 ease-in-out sm:static sm:translate-x-0 ${
+                className={`fixed! inset-y-0 top-20 left-0 z-30 w-64 transform bg-[#0b0f12] border-r border-[#111316] px-4 py-6 transition-transform duration-200 ease-in-out sm:static sm:translate-x-0 ${
                     open ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
