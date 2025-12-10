@@ -7,9 +7,9 @@ import submitIcon from '../../assets/images/submitIcon.png';
 import paymentIcon from '../../assets/images/paymentIcon.png';
 import { getUser, clearAuthToken } from "../../hooks/useAuthToken";
 import { fetchUserProfile } from "../../api"; 
-import QRCodeModal from "./QRCodeModal"; // Import the new modal
+import QRCodeModal from "./QRCodeModal"; 
 
-// The fixed form ID for the QR code
+// The fixed form ID for the QR code (Event Registration Form)
 const FIXED_FORM_ID = "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
 const navItems = [
@@ -37,23 +37,31 @@ const navItems = [
 
 export default function Sidebar({ open, onClose }) {
     const [user, setUser] = useState(null);
-    const [encryptId, setEncryptId] = useState(null); // State for encrypt_id
-    const [showQR, setShowQR] = useState(false); // State for QR Modal
+    const [encryptId, setEncryptId] = useState(null);
+    const [showQR, setShowQR] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         const loadUserData = async () => {
-            // Load local user first for immediate UI
+            // 1. Load local user first
             const localUser = getUser();
             setUser(localUser);
+            
+            // Pre-set encrypt_id if it exists in local storage to avoid wait time
+            if (localUser?.encrypt_id) {
+                setEncryptId(localUser.encrypt_id);
+            }
 
             try {
-                // Fetch fresh profile data to get encrypt_id
+                // 2. Fetch fresh profile data to get the verified encrypt_id
                 const response = await fetchUserProfile();
                 if (response && response.data) {
                     setUser(response.data);
-                    setEncryptId(response.data.encrypt_id);
+                    // Explicitly set the encrypt_id from the response
+                    if (response.data.encrypt_id) {
+                        setEncryptId(response.data.encrypt_id);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch user profile:", error);
@@ -118,7 +126,7 @@ export default function Sidebar({ open, onClose }) {
                     })}
                 </nav>
 
-                <div className="mb-0! mt-[23vh] border-t border-[#111316] pt-6">
+                <div className="mb-0 mt-[23vh] border-t border-[#111316] pt-6">
                     {/* Account Settings / User Profile Area - Clickable for QR */}
                     <div 
                         className="flex items-center gap-3 px-4 cursor-pointer hover:bg-[#101418] p-2 rounded-lg transition-colors group"
@@ -149,9 +157,9 @@ export default function Sidebar({ open, onClose }) {
             <QRCodeModal 
                 isOpen={showQR} 
                 onClose={() => setShowQR(false)} 
-                userId={user?.id || "guest"} 
-                encryptId={encryptId} // Pass the fetched encrypt_id
-                formId={FIXED_FORM_ID} // Pass the fixed form_id
+                visualId={user?.id || "N/A"} // Short ID for visual display only
+                encryptId={encryptId}        // Long Encrypt ID for the actual QR Code payload
+                formId={FIXED_FORM_ID}       // Fixed Form ID
                 userName={fullName}
             />
         </>
