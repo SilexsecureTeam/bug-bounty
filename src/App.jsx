@@ -13,6 +13,7 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";  
 import About from "./pages/about";
 import Highlights from "./pages/highlights";
+import Program from "./pages/program";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/highlights" element={<Highlights />} />
+          <Route path="/program" element={<Program />} />
           <Route path="/register" element={<RegisterSelection />} />
           <Route path="/register/create" element={<Register />} />
           <Route path="/signin" element={<SignIn />} />
