@@ -6,7 +6,7 @@ import reportIcon from '../../assets/images/reportIcon.png';
 import submitIcon from '../../assets/images/submitIcon.png';
 import paymentIcon from '../../assets/images/paymentIcon.png';
 import { getUser, clearAuthToken } from "../../hooks/useAuthToken";
-import { fetchUserProfile } from "../../api"; 
+import { fetchUserProfileEvent } from "../../api"; 
 import QRCodeModal from "./QRCodeModal"; // Import the new modal
 
 // The fixed form ID for the QR code
@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose }) {
 
             try {
                 // Fetch fresh profile data to get encrypt_id
-                const response = await fetchUserProfile();
+                const response = await fetchUserProfileEvent();
                 if (response && response.data) {
                     setUser(response.data);
                     setEncryptId(response.data.encrypt_id);
