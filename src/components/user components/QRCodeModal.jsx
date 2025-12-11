@@ -106,4 +106,4 @@ export default function QRCodeModal({ isOpen, onClose, userId, encryptId, formId
       </div>
     </div>
   );
-}
+                    }
