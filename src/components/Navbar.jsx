@@ -10,13 +10,13 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Home", to: "/", special: true },
-    { name: "Programme", href: "#hero" },
-    { name: "Highlights", href: "#highlights" },
-    { name: "Sponsors", href: "#sponsors" },
-    // { name: "Contact", href: "#contact" },
+    { name: "Programme", href: "/program" },
+    { name: "Highlights", href: "/highlights" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
     { name: "Leaderboard", to: "/leaderboard" },
     { name: "Login", to: "/signin" },
-    { name: "Registration", to: "/register" },
+    // { name: "Registration", to: "/register" },
   ];
 
   const homeNavigate = () => {
@@ -26,7 +26,7 @@ export default function Navbar() {
   return (
     <nav className="fixed w-full! top-0 left-0 z-50 shadow-lg">
       <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        className="mx-auto px-4 sm:px-6 lg:px-8"
         style={{
           background: "linear-gradient(to right, #36460A, #85AB20, #36450D)",
         }}

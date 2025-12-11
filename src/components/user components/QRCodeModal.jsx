@@ -1,11 +1,15 @@
+// File: src/components/user components/QRCodeModal.jsx
 import React, { useRef } from "react";
 import { X, Download } from "lucide-react";
 import QRCode from "react-qr-code"; 
 
-export default function QRCodeModal({ isOpen, onClose, userId, userName }) {
+export default function QRCodeModal({ isOpen, onClose, userId, encryptId, formId, userName }) {
   const svgRef = useRef(null);
 
   if (!isOpen) return null;
+
+  // Use encryptId if available, otherwise fallback to userId (safe fallback)
+  const qrUserId = encryptId || userId;
 
   // Function to download the QR Code
   const downloadQRCode = () => {
@@ -69,8 +73,8 @@ export default function QRCodeModal({ isOpen, onClose, userId, userName }) {
                 size={256}
                 style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 value={JSON.stringify({
-                  uid: userId,
-                  type: "event_checkin",
+                  userId: qrUserId,
+                  id: formId,
                   name: userName
                 })}
                 viewBox={`0 0 256 256`}
@@ -85,7 +89,9 @@ export default function QRCodeModal({ isOpen, onClose, userId, userName }) {
              <p className="text-lg font-semibold text-white">{userName}</p>
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A2334] border border-[#2A303C]">
                 <span className="w-2 h-2 rounded-full bg-[#9FC24D] animate-pulse"></span>
-                <p className="text-[10px] font-mono text-[#9BA2B0] uppercase tracking-wider">ID: {userId}</p>
+                <p className="text-[10px] font-mono text-[#9BA2B0] uppercase tracking-wider">
+                    ID: {userId} {/* Keeping visual ID short/readable from user object */}
+                </p>
              </div>
           </div>
 

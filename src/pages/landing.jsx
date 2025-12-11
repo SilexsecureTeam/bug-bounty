@@ -253,11 +253,11 @@ export default function Landing() {
           <img
             src={shieldBg}
             alt="Abstract circuit shield"
-            className="floating-pulse absolute right-[-15%] top-[-5%] h-[120%] w-auto opacity-70"
+            className="floating-pulse absolute right-5 top-20 h-full w-auto opacity-80"
           />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-18 sm:px-10 lg:gap-20 lg:px-0 lg:pt-10">
+        <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-6 pb-24 pt-18 sm:px-10 lg:gap-20 lg:px-0 lg:pt-10">
           <header className="flex flex-col gap-6 lg:gap-10">
 
 
