@@ -202,6 +202,8 @@ export async function fetchPrograms() {
   });
 }
 
+
+
 // ✅ Fetch Categories
 export async function fetchCategories() {
   const token = getAuthToken();
@@ -219,6 +221,16 @@ export async function fetchUserProfile() {
   if (!token) throw new Error("User not authenticated");
 
   return request("/bounty/profile", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function fetchUserProfileEvent() {
+  const token = getAuthToken();
+  if (!token) throw new Error("User not authenticated");
+
+  return request("/user/profile", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
