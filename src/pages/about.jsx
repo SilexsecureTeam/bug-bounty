@@ -337,7 +337,7 @@ export default function About() {
       
 
         {/* --- FAQ & Contact Section --- */}
-        <section className="py-24 pb-0 px-6 mx-auto max-w-7xl text-[17px]">
+        <section className="py-24 px-6 mx-auto max-w-7xl text-[17px]">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold text-white">Frequently asked questions.</h2>
             <p className="mt-2 text-[#9CA3AF]">Find quick answers to the most common questions about the Defcomm program.</p>
