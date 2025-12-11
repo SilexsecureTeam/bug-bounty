@@ -10,10 +10,10 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Home", to: "/", special: true },
-    { name: "Programme", href: "/program" },
-    { name: "Highlights", href: "/highlights" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "About", to: "/about" },
+    { name: "Programme", to: "/program" },
+    { name: "Highlights", to: "/highlights" },
+    { name: "Contact", to: "/contact" },
     { name: "Leaderboard", to: "/leaderboard" },
     { name: "Login", to: "/signin" },
     // { name: "Registration", to: "/register" },

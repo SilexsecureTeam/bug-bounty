@@ -12,8 +12,17 @@ import newsImg1 from "../assets/images/Image-1.png";
 import newsImg2 from "../assets/images/Image-2.png";
 import newsImg3 from "../assets/images/Image-3.png";
 import newsImg4 from "../assets/images/Image-4.png";
-import matrixImg from "../assets/images/authImg.jpg"; // Placeholder for the matrix/code image
-import joinIcon from "../assets/images/red-team.png"; // Placeholder for the small CTA icon
+import matrixImg from "../assets/images/image 228.png"; // Placeholder for the matrix/code image
+import joinIcon from "../assets/images/Image.png"; // Placeholder for the small CTA icon
+
+import img1 from "../assets/images/image 219.png";
+import img2 from "../assets/images/image 220.png";
+import img3 from "../assets/images/image 222.png";
+import img4 from "../assets/images/image 224.png";
+import img5 from "../assets/images/image 225.png";
+import img6 from "../assets/images/image 226.png";
+import img7 from "../assets/images/image 220.png";
+import img8 from "../assets/images/image 225.png";
 
 // --- Data ---
 
@@ -24,7 +33,7 @@ const newsUpdates = [
       title: "New Bug Bounty Challenge Launched",
       desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
       date: "August 20, 2022",
-      image: newsImg1
+      image: img1
    },
    {
       id: 2,
@@ -32,7 +41,7 @@ const newsUpdates = [
       title: "Top Ethical Hackers Recognized",
       desc: "Meet the top security researchers advancing Africa's cybersecurity mission.",
       date: "August 20, 2022",
-      image: newsImg2
+      image: img2
    },
    {
       id: 3,
@@ -40,7 +49,7 @@ const newsUpdates = [
       title: "New Defence Tech Research Hub Opened",
       desc: "Collaboration center built for testing drones, communications tools, and threat simulation.",
       date: "August 20, 2022",
-      image: newsImg3
+      image: img3
    },
    {
       id: 4,
@@ -48,7 +57,7 @@ const newsUpdates = [
       title: "Cybersecurity Training Cohort Graduates",
       desc: "Over 200 young professionals trained in ethical testing and secure system design.",
       date: "August 20, 2022",
-      image: newsImg4
+      image: img4
    },
    // Duplicating for the grid effect shown in design
    {
@@ -57,7 +66,7 @@ const newsUpdates = [
       title: "New Bug Bounty Challenge Launched",
       desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
       date: "August 20, 2022",
-      image: newsImg1
+      image: img5
    },
    {
       id: 6,
@@ -65,7 +74,7 @@ const newsUpdates = [
       title: "New Bug Bounty Challenge Launched",
       desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
       date: "August 20, 2022",
-      image: newsImg3
+      image: img6
    },
    {
       id: 7,
@@ -73,7 +82,7 @@ const newsUpdates = [
       title: "Top Ethical Hackers Recognized",
       desc: "Meet the top security researchers advancing Africa's cybersecurity mission.",
       date: "August 20, 2022",
-      image: newsImg2
+      image: img7
    },
    {
       id: 8,
@@ -81,7 +90,7 @@ const newsUpdates = [
       title: "New Bug Bounty Challenge Launched",
       desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
       date: "August 20, 2022",
-      image: newsImg4
+      image: img8
    }
 ];
 

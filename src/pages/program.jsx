@@ -8,9 +8,7 @@ import { useReveal } from "../hooks/useReveal";
 
 // Assets (Reusing existing assets to match design placeholders)
 import shieldBg from "../assets/images/Group-1450.svg";
-import overviewImg from "../assets/images/authImg.jpg"; // Placeholder for the group photo
-import matrixImg from "../assets/images/Image-1.png"; // Placeholder for the tech/matrix image
-import avatarImg from "../assets/images/red-team.png"; // Placeholder for the 'Join Mission' avatar
+import overviewImg from "../assets/images/image 232.png"; // Placeholder for the group photo
 
 // --- Data Constants ---
 

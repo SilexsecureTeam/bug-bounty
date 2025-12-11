@@ -21,7 +21,8 @@ import Footer from "../components/Footer";
 import shieldBg from "../assets/images/Group-1450.svg";
 // Replaced missing first_icon with a placeholder or lucide icon to prevent crash
 import first_icon from "../assets/images/Icons.png"; 
-import aboutImage from "../assets/images/authImg.jpg";
+import second_icon from "../assets/images/IIcon.png"; 
+import aboutImage from "../assets/images/aboutImg.png";
 
 // --- Data Constants ---
 
@@ -214,7 +215,7 @@ export default function About() {
               <img src={first_icon} alt="" className="w-34 h-34" />
             </div>
             <div className="bg-[#192204] p-6 md:col-span-2 flex items-center justify-center rounded-2xl border border-[#26330A]">
-              <img src={first_icon} alt="" className="w-34 h-34" />
+              <img src={second_icon} alt="" className="w-34 h-34" />
             </div>
             <div className="bg-[#192204] p-6 md:col-span-2 flex items-center justify-center rounded-2xl border border-[#26330A]">
               <img src={first_icon} alt="" className="w-34 h-34" />
