@@ -215,22 +215,22 @@ export default function Highlights() {
                   <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
                      {/* Left: Matrix Image */}
                      <div className="reveal-child relative h-[500px] w-full overflow-hidden rounded-3xl border border-[#2A2A2A] bg-black">
-                        {/* 1. Base Image: Grayscale & Lower Opacity to blend with black bg */}
-                        <img
-                           src={matrixImg}
-                           alt="Cybersecurity Matrix"
-                           className="h-full w-full object-cover opacity-50 grayscale transition-transform duration-700 hover:scale-105"
-                        />
+                {/* 1. Base Image: Grayscale & Lower Opacity to blend with black bg */}
+                <img
+                  src={matrixImg}
+                  alt="Cybersecurity Matrix"
+                  className="h-full w-full object-cover opacity-50 grayscale transition-transform duration-700 hover:scale-105"
+                />
 
-                        {/* 2. Green Tint: Applies the Defcomm Green color to the white parts of the image */}
-                        <div className="absolute inset-0 bg-[#9FC24D] opacity-20 mix-blend-overlay pointer-events-none" />
+                {/* 2. Green Tint: Applies the Defcomm Green color to the white parts of the image */}
+                <div className="absolute inset-0 bg-[#9FC24D] opacity-20 mix-blend-overlay pointer-events-none" />
 
-                        {/* 3. Dark Gradient: Fades the bottom to black for depth */}
-                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent pointer-events-none" />
+                {/* 3. Dark Gradient: Fades the bottom to black for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
-                        {/* 4. Subtle Matrix/Code Rain Effect (Optional - kept low opacity for texture) */}
-                        <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/o0vwzuFwCGAFO/giphy.gif')] opacity-5 bg-cover mix-blend-screen pointer-events-none" />
-                     </div>
+                {/* 4. Subtle Matrix/Code Rain Effect (Optional - kept low opacity for texture) */}
+                <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/o0vwzuFwCGAFO/giphy.gif')] opacity-5 bg-cover mix-blend-screen pointer-events-none" />
+              </div>
 
                      {/* Right: Content */}
                      <div className="reveal-child space-y-8">
