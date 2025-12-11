@@ -214,7 +214,7 @@ export default function Highlights() {
 
                   <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
                      {/* Left: Matrix Image */}
-                     <div className="reveal-child relative h-[500px] w-full overflow-hidden rounded-3xl border border-[#2A2A2A] bg-black">
+                     <div className="reveal-child relative h-[550px] w-full overflow-hidden rounded-3xl border border-[#2A2A2A] bg-black">
                 {/* 1. Base Image: Grayscale & Lower Opacity to blend with black bg */}
                 <img
                   src={matrixImg}
