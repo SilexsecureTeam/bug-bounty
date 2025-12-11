@@ -90,7 +90,7 @@ export default function QRCodeModal({ isOpen, onClose, userId, encryptId, formId
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A2334] border border-[#2A303C]">
                 <span className="w-2 h-2 rounded-full bg-[#9FC24D] animate-pulse"></span>
                 <p className="text-[10px] font-mono text-[#9BA2B0] uppercase tracking-wider">
-                    ID: {userId} {/* Keeping visual ID short/readable from user object */}
+                    ID: {encryptId} {/* Keeping visual ID short/readable from user object */}
                 </p>
              </div>
           </div>
