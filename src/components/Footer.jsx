@@ -12,7 +12,7 @@ export default function Footer() {
         {/* Top Row: Stay Secure & Subscribe */}
         <div className="flex flex-col justify-between gap-8 border-b border-[#3A3D42] pb-12 lg:flex-row lg:items-center">
           <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-[#2A2D32] p-3 text-white">
+            <div className="rounded-lg p-3 text-white">
               <img src={bugBountyLogo} alt="" />
             </div>
             <div>
