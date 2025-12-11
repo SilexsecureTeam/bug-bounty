@@ -118,7 +118,7 @@ export default function Sidebar({ open, onClose }) {
                     })}
                 </nav>
 
-                <div className="mb-0! mt-[23vh] border-t border-[#111316] pt-6">
+                <div className="mb-0 mt-[23vh] border-t border-[#111316] pt-6">
                     {/* Account Settings / User Profile Area - Clickable for QR */}
                     <div 
                         className="flex items-center gap-3 px-4 cursor-pointer hover:bg-[#101418] p-2 rounded-lg transition-colors group"
