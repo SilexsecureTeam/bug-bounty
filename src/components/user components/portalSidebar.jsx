@@ -6,7 +6,7 @@ import reportIcon from '../../assets/images/reportIcon.png';
 import submitIcon from '../../assets/images/submitIcon.png';
 import paymentIcon from '../../assets/images/paymentIcon.png';
 import { getUser, clearAuthToken } from "../../hooks/useAuthToken";
-import { fetchUserProfileEvent } from "../../api"; 
+import { fetchUserProfile } from "../../api"; 
 import QRCodeModal from "./QRCodeModal"; // Import the new modal
 
 // The fixed form ID for the QR code
@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose }) {
 
             try {
                 // Fetch fresh profile data to get encrypt_id
-                const response = await fetchUserProfileEvent();
+                const response = await fetchUserProfile();
                 if (response && response.data) {
                     setUser(response.data);
                     setEncryptId(response.data.encrypt_id);
@@ -118,7 +118,7 @@ export default function Sidebar({ open, onClose }) {
                     })}
                 </nav>
 
-                <div className="mb-0 mt-[23vh] border-t border-[#111316] pt-6">
+                <div className="mb-0! mt-[23vh] border-t border-[#111316] pt-6">
                     {/* Account Settings / User Profile Area - Clickable for QR */}
                     <div 
                         className="flex items-center gap-3 px-4 cursor-pointer hover:bg-[#101418] p-2 rounded-lg transition-colors group"
@@ -156,4 +156,4 @@ export default function Sidebar({ open, onClose }) {
             />
         </>
     );
-}
+            }
