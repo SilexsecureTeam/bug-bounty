@@ -98,7 +98,9 @@ export default function Contact() {
                     <Phone size={18} />
                     <span className="text-[16px] font-semibold text-white">Call for inquiry</span>
                   </div>
-                  <p className="text-[16px] text-[#9CA3AF]">+257 388-6895</p>
+                  <p className="text-[16px] text-[#9CA3AF]">+234 803 697 5198 <br />
++44 746 347 4337 <br />
++234 703 220 5576</p>
                 </div>
 
                 {/* Email */}
@@ -107,26 +109,10 @@ export default function Contact() {
                     <Mail size={18} />
                     <span className="text-[16px] font-semibold text-white">Send us email</span>
                   </div>
-                  <p className="text-[16px] text-[#9CA3AF]">info@defcommglobal.com</p>
+                  <p className="text-[16px] text-[#9CA3AF]">business@defcomm.ng</p>
                 </div>
 
-                {/* Hours */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[#9FC24D]">
-                    <Clock size={18} />
-                    <span className="text-[16px] font-semibold text-white">Opening hours</span>
-                  </div>
-                  <p className="text-[16px] text-[#9CA3AF]">Mon - Fri: 10AM - 10PM</p>
-                </div>
-
-                {/* Office */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[#9FC24D]">
-                    <MapPin size={18} />
-                    <span className="text-[16px] font-semibold text-white">Office</span>
-                  </div>
-                  <p className="text-[16px] text-[#9CA3AF]">19 North Road, Utako, Abuja</p>
-                </div>
+                
               </div>
             </div>
 
