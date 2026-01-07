@@ -53,9 +53,9 @@ const newsUpdates = [
    },
    {
       id: 4,
-      tag: "Capacity Building",
-      title: "Cybersecurity Training Cohort Graduates",
-      desc: "Over 200 young professionals trained in ethical testing and secure system design.",
+      tag: "Innovation",
+      title: "Counter-UAS / Anti-Drone Detection Systems",
+      desc: "Drone detection using radar, RF analysis, electro-optical, and acoustic sensors Classification and threat identification (non-kinetic focus).",
       date: "August 20, 2022",
       image: img4
    },
@@ -63,8 +63,8 @@ const newsUpdates = [
    {
       id: 5,
       tag: "Innovation",
-      title: "New Bug Bounty Challenge Launched",
-      desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
+      title: "Satellite & Beyond-Coverage Communications",
+      desc: "Satellite-backed secure communications Hybrid terrestrial–satellite architectures.",
       date: "August 20, 2022",
       image: img5
    },
@@ -135,6 +135,7 @@ export default function Highlights() {
                         <div className="relative z-10 space-y-6 text-left">
                            <h1 className="text-4xl font-bold leading-[1.1] text-white md:text-7xl">
                               Defcomm <span className="text-[#85AB20]">Highlights</span> & <br /> <span className="text-[#85AB20]">Innovation</span> Updates <br />
+ />
                            </h1>
                         </div>
 
@@ -159,8 +160,7 @@ export default function Highlights() {
                </header>
             </div>
 
-            {/* --- News Grid Section --- */}
-            <section ref={newsRef} className="bg-[#121212] px-6 py-24">
+            {/* --- News Grid Section ---             <section ref={newsRef} className="bg-[#121212] px-6 py-24">
                <div className="mx-auto max-w-7xl">
                   <div className="mb-16 text-center">
                      <h2 className="text-3xl font-black text-white sm:text-4xl">What's Happening Across Defcomm</h2>
