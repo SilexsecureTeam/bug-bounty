@@ -20,10 +20,10 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import shieldBg from "../assets/images/Group-1450.svg";
 // Replaced missing first_icon with a placeholder or lucide icon to prevent crash
-import first_icon from "../assets/images/Icons.png"; 
-import second_icon from "../assets/images/IIcon.png"; 
-import third_icon from "../assets/images/IIcon.png"
-import fourth_icon from "../assets/images/IIcon.png"; 
+import first_icon from "../assets/images/Frame1.png"; 
+import second_icon from "../assets/images/Frame2.png"; 
+import third_icon from "../assets/images/Frame3.png"
+import fourth_icon from "../assets/images/Frame4.png"; 
 
 import aboutImage from "../assets/images/about2.jpg";
 
