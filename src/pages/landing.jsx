@@ -274,9 +274,12 @@ export default function Landing() {
                   />
                 </div>
 
-                <p className="text-lg text-[#C6D4A1] sm:text-xl">
-                  Operation Iron Shield brings together cybersecurity strategists, defence partners, and ethical hackers for Africa's most ambitious bounty operation.
-                </p>
+                <p className="text-sm text-[#C6D4A1] sm:text-[16px]">
+                  
+
+Operation Iron Shield represents a new phase in African-led defence communication capability, focused on delivering secure, resilient, and sovereign communications for military and national security operations.
+<br />
+Designed to operate across urban, border, maritime, and remote environments, the initiative demonstrates how defence-grade secure devices and satellite-enabled communications can sustain command, coordination, and situational awareness in contested and infrastructure-limited theatres.   </p>
                 <div className="flex flex-wrap items-center gap-4">
                   <Link
                     to="/register"
