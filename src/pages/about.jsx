@@ -22,7 +22,7 @@ import shieldBg from "../assets/images/Group-1450.svg";
 // Replaced missing first_icon with a placeholder or lucide icon to prevent crash
 import first_icon from "../assets/images/Icons.png"; 
 import second_icon from "../assets/images/IIcon.png"; 
-import aboutImage from "../assets/images/aboutImg.png";
+import aboutImage from "../assets/images/about.jpg";
 
 // --- Data Constants ---
 
