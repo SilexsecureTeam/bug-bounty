@@ -200,7 +200,7 @@ export default function About() {
         </div>
 
         {/* --- Section with the Grid Fix --- */}
-        <section className="bg-[#151C04] p-6 lg:p-16">
+        <section className="bg-[#151C0499] p-6 lg:p-16">
           <div className="text-center max-w-4xl mx-auto space-y-4 mb-8 text-[17px]">
             <h3 className="text-2xl font-bold leading-tight text-white md:text-4xl">Accelerating secure defence innovation in Africa.</h3>
             <p>Learn about Defcomm’s mission to build a stronger and more resilient Africa through defence technology development, ethical security research, and collaborative innovation that supports national and regional stability.</p>
