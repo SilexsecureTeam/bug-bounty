@@ -78,10 +78,10 @@ const statPills = [
 ];
 
 const impactBullets = [
-  "1,500+ participants from 10 nations",
-  "$200,000+ in prizes and innovation grants",
-  "Live hacking of Secure OS, encrypted drones, privacy phones",
-  "Strategic panels on sovereignty and cyber resilience"
+  "Defence-grade secure communication devices with hardened OS and controlled environments",
+  "End-to-end encryption for mission-critical communications",
+  "Direct-to-satellite connectivity enabling beyond-line-of-coverage operations",
+  "Rapid deployment architecture with minimal reliance on ground infrastructure"
 ];
 
 const agendaItems = [
