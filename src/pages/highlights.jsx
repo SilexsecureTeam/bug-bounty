@@ -39,7 +39,7 @@ const newsUpdates = [
       id: 2,
       tag: "Recognition",
       title: "Secure Operating Systems (Defence OS)",
-      desc: "Hardened mobile and embedded operating systems Secure boot, trusted execution environments (TEE)Mandatory access control and compartmentalisation",
+      desc: "Hardened mobile and embedded operating systems Secure boot, trusted execution environments (TEE). Mandatory access control and compartmentalisation",
       date: "August 20, 2022",
       image: img2
    },
@@ -55,7 +55,7 @@ const newsUpdates = [
       id: 4,
       tag: "Innovation",
       title: "Counter-UAS / Anti-Drone Detection Systems",
-      desc: "Drone detection using radar, RF analysis, electro-optical, and acoustic sensors Classification and threat identification (non-kinetic focus).",
+      desc: "Drone detection using radar, RF analysis, electro-optical, and acoustic sensors. Classification and threat identification (non-kinetic focus).",
       date: "August 20, 2022",
       image: img4
    },
@@ -64,32 +64,32 @@ const newsUpdates = [
       id: 5,
       tag: "Innovation",
       title: "Satellite & Beyond-Coverage Communications",
-      desc: "Satellite-backed secure communications Hybrid terrestrial–satellite architectures.",
+      desc: "Satellite-backed secure communications. Hybrid terrestrial–satellite architectures.",
       date: "August 20, 2022",
       image: img5
    },
    {
       id: 6,
       tag: "Innovation",
-      title: "New Bug Bounty Challenge Launched",
-      desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
+      title: "Secure Hardware & Trusted Devices",
+      desc: "Hardened devices, secure elements, and tamper resistance. Controlled manufacturing and supply-chain assurance.",
       date: "August 20, 2022",
       image: img6
    },
    {
       id: 7,
-      tag: "Recognition",
-      title: "Top Ethical Hackers Recognized",
-      desc: "Meet the top security researchers advancing Africa's cybersecurity mission.",
+      tag: "Innovation",
+      title: "Cyber Defence & Information Assurance",
+      desc: "Network defence, endpoint security, and threat monitoring. Secure identity, access management, and audit trails.",
       date: "August 20, 2022",
       image: img7
    },
    {
       id: 8,
       tag: "Innovation",
-      title: "New Bug Bounty Challenge Launched",
-      desc: "Defcomm introduces a continent-wide vulnerability discovery challenge to strengthen defence digital.",
-      date: "August 20, 2022",
+      title: "",
+      desc: "",
+      date: "",
       image: img8
    }
 ];
