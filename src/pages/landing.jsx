@@ -266,7 +266,7 @@ export default function Landing() {
               style={{ "--reveal-child-delay": "0.2s" }}
             >
               <div className="flex max-w-3xl flex-col gap-6">
-                <div className="w-full max-w-xl">
+                <div className="w-full max-w-2xl">
                   <h1 className="text-5xl font-extrabold color-[#36460A]">African Defense <span className="text-[#C6D4A1]">(Tech)</span></h1>
                 </div>
 <p className="text-white text-[16px]"> OPERATION IRON SHIELD</p>
