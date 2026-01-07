@@ -174,13 +174,13 @@ export default function Highlights() {
           key={news.id}
           className="reveal-child group flex flex-col overflow-hidden border border-[#2A2A2A] bg-[#1E1E1E] transition-all hover:border-[#9FC24D]/50"
         >
-          <div className="relative h-48 w-full overflow-hidden">
-            <img
-              src={news.image}
-              alt={news.title}
-              className="h-full w-full object-cover  transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
+          <div className="relative w-full aspect-video overflow-hidden">
+        <img
+          src={news.image}
+          alt={news.title}
+          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
           <div className="flex flex-1 flex-col p-5">
             <span className="mb-3 inline-block w-fit rounded bg-[#2D3320] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9FC24D]">
               {news.tag}
