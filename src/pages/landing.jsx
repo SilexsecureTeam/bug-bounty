@@ -267,9 +267,9 @@ export default function Landing() {
             >
               <div className="flex max-w-3xl flex-col gap-6">
                 <div className="w-full max-w-xl">
-                  <h1 className="text-3xl font-extrabold color-[#36460A]">African Defense Tech</h1>
+                  <h1 className="text-6xl font-extrabold color-[#36460A]">African Defense Tech</h1>
                 </div>
-<p className="text-sm text-[#C6D4A1] sm:text-[16px]"> OPERATION IRON SHIELD</p>
+<p className="text-white text-[16px]"> OPERATION IRON SHIELD</p>
                 <p className="text-sm text-[#C6D4A1] sm:text-[16px]">
                   
 
