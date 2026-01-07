@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import bugBounty from "../assets/images/bug bounty logo 4.png";
+import bugBounty from "../assets/images/defensetech.png";
 import shieldBg from "../assets/images/Group-1450.svg";
 import Logotypes from "../assets/images/Logotypes.png";
 import agendaMap from "../assets/images/Frame-34.png";
