@@ -221,10 +221,10 @@ export default function About() {
               <img src={second_icon} alt="" className="w-34 h-34" />
             </div>
             <div className="bg-[#192204] p-6 md:col-span-2 flex items-center justify-center rounded-2xl border border-[#26330A]">
-              <img src={first_icon} alt="" className="w-34 h-34" />
+              <img src={third_icon} alt="" className="w-34 h-34" />
             </div>
             <div className="bg-[#192204] p-6 md:col-span-2 flex items-center justify-center rounded-2xl border border-[#26330A]">
-              <img src={first_icon} alt="" className="w-34 h-34" />
+              <img src={fourth_icon} alt="" className="w-34 h-34" />
             </div>
             
           </div>
