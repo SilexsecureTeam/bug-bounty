@@ -160,46 +160,59 @@ export default function Highlights() {
             </div>
 
                           <section ref={newsRef} className="bg-[#121212] px-6 py-24">
-               <div className="mx-auto max-w-7xl">
-                  <div className="mb-16 text-center">
-                     <h2 className="text-3xl font-black text-white sm:text-4xl">What's Happening Across Defcomm</h2>
-                     <p className="mx-auto mt-4 max-w-2xl text-[16px] text-[#9CA3AF]">
-                        Explore the most important updates shaping Africa's defence technology, cybersecurity readiness, and innovation ecosystem.
-                     </p>
-                  </div>
+  <div className="mx-auto max-w-7xl">
+    <div className="mb-16 text-center">
+      <h2 className="text-3xl font-black text-white sm:text-4xl">What's Happening Across Defcomm</h2>
+      <p className="mx-auto mt-4 max-w-2xl text-[16px] text-[#9CA3AF]">
+        Explore the most important updates shaping Africa's defence technology, cybersecurity readiness, and innovation ecosystem.
+      </p>
+    </div>
 
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                     {newsUpdates.map((news) => (
-                        <div
-                           key={news.id}
-                           className="reveal-child group flex flex-col overflow-hidden border border-[#2A2A2A] bg-[#1E1E1E] transition-all hover:border-[#9FC24D]/50"
-                        >
-                           <div className="relative h-48 w-full overflow-hidden">
-                              <img
-                                 src={news.image}
-                                 alt={news.title}
-                                 className="h-full w-full object-cover  transition-transform duration-500 group-hover:scale-105"
-                              />
-                           </div>
-                           <div className="flex flex-1 flex-col p-5">
-                              <span className="mb-3 inline-block w-fit rounded bg-[#2D3320] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9FC24D]">
-                                 {news.tag}
-                              </span>
-                              <h3 className="mb-2 text-lg font-bold leading-tight text-white">
-                                 {news.title}
-                              </h3>
-                              <p className="mb-4 flex-1 text-xs leading-relaxed text-[#9CA3AF]">
-                                 {news.desc}
-                              </p>
-                              <p className="text-[10px] font-medium text-[#6B7280]">
-                                 {news.date}
-                              </p>
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               </div>
-            </section>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {newsUpdates.map((news) => (
+        <div
+          key={news.id}
+          className="reveal-child group flex flex-col overflow-hidden border border-[#2A2A2A] bg-[#1E1E1E] transition-all hover:border-[#9FC24D]/50"
+        >
+          <div className="relative h-48 w-full overflow-hidden">
+            <img
+              src={news.image}
+              alt={news.title}
+              className="h-full w-full object-cover  transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          <div className="flex flex-1 flex-col p-5">
+            <span className="mb-3 inline-block w-fit rounded bg-[#2D3320] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9FC24D]">
+              {news.tag}
+            </span>
+            <h3 className="mb-2 text-lg font-bold leading-tight text-white">
+              {news.title}
+            </h3>
+            
+            {/* MODIFIED SECTION STARTS HERE */}
+            <p className="mb-4 flex-1 text-xs leading-relaxed text-[#9CA3AF]">
+              {news.desc.split('.').map((sentence, index, array) => (
+                <React.Fragment key={index}>
+                  {sentence}
+                  {index < array.length - 1 && (
+                    <>
+                      .<br />
+                    </>
+                  )}
+                </React.Fragment>
+              ))}
+            </p>
+            {/* MODIFIED SECTION ENDS HERE */}
+
+            <p className="text-[10px] font-medium text-[#6B7280]">
+              {news.date}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
             {/* --- Key Updates & Feature Section (Image 2 Top) --- */}
             <section ref={featureRef} className="bg-[#121212] px-6 py-24">
