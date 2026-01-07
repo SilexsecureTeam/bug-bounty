@@ -135,7 +135,6 @@ export default function Highlights() {
                         <div className="relative z-10 space-y-6 text-left">
                            <h1 className="text-4xl font-bold leading-[1.1] text-white md:text-7xl">
                               Defcomm <span className="text-[#85AB20]">Highlights</span> & <br /> <span className="text-[#85AB20]">Innovation</span> Updates <br />
- />
                            </h1>
                         </div>
 
@@ -160,7 +159,7 @@ export default function Highlights() {
                </header>
             </div>
 
-            {/* --- News Grid Section ---             <section ref={newsRef} className="bg-[#121212] px-6 py-24">
+                          <section ref={newsRef} className="bg-[#121212] px-6 py-24">
                <div className="mx-auto max-w-7xl">
                   <div className="mb-16 text-center">
                      <h2 className="text-3xl font-black text-white sm:text-4xl">What's Happening Across Defcomm</h2>
