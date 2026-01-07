@@ -214,13 +214,13 @@ export default function About() {
             </div>
 
             {/* Using Lucide icons as fallback since first_icon.png was missing */}
-          <img src={first_icon} alt="" className="w-34 h-34" />
+          <img src={first_icon} alt="" className="w-full md:col-span-2" />
           
-           <img src={second_icon} alt="" className="w-34 h-34" />
+           <img src={second_icon} alt="" className="w-full md:col-span-2" />
             
-            <img src={third_icon} alt="" className="w-34 h-34" />
+            <img src={third_icon} alt="" className="w-full md:col-span-2" />
             
-             <img src={fourth_icon} alt="" className="w-34 h-34" />
+             <img src={fourth_icon} alt="" className="w-full md:col-span-2" />
             
             
           </div>
