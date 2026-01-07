@@ -15,14 +15,14 @@ import newsImg4 from "../assets/images/Image-4.png";
 import matrixImg from "../assets/images/image 228.png"; // Placeholder for the matrix/code image
 import joinIcon from "../assets/images/Image.png"; // Placeholder for the small CTA icon
 
-import img1 from "../assets/images/image 219.png";
-import img2 from "../assets/images/image 220.png";
-import img3 from "../assets/images/image 222.png";
-import img4 from "../assets/images/image 224.png";
-import img5 from "../assets/images/image 225.png";
-import img6 from "../assets/images/image 226.png";
-import img7 from "../assets/images/image 220.png";
-import img8 from "../assets/images/image 225.png";
+import img1 from "../assets/images/first.jpg";
+import img2 from "../assets/images/second.png";
+import img3 from "../assets/images/third.png";
+import img4 from "../assets/images/fourth.png";
+import img5 from "../assets/images/fifth.png";
+import img6 from "../assets/images/sixth.jpg";
+import img7 from "../assets/images/seventh.jpg";
+import img8 from "../assets/images/eight.png";
 
 // --- Data ---
 
