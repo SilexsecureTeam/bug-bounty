@@ -196,7 +196,7 @@ export default function Highlights() {
                   {sentence}
                   {index < array.length - 1 && (
                     <>
-                      .<br />
+                      .<br /> <br />
                     </>
                   )}
                 </React.Fragment>
