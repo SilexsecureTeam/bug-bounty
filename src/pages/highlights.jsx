@@ -38,16 +38,16 @@ const newsUpdates = [
    {
       id: 2,
       tag: "Recognition",
-      title: "Top Ethical Hackers Recognized",
-      desc: "Meet the top security researchers advancing Africa's cybersecurity mission.",
+      title: "Secure Operating Systems (Defence OS)",
+      desc: "Hardened mobile and embedded operating systems Secure boot, trusted execution environments (TEE)Mandatory access control and compartmentalisation",
       date: "August 20, 2022",
       image: img2
    },
    {
       id: 3,
       tag: "Collaboration",
-      title: "New Defence Tech Research Hub Opened",
-      desc: "Collaboration center built for testing drones, communications tools, and threat simulation.",
+      title: "Surveillance & Reconnaissance Technologies",
+      desc: "Ground, border, maritime, and perimeter surveillance systems EO/IR cameras, ground sensors, and unattended monitoring systems.",
       date: "August 20, 2022",
       image: img3
    },
