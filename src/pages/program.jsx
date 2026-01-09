@@ -8,7 +8,7 @@ import { useReveal } from "../hooks/useReveal";
 
 // Assets (Reusing existing assets to match design placeholders)
 import shieldBg from "../assets/images/Group-1450.svg";
-import overviewImg from "../assets/images/image 232.png"; // Placeholder for the group photo
+import overviewImg from "../assets/images/first.jpg"; // Placeholder for the group photo
 
 // --- Data Constants ---
 
