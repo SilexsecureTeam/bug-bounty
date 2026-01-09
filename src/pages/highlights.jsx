@@ -176,10 +176,12 @@ export default function Highlights() {
         >
           <div className="relative w-full aspect-video overflow-hidden">
         <img
-          src={news.image}
-          alt={news.title}
-          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-        />
+              src={news.image}
+              alt={news.title}
+              loading="eager" 
+              className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              style={{ imageRendering: '-webkit-optimize-contrast' }}
+            />
       </div>
           <div className="flex flex-1 flex-col p-5">
             <span className="mb-3 inline-block w-fit rounded bg-[#2D3320] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9FC24D]">
