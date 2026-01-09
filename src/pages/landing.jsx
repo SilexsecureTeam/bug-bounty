@@ -86,7 +86,7 @@ const impactBullets = [
 
 const agendaItems = [
   {
-    label: "February 2026",
+    label: "March 2026",
     title: "Pre Event",
     time: "Private briefings and threat modelling"
   },
@@ -96,7 +96,7 @@ const agendaItems = [
     time: "Strategy labs · 09:30 – 18:00"
   },
   {
-    label: "March 5, 2025",
+    label: "March 5, 2026",
     title: "Event Day",
     time: "CTF finals · 09:30 – 18:00"
   }
