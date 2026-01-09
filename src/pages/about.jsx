@@ -201,30 +201,59 @@ export default function About() {
 
         {/* --- Section with the Grid Fix --- */}
         <section className="bg-[#151C0499] p-6 lg:p-16">
-          <div className="text-center max-w-4xl mx-auto space-y-4 mb-8 text-[17px]">
-            <h3 className="text-2xl font-bold leading-tight text-white md:text-4xl">Accelerating secure defence innovation in Africa.</h3>
-            <p>Learn about Defcomm’s mission to build a stronger and more resilient Africa through defence technology development, ethical security research, and collaborative innovation that supports national and regional stability.</p>
-          </div>
+  <div className="mx-auto mb-8 max-w-4xl space-y-4 text-center text-[17px]">
+    <h3 className="text-2xl font-bold leading-tight text-white md:text-4xl">
+      Accelerating secure defence innovation in Africa.
+    </h3>
+    <p className="text-gray-300">
+      Learn about Defcomm’s mission to build a stronger and more resilient Africa
+      through defence technology development, ethical security research, and
+      collaborative innovation that supports national and regional stability.
+    </p>
+  </div>
 
-          {/* FIX: Added 'grid' class and responsive breakpoints */}
-          <div className="grid grid-cols-1 md:grid-cols-7 gap-5 p-4">
-            <div className="md:col-span-3 md:row-span-2 bg-[#192204] p-6 rounded-2xl border border-[#26330A]">
-              <p className="font-bold text-[18px] mb-4">Core Defence & Cyber Innovation</p>
-              <p className="leading-relaxed text-[17px] text-[#B6C197]">Advancing modern, scalable technologies that strengthen Africa’s defence ecosystem. From drone development and smart surveillance systems to cybersecurity tools and software that tracks weapons and threats, Defcomm supports reliable operations, improves situational awareness, and enables smarter, faster responses to emerging security challenges.</p>
-            </div>
+  {/* MAIN GRID: Split into 2 columns (Left for Text, Right for Icons) */}
+  <div className="grid grid-cols-1 gap-5 p-4 lg:grid-cols-2">
+    
+    {/* LEFT COLUMN: Text Box */}
+    <div className="flex flex-col justify-center rounded-2xl border border-[#26330A] bg-[#192204] p-8">
+      <p className="mb-4 text-[18px] font-bold text-white">
+        Core Defence & Cyber Innovation
+      </p>
+      <p className="text-[17px] leading-relaxed text-[#B6C197]">
+        Advancing modern, scalable technologies that strengthen Africa’s defence
+        ecosystem. From drone development and smart surveillance systems to
+        cybersecurity tools and software that tracks weapons and threats,
+        Defcomm supports reliable operations, improves situational awareness,
+        and enables smarter, faster responses to emerging security challenges.
+      </p>
+    </div>
 
-            {/* Using Lucide icons as fallback since first_icon.png was missing */}
-          <img src={first_icon} alt="" className="h-40 w-auto md:col-span-2" />
-          
-           <img src={second_icon} alt="" className="h-40 w-auto md:col-span-2" />
-            
-            <img src={third_icon} alt="" className="h-40 w-auto md:col-span-2" />
-            
-             <img src={fourth_icon} alt="" className="h-40 w-auto md:col-span-2" />
-            
-            
-          </div>
-        </section>
+    {/* RIGHT COLUMN: Nested 2x2 Grid for Icons */}
+    <div className="grid grid-cols-2 gap-5">
+      {/* Icon 1 */}
+      <div className="flex h-full min-h-[160px] items-center justify-center rounded-2xl border border-[#26330A] bg-[#192204] p-6 transition-colors hover:border-[#9FC24D]/50">
+        <img src={first_icon} alt="Drone Tech" className="h-16 w-16 object-contain md:h-20 md:w-20" />
+      </div>
+
+      {/* Icon 2 */}
+      <div className="flex h-full min-h-[160px] items-center justify-center rounded-2xl border border-[#26330A] bg-[#192204] p-6 transition-colors hover:border-[#9FC24D]/50">
+        <img src={second_icon} alt="Surveillance" className="h-16 w-16 object-contain md:h-20 md:w-20" />
+      </div>
+
+      {/* Icon 3 */}
+      <div className="flex h-full min-h-[160px] items-center justify-center rounded-2xl border border-[#26330A] bg-[#192204] p-6 transition-colors hover:border-[#9FC24D]/50">
+        <img src={third_icon} alt="Cyber Security" className="h-16 w-16 object-contain md:h-20 md:w-20" />
+      </div>
+
+      {/* Icon 4 */}
+      <div className="flex h-full min-h-[160px] items-center justify-center rounded-2xl border border-[#26330A] bg-[#192204] p-6 transition-colors hover:border-[#9FC24D]/50">
+        <img src={fourth_icon} alt="Analytics" className="h-16 w-16 object-contain md:h-20 md:w-20" />
+      </div>
+    </div>
+
+  </div>
+</section>
 
         {/* --- Tabs Section --- */}
         <div className="text-center max-w-5xl mx-auto py-6 pt-12 space-y-4 px-6">
