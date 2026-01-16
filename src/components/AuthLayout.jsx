@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import authImg from "../assets/images/authImg.jpg";
-import DefcommLogo from "../assets/images/Defcomm-04 2.svg";
+import DefcommLogo from "../assets/images/AfD.svg";
 import Footer from "./Footer";
 
 const defaultTabs = [
