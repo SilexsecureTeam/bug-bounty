@@ -147,7 +147,7 @@ export default function Landing() {
       <section
         id="hero"
         ref={heroRef}
-        className="reveal-section relative min-h-screen flex flex-col justify-between bg-[#050605] overflow-hidden"
+        className="reveal-section relative h-[80vh] flex flex-col justify-between bg-[#050605] overflow-hidden"
       >
         {/* Background Map Effect - Right aligned */}
         <div className="absolute right-0 top-0 h-full w-full lg:w-3/5 opacity-20 pointer-events-none">
@@ -164,7 +164,7 @@ export default function Landing() {
         ></div>
 
         {/* Main Hero Content */}
-        <div className="relative z-10 flex-grow flex items-center px-6 pt-12 md:pt-20 pb-12 sm:px-10 lg:px-16">
+        <div className="relative z-10 flex-grow flex items-center px-6 pt-4 md:pt-6 pb-12 sm:px-10 lg:px-16">
           <div className="w-full grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-8 items-center">
 
             {/* Left Side: Typography & Buttons */}
