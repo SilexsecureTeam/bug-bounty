@@ -164,7 +164,7 @@ export default function Landing() {
         ></div>
 
         {/* Main Hero Content */}
-        <div className="relative z-10 flex-grow flex items-center px-6 pt-32 pb-12 sm:px-10 lg:px-16">
+        <div className="relative z-10 flex-grow flex items-center px-6 pt-16 md:pt-32 pb-12 sm:px-10 lg:px-16">
           <div className="w-full grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-8 items-center">
 
             {/* Left Side: Typography & Buttons */}
