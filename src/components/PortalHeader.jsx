@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DefcommLogo from "../assets/images/Defcomm-04 2.svg";
+import DefcommLogo from "../assets/images/AFD.svg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getAuthToken, clearAuthToken } from "../hooks/useAuthToken";
 
