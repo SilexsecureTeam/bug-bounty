@@ -338,6 +338,82 @@ export default function Landing() {
       </section>
       {/* --- NEW HERO SECTION END --- */}
 
+      <section
+          id="speakers"
+          ref={speakersRef}
+          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#3A3D42] bg-[#2B2E32] px-6 py-16 sm:px-10 lg:px-16"
+        >
+          <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.1s" }}>
+            <div className="space-y-6">
+              <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-[3.75rem]">
+                <span className="relative inline-block">
+                  <span>Keynote</span>
+                  <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
+                </span>
+                <br />
+                <span className="relative mt-4 inline-block">
+                  <span>Speakers</span>
+                  <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
+                </span>
+              </h2>
+            </div>
+            <p className="max-w-xs text-sm leading-relaxed text-[#D8DCE4] lg:text-right">
+              Meet the industry leaders shaping the future of Cyber security.
+            </p>
+          </div>
+
+          <div className="py-4">
+            <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
+              {speakerCards.map((card, index) => {
+                const delay = 0.18 + index * 0.06;
+                if (card.type === "text") {
+                  const hasName = card.name && card.name.trim() !== "";
+                  return (
+                    <article
+                      key={`${card.name || "no-name"}-text-${index}`}
+                      className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.text[card.variant ?? "light"]}`}
+                      style={{ "--reveal-child-delay": `${delay}s` }}
+                    >
+                      {hasName ? (
+                        <>
+                          <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
+                            {card.name}
+                          </h3>
+                          <p className={`text-sm sm:text-base leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
+                            {card.role}
+                          </p>
+                        </>
+                      ) : (
+                        <div className="flex flex-1 items-center justify-center">
+                          <img
+                            src={fallbackImg}
+                            alt="Speaker placeholder"
+                            className="max-h-[70%] max-w-[70%] object-contain opacity-90"
+                          />
+                        </div>
+                      )}
+                    </article>
+                  );
+                }
+                return (
+                  <article
+                    key={`${card.name || "no-name"}-image-${index}`}
+                    className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
+                    style={{ "--reveal-child-delay": `${delay}s` }}
+                  >
+                    <img
+                      src={card.image || fallbackImg}
+                      alt={card.name || "Speaker"}
+                      className="h-full w-full object-cover"
+                    />
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-6 pb-24 pt-10 sm:px-10 lg:gap-20 lg:px-0">
         
         {/* Sponsors Strip */}
@@ -470,81 +546,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section
-          id="speakers"
-          ref={speakersRef}
-          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#3A3D42] bg-[#2B2E32] px-6 py-16 sm:px-10 lg:px-16"
-        >
-          <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.1s" }}>
-            <div className="space-y-6">
-              <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-[3.75rem]">
-                <span className="relative inline-block">
-                  <span>Keynote</span>
-                  <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
-                </span>
-                <br />
-                <span className="relative mt-4 inline-block">
-                  <span>Speakers</span>
-                  <span className="absolute left-0 -bottom-3 h-2 w-full rounded-full bg-[#89D12F]"></span>
-                </span>
-              </h2>
-            </div>
-            <p className="max-w-xs text-sm leading-relaxed text-[#D8DCE4] lg:text-right">
-              Meet the industry leaders shaping the future of Cyber security.
-            </p>
-          </div>
-
-          <div className="py-4">
-            <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
-              {speakerCards.map((card, index) => {
-                const delay = 0.18 + index * 0.06;
-                if (card.type === "text") {
-                  const hasName = card.name && card.name.trim() !== "";
-                  return (
-                    <article
-                      key={`${card.name || "no-name"}-text-${index}`}
-                      className={`reveal-child flex flex-col justify-between rounded-[40px] p-6 sm:p-8 shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.text[card.variant ?? "light"]}`}
-                      style={{ "--reveal-child-delay": `${delay}s` }}
-                    >
-                      {hasName ? (
-                        <>
-                          <h3 className="text-lg sm:text-2xl font-semibold tracking-tight">
-                            {card.name}
-                          </h3>
-                          <p className={`text-sm sm:text-base leading-relaxed ${card.variant === "light" ? "text-[#4A4F58]" : "text-white/80"}`}>
-                            {card.role}
-                          </p>
-                        </>
-                      ) : (
-                        <div className="flex flex-1 items-center justify-center">
-                          <img
-                            src={fallbackImg}
-                            alt="Speaker placeholder"
-                            className="max-h-[70%] max-w-[70%] object-contain opacity-90"
-                          />
-                        </div>
-                      )}
-                    </article>
-                  );
-                }
-                return (
-                  <article
-                    key={`${card.name || "no-name"}-image-${index}`}
-                    className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
-                    style={{ "--reveal-child-delay": `${delay}s` }}
-                  >
-                    <img
-                      src={card.image || fallbackImg}
-                      alt={card.name || "Speaker"}
-                      className="h-full w-full object-cover"
-                    />
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
+        
         <section
           id="sponsors"
           ref={sponsorsRef}
