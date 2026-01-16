@@ -16,6 +16,14 @@ import linkedIn from '../assets/images/linkedIn.svg';
 import instagram from '../assets/images/instagram.svg';
 import youtube from '../assets/images/youtube.svg';
 import { FaXTwitter } from "react-icons/fa6";
+import { 
+  Satellite, 
+  Smartphone, 
+  Radio, 
+  Watch, 
+  Plane, 
+  ShieldCheck 
+} from "lucide-react";
 
 
 const sponsors = [
@@ -191,9 +199,107 @@ export default function Landing() {
             </div>
 
             {/* Right Side: Node Diagram Visual */}
-            <div className="relative flex items-center justify-center lg:justify-end">
-              {/* This is the placeholder for the complex node diagram in the figma design */}
-              {/* You should replace 'bugBounty' with the actual diagram export when available */}
+            {/* Right Side: Node Diagram Visual */}
+            <div className="relative flex items-center justify-center lg:justify-end w-full h-[500px] lg:h-[600px]">
+              
+              {/* Diagram Container */}
+              <div className="relative w-full max-w-[550px] aspect-square">
+                
+                {/* SVG Connecting Lines Layer */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 drop-shadow-[0_0_10px_rgba(158,203,50,0.3)]">
+                  <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#3F550F" />
+                      <stop offset="100%" stopColor="#9ECB32" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Center to Drone (Top) */}
+                  <path d="M50% 50% Q55% 30% 55% 15%" fill="none" stroke="url(#lineGradient)" strokeWidth="2" />
+                  
+                  {/* Center to Privacy Phone (Right) */}
+                  <path d="M50% 50% Q70% 45% 85% 40%" fill="none" stroke="url(#lineGradient)" strokeWidth="2" />
+                  
+                  {/* Center to Tower (Bottom Right) */}
+                  <path d="M50% 50% Q65% 65% 75% 75%" fill="none" stroke="url(#lineGradient)" strokeWidth="2" />
+                  
+                  {/* Center to Watch (Bottom Left) */}
+                  <path d="M50% 50% Q40% 65% 35% 75%" fill="none" stroke="url(#lineGradient)" strokeWidth="2" />
+                  
+                  {/* Center to Secure OS (Left) */}
+                  <path d="M50% 50% Q30% 45% 15% 40%" fill="none" stroke="url(#lineGradient)" strokeWidth="2" />
+
+                  {/* Line trailing off to the left (Simulating connection to 'Challenge' button) */}
+                  <path d="M15% 40% Q5% 45% -10% 50%" fill="none" stroke="#9ECB32" strokeWidth="2" strokeOpacity="0.5" strokeDasharray="5,5" />
+                </svg>
+
+                {/* --- NODES --- */}
+
+                {/* 1. Center Node: Satellite Connectivity */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+                  <div className="relative flex h-28 w-28 items-center justify-center rounded-full border-2 border-[#9ECB32] bg-[#050605] shadow-[0_0_40px_rgba(158,203,50,0.2)]">
+                    <Satellite className="h-12 w-12 text-[#9ECB32] animate-pulse" strokeWidth={1.5} />
+                    {/* Inner spinning ring effect */}
+                    <div className="absolute inset-2 rounded-full border border-[#9ECB32]/30 border-t-transparent animate-spin-slow"></div>
+                  </div>
+                  <span className="mt-4 text-center text-xs font-semibold uppercase tracking-widest text-white">
+                    Satellite Connectivity
+                  </span>
+                </div>
+
+                {/* 2. Top Node: Drone */}
+                <div className="absolute top-[5%] left-[55%] -translate-x-1/2 z-20 flex flex-col items-center w-40">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-[#9ECB32] bg-[#0B0E07]">
+                    <Plane className="h-8 w-8 text-white" strokeWidth={1.5} />
+                  </div>
+                  <span className="mt-3 text-center text-[10px] font-medium leading-tight text-[#D7E4BB]">
+                    Autonomous Drone<br />Security Frameworks
+                  </span>
+                </div>
+
+                {/* 3. Right Node: Privacy Phone */}
+                <div className="absolute top-[30%] left-[85%] -translate-x-1/2 z-20 flex flex-col items-center w-32">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-[#9ECB32] bg-[#0B0E07]">
+                    {/* Using double ring for privacy phone look */}
+                    <div className="h-14 w-14 rounded-full border border-[#9ECB32]/50 flex items-center justify-center">
+                       <Smartphone className="h-6 w-6 text-white" strokeWidth={1.5} />
+                    </div>
+                  </div>
+                  <span className="mt-3 text-center text-[10px] font-medium leading-tight text-[#D7E4BB]">
+                    Defcomm privacy<br />phone
+                  </span>
+                </div>
+
+                {/* 4. Bottom Right Node: Secure Comms */}
+                <div className="absolute top-[75%] left-[75%] -translate-x-1/2 z-20 flex flex-col items-center w-36">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-[#9ECB32] bg-[#0B0E07]">
+                    <Radio className="h-8 w-8 text-[#9ECB32]" strokeWidth={1.5} />
+                  </div>
+                  <span className="mt-3 text-center text-[10px] font-medium leading-tight text-[#D7E4BB]">
+                    Secure<br/>Communications
+                  </span>
+                </div>
+
+                {/* 5. Bottom Left Node: Watch */}
+                <div className="absolute top-[75%] left-[35%] -translate-x-1/2 z-20 flex flex-col items-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#9ECB32] bg-[#0B0E07]">
+                    <Watch className="h-7 w-7 text-white" strokeWidth={1.5} />
+                  </div>
+                </div>
+
+                {/* 6. Left Node: Secure OS */}
+                <div className="absolute top-[32%] left-[15%] -translate-x-1/2 z-20 flex flex-col items-center">
+                  <div className="flex h-24 w-16 flex-col items-center justify-center rounded-[20px] border-2 border-[#9ECB32] bg-[#0B0E07]">
+                    <ShieldCheck className="h-6 w-6 text-[#9ECB32] mb-1" strokeWidth={1.5} />
+                    <div className="h-1 w-6 rounded-full bg-[#36460A]"></div>
+                  </div>
+                  <div className="mt-2 text-center">
+                    <span className="block text-lg font-black tracking-widest text-[#9ECB32]">DOS</span>
+                    <span className="text-[10px] font-medium text-[#D7E4BB]">Defcomm Secure OS</span>
+                  </div>
+                </div>
+
+              </div>
               <img
                 src={bugBounty}
                 alt="Defcomm Security Framework"
