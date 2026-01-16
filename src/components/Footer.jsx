@@ -1,5 +1,5 @@
 import { useState } from "react";
-import bugBountyLogo from "../assets/images/real-logo.png";
+import bugBountyLogo from "../assets/images/AFD.svg";
 import { Shield } from "lucide-react";
 
 export default function Footer() {
