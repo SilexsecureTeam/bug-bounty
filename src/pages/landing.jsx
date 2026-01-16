@@ -300,11 +300,7 @@ export default function Landing() {
                 </div>
 
               </div>
-              <img
-                src={bugBounty}
-                alt="Defcomm Security Framework"
-                className="w-full max-w-2xl h-auto object-contain drop-shadow-2xl relative z-10 animate-pulse-slow"
-              />
+          
             </div>
           </div>
         </div>
