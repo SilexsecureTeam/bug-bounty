@@ -200,7 +200,7 @@ export default function Landing() {
 
             {/* Right Side: Node Diagram Visual */}
             {/* Right Side: Node Diagram Visual */}
-            <div className="relative flex items-center justify-center lg:justify-end w-full h-[500px] lg:h-[600px]">
+            <div className="relative hidden sm:flex items-center justify-center lg:justify-end w-full h-[500px] lg:h-[600px]">
               
               {/* Diagram Container */}
               <div className="relative w-full max-w-[550px] aspect-square">
