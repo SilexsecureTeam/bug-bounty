@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom"; // 1. Import useLocation
-import Defcomm from "../assets/images/Defcomm-04 2.svg";
+import Defcomm from "../assets/images/AFD.svg";
 import { HiMenu, HiX } from "react-icons/hi"; 
 
 export default function Navbar() {
