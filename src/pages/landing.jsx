@@ -452,12 +452,13 @@ export default function Landing() {
                 Operation Iron Shield unites ethical hackers, defence partners, and government leaders to anticipate, neutralise, and outpace emerging threats across critical infrastructure.
               </p>
             </div>
-            <div
-              
-              className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#f7f7f7] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              <span className="text-black">Download slide deck →</span>
-            </div>
+            <a
+  href="/SlideDeck.pdf"
+  download="SlideDeck.pdf"
+  className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#f7f7f7] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
+>
+  <span className="text-black">Download slide deck →</span>
+</a>
           </article>
 
           <div className="grid gap-8 lg:grid-cols-1">
