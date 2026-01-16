@@ -453,8 +453,8 @@ export default function Landing() {
               </p>
             </div>
             <a
-  href="/SlideDeck.pdf"
-  download="SlideDeck.pdf"
+  href="/Bug Bounty Slide Deck (with Sponsors).pdf"
+  download="Bug Bounty Slide Deck (with Sponsors).pdf"
   className="mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-black/20 bg-[#f7f7f7] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
 >
   <span className="text-black">Download slide deck →</span>
