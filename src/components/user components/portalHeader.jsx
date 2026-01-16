@@ -1,6 +1,6 @@
 // File: src/components/PortalHeader.jsx
 import React, { useEffect, useState } from "react";
-import DefcommLogo from "../../assets/images/Defcomm-04 2.svg";
+import DefcommLogo from "../../assets/images/AFD.svg";
 import { getUser } from "../../hooks/useAuthToken"; // Import the hook
 
 export default function PortalHeader({ onToggleSidebar }) {
