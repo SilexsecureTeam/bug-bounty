@@ -173,7 +173,7 @@ export default function Landing() {
                 <h3 className="text-[#6EA633] font-bold text-2xl lg:text-3xl tracking-wide uppercase font-sans">
                   Theme
                 </h3>
-                <h1 className="text-white font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.1] uppercase tracking-wide">
+                <h1 className="text-white font-black text-3xl sm:text-5xl lg:text-6xl leading-[1.1] uppercase tracking-wide">
                   Securing 
                   Communications, <br />
                   Systems, and Skies.
