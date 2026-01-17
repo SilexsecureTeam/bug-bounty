@@ -147,7 +147,7 @@ export default function Landing() {
       <section
         id="hero"
         ref={heroRef}
-        className="reveal-section relative h-[80vh] flex flex-col justify-between bg-[#050605] overflow-hidden"
+        className="reveal-section relative flex flex-col justify-between bg-[#050605] overflow-hidden"
       >
         {/* Background Map Effect - Right aligned */}
         <div className="absolute right-0 top-0 h-full w-full lg:w-3/5 opacity-20 pointer-events-none">
