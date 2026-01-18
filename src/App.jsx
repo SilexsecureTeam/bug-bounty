@@ -21,6 +21,7 @@ import Contact from "./pages/contact";
 // Admin Imports
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/Dashboard";
+import AdminEvents from "./pages/Admin/Events";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -109,7 +110,7 @@ export default function App() {
             {/* Map other admin sidebar links to the same dashboard 
               (or create specific pages for them later) 
             */}
-            <Route path="events" element={<AdminDashboard />} />
+            <Route path="events" element={<AdminEvents />} />
             <Route path="attendance" element={<AdminDashboard />} />
             <Route path="attendees" element={<AdminDashboard />} />
             <Route path="certificates" element={<AdminDashboard />} />
