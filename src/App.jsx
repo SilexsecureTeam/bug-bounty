@@ -22,6 +22,8 @@ import Contact from "./pages/contact";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/Dashboard";
 
+import DebugOverlay from "./components/DebugOverlay";
+
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const token = getAuthToken();
@@ -53,6 +55,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <DebugOverlay />
       {/* Conditionally render the Public Navbar */}
       {!shouldHideNavbar && <Navbar />}
 
