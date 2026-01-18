@@ -1,6 +1,8 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { getAuthToken } from "./hooks/useAuthToken";
 import Navbar from "./components/Navbar";
+
+// Public & User Pages
 import Landing from "./pages/landing";
 import RegisterSelection from "./pages/register-selection";
 import Register from "./pages/register";
@@ -16,6 +18,10 @@ import Highlights from "./pages/highlights";
 import Program from "./pages/program";
 import Contact from "./pages/contact";
 
+// Admin Imports
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const token = getAuthToken();
@@ -27,7 +33,9 @@ const ProtectedRoute = ({ children }) => {
 
 export default function App() {
   const location = useLocation();
-  const hideNavbar = [
+
+  // Updated logic: Check for exact paths OR if path starts with /admin
+  const isExactHiddenRoute = [
     "/register",
     "/register/create",
     "/signin",
@@ -39,12 +47,19 @@ export default function App() {
     "/leaderboard",
   ].includes(location.pathname);
 
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute;
+
   return (
     <div className="min-h-screen flex flex-col">
-      {!hideNavbar && <Navbar />}
-      <main className={hideNavbar ? "flex-1" : "flex-1 mt-16"}>
+      {/* Conditionally render the Public Navbar */}
+      {!shouldHideNavbar && <Navbar />}
+
+      {/* Adjust margin-top based on whether Navbar is visible */}
+      <main className={shouldHideNavbar ? "flex-1" : "flex-1 mt-16"}>
         <Routes>
-          {/* Public Routes */}
+          {/* --- Public Routes --- */}
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/highlights" element={<Highlights />} />
@@ -56,7 +71,7 @@ export default function App() {
           <Route path="/otp" element={<OtpVerification />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
 
-          {/* Protected Routes */}
+          {/* --- User Protected Routes --- */}
           <Route
             path="/submit-report"
             element={
@@ -82,7 +97,33 @@ export default function App() {
             }
           />
 
-          {/* Catch-all route for 404 Not Found */}
+          {/* --- Admin Routes --- */}
+          {/* This renders the AdminLayout (Sidebar + Header) */}
+          <Route path="/admin" element={<AdminLayout />}>
+            {/* Index maps to /admin and renders the Dashboard */}
+            <Route index element={<AdminDashboard />} />
+            
+            {/* Map other admin sidebar links to the same dashboard 
+              (or create specific pages for them later) 
+            */}
+            <Route path="events" element={<AdminDashboard />} />
+            <Route path="attendance" element={<AdminDashboard />} />
+            <Route path="attendees" element={<AdminDashboard />} />
+            <Route path="certificates" element={<AdminDashboard />} />
+            <Route path="souvenirs" element={<AdminDashboard />} />
+            <Route path="comms" element={<AdminDashboard />} />
+            <Route path="reports" element={<AdminDashboard />} />
+            <Route path="payments" element={<AdminDashboard />} />
+            <Route path="program" element={<AdminDashboard />} />
+            <Route path="integrations" element={<AdminDashboard />} />
+            <Route path="logs" element={<AdminDashboard />} />
+            <Route path="team" element={<AdminDashboard />} />
+            <Route path="settings" element={<AdminDashboard />} />
+            <Route path="help" element={<AdminDashboard />} />
+            <Route path="account" element={<AdminDashboard />} />
+          </Route>
+
+          {/* --- Catch-all --- */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
