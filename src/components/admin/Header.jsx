@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bell, Moon } from 'lucide-react';
+import { Search, Bell, Moon, ChevronLeft} from 'lucide-react';
 import userAvatar from '../../assets/images/fb.png'; // Use real avatar
 
 export default function Header({ toggleSidebar }) {
@@ -44,6 +44,3 @@ export default function Header({ toggleSidebar }) {
     </header>
   );
 }
-
-// Helper icon import
-import { ChevronLeft } from 'lucide-react';
