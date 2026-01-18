@@ -2,12 +2,14 @@ import React from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
+// FIXED: Added missing icon imports (UserCheck, FileCheck, Gift, Settings, MessageSquare)
 import { 
-  ArrowUpRight, ArrowRight, MoreVertical, QrCode, Plus, Eye 
+  ArrowUpRight, ArrowRight, MoreVertical, QrCode, Plus, Eye, 
+  UserCheck, FileCheck, Gift, Settings, MessageSquare 
 } from 'lucide-react';
 import { 
   statsData, chartData, recentActivity, upcomingEvents, organizers 
-} from '../../data/dashboardData'; // Adjust path
+} from '../../data/dashboardData'; 
 
 export default function Dashboard() {
   return (
