@@ -1,6 +1,6 @@
 import React from 'react';
-import { Search, Bell, Moon, ChevronLeft} from 'lucide-react';
-import userAvatar from '../../assets/images/fb.png'; // Use real avatar
+import { Search, Bell, Moon, ChevronLeft } from 'lucide-react'; // <--- FIXED: Added ChevronLeft here
+import userAvatar from '../../assets/images/fb.png'; 
 
 export default function Header({ toggleSidebar }) {
   return (
@@ -38,6 +38,7 @@ export default function Header({ toggleSidebar }) {
           <div className="hidden text-sm md:block">
             <p className="font-semibold text-white">Dammy Bright</p>
           </div>
+          {/* Now this will work because ChevronLeft is imported at the top */}
           <ChevronLeft className="h-4 w-4 rotate-270 text-[#545C68]" />
         </div>
       </div>
