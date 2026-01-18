@@ -19,8 +19,8 @@ import Program from "./pages/program";
 import Contact from "./pages/contact";
 
 // Admin Imports
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/Dashboard";
+import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminDashboard from "./pages/Admin/Dashboard";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
