@@ -115,7 +115,10 @@
     "which": "^2.0.2",
     "word-wrap": "^1.2.5",
     "yallist": "^3.1.1",
-    "yocto-queue": "^0.1.0"
+    "yocto-queue": "^0.1.0", 
+"clsx": "^2.1.0",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.16",
