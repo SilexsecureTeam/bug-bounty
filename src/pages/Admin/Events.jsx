@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Search, Plus, Filter, Calendar, Users, FileCheck, 
-  Eye, Trash2, Edit, MapPin, MoreVertical, ChevronLeft, ChevronRight 
+  Search, Plus, Filter, Calendar, Users, 
+  Eye, Trash2, Edit, MoreVertical, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import sponsor1 from '../../assets/images/sponsor1.png'; // Using your existing asset
 
@@ -10,30 +10,33 @@ const eventsData = [
   {
     id: 1,
     name: "Cyber Threat Intelligence Bootcamp",
+    mail: "john@carter.com", 
     date: "03 Feb 2025 • 09:00 AM",
     location: "Lagos, Nigeria",
     attendees: 1240,
-    certificate: "Available",
+    certificate: 500,
     status: "Live",
     image: sponsor1
   },
   {
     id: 2,
     name: "Ethical Hacking Workshop",
+    mail: "john@carter.com", 
     date: "15 Mar 2025 • 10:00 AM",
     location: "Abuja, Nigeria",
     attendees: 850,
-    certificate: "Pending",
+    certificate: 500,
     status: "Upcoming",
     image: sponsor1
   },
   {
     id: 3,
     name: "Defcomm Annual Summit 2024",
+    mail: "john@carter.com", 
     date: "12 Dec 2024 • 08:00 AM",
     location: "Virtual",
     attendees: 5521,
-    certificate: "Issued",
+    certificate: 500,
     status: "Completed",
     image: sponsor1
   },
@@ -123,12 +126,12 @@ export default function Events() {
                 <tr key={event.id} className="group transition-colors hover:bg-[#16181A]">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
-                      <img src={event.image} alt="" className="h-10 w-10 rounded-lg border border-[#1F2227] object-cover" />
+                      <img src={event.image} alt="" className="h-8 w-8 rounded-lg border border-[#1F2227] object-cover" />
                       <div>
                         <span className="block text-sm font-bold text-white">{event.name}</span>
                         <div className="mt-1 flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-[#545C68]" />
-                          <span className="text-[10px] text-[#545C68]">{event.location}</span>
+                          
+                          <span className="text-[10px] text-[#545C68]">{event.mail}</span>
                         </div>
                       </div>
                     </div>
@@ -147,8 +150,7 @@ export default function Events() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-xs">
-                      <FileCheck className={`h-3.5 w-3.5 ${event.certificate === 'Available' ? 'text-[#9ECB32]' : 'text-[#545C68]'}`} />
-                      <span className={event.certificate === 'Available' ? 'font-medium text-white' : 'text-[#545C68]'}>
+                       <span className={event.certificate === 'Available' ? 'font-medium text-white' : 'text-[#545C68]'}>
                         {event.certificate}
                       </span>
                     </div>
@@ -161,7 +163,6 @@ export default function Events() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                      <button className="rounded-lg p-2 text-[#545C68] transition-colors hover:bg-[#1F2227] hover:text-white"><Eye className="h-4 w-4" /></button>
                       <button className="rounded-lg p-2 text-[#545C68] transition-colors hover:bg-[#1F2227] hover:text-[#9ECB32]"><Edit className="h-4 w-4" /></button>
                       <button className="rounded-lg p-2 text-[#545C68] transition-colors hover:bg-[#1F2227] hover:text-[#AA4D4D]"><Trash2 className="h-4 w-4" /></button>
                     </div>
@@ -179,11 +180,11 @@ export default function Events() {
           <div key={event.id} className="rounded-2xl border border-[#1F2227] bg-[#0D0F10] p-4">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <img src={event.image} alt="" className="h-12 w-12 rounded-lg border border-[#1F2227] object-cover" />
+                <img src={event.image} alt="" className="h-10 w-10 rounded-lg border border-[#1F2227] object-cover" />
                 <div>
                   <h3 className="text-sm font-bold text-white">{event.name}</h3>
                   <div className="mt-1 flex items-center gap-1 text-[10px] text-[#545C68]">
-                    <MapPin className="h-3 w-3" /> {event.location}
+                     {event.mail}
                   </div>
                 </div>
               </div>
