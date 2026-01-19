@@ -27,7 +27,7 @@ import EventAttendanceDetails from "./pages/Admin/EventAttendanceDetails";
 import Certificates from "./pages/Admin/Certificates";
 import SouvenirManagement from "./pages/Admin/SouvenirManagement";
 import Communication from "./pages/Admin/Communication";
-
+import Reports from "./pages/Admin/Reports";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -122,7 +122,7 @@ export default function App() {
             <Route path="certificates" element={<Certificates />} />
             <Route path="souvenirs" element={<SouvenirManagement />} />
             <Route path="comms" element={<Communication />} />
-            <Route path="reports" element={<AdminDashboard />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="payments" element={<AdminDashboard />} />
             <Route path="program" element={<AdminDashboard />} />
             <Route path="integrations" element={<AdminDashboard />} />
