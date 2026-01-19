@@ -63,7 +63,7 @@ const StatCard = ({ title, value, icon: Icon }) => (
   </div>
 );
 
-export default function Payment() {
+export default function PaymentManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   
   // Custom Tooltip for Pie Chart
