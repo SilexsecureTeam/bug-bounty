@@ -90,7 +90,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // --- MAIN COMPONENT ---
 
-export default function Reports() {
+export default function ReportsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
