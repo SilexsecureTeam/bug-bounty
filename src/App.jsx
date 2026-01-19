@@ -23,6 +23,7 @@ import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminEvents from "./pages/Admin/Events";
 import LiveAttendance from "./pages/Admin/LiveAttendance";
+import EventAttendanceDetails from "./pages/Admin/EventAttendanceDetails";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -113,7 +114,7 @@ export default function App() {
             */}
             <Route path="events" element={<AdminEvents />} />
             <Route path="attendance" element={<LiveAttendance />} />
-            <Route path="attendees" element={<AdminDashboard />} />
+            <Route path="attendees" element={<EventAttendanceDetails />} />
             <Route path="certificates" element={<AdminDashboard />} />
             <Route path="souvenirs" element={<AdminDashboard />} />
             <Route path="comms" element={<AdminDashboard />} />
