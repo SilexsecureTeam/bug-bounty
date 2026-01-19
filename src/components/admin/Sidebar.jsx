@@ -2,6 +2,7 @@ import React from 'react';
 import { LogOut, X } from 'lucide-react'; // Added X for mobile close button
 import { sidebarMenu } from '../../data/dashboardData'; 
 import { Link, useLocation } from 'react-router-dom';
+import defLogo from './Defcomm.svg';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const location = useLocation();
@@ -16,13 +17,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
         <div>
           {/* Logo Area */}
           <div className="flex items-center justify-between px-6 py-6 h-20">
-            <div className={`flex items-center gap-3 transition-opacity duration-200 ${!isOpen && "lg:opacity-0"}`}>
-              <div className="h-8 w-8 rounded-lg bg-white/10 p-1 flex items-center justify-center shrink-0">
-                <div className="h-4 w-4 border-2 border-white transform rotate-45"></div>
-              </div>
-              <span className="text-xl font-bold text-white tracking-widest">
-                DEFCOMM
-              </span>
+            <div className={`flex items-center gap-3 transition-opacity max-h-12 duration-200 ${!isOpen && "lg:opacity-0"}`}>
+              <img src={defLogo} className='h-full'/>
             </div>
             
             {/* Mobile Close Button */}
