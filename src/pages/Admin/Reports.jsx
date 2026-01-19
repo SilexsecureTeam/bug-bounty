@@ -62,30 +62,36 @@ const insightsData = [
   { title: "Feedback Correlation", desc: "Events with higher attendance (90%+) received 15% more positive feedback on average." },
 ];
 
+// --- HELPER COMPONENTS ---
+
+// Moved CustomTooltip OUTSIDE to prevent re-creation on every render (Performance + Linting fix)
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#1F221F] border border-[#2A2E2A] p-3 rounded-lg shadow-xl">
+        <p className="text-white font-bold text-xs mb-2">{label}</p>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-2 h-2 rounded-full bg-[#2A2E2A]"></span>
+          <span className="text-gray-400 text-[10px]">
+            Capacity: <span className="text-white font-mono">{payload[0].value}</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#9ECB32]"></span>
+          <span className="text-gray-400 text-[10px]">
+            Turnout: <span className="text-white font-mono">{payload[1]?.value}</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 // --- MAIN COMPONENT ---
 
 export default function Reports() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Custom Tooltip for Recharts
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#1F221F] border border-[#2A2E2A] p-3 rounded-lg shadow-xl">
-          <p className="text-white font-bold text-xs mb-2">{label}</p>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-[#2A2E2A]"></span>
-            <span className="text-gray-400 text-[10px]">Capacity: <span className="text-white font-mono">{payload[0].value}</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#9ECB32]"></span>
-            <span className="text-gray-400 text-[10px]">Turnout: <span className="text-white font-mono">{payload[1].value}</span></span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="min-h-screen bg-[#060706] text-white p-6 font-sans">
@@ -254,7 +260,7 @@ export default function Reports() {
                  <span className="font-bold text-white">{item.val}</span>
               </div>
             ))}
-            {/* Progress Bar Visual (Static for Design) */}
+            {/* Progress Bar Visual */}
             <div className="w-full h-1 bg-[#2A2E2A] rounded-full mt-2 flex overflow-hidden">
                <div className="w-[83%] bg-[#9ECB32]"></div>
                <div className="w-[11%] bg-[#EAB308]"></div>
@@ -274,7 +280,13 @@ export default function Reports() {
           <div className="flex items-center gap-2">
              <div className="relative">
                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-500" />
-               <input type="text" placeholder="Search" className="bg-[#141613] border border-[#2A2E2A] rounded-lg py-2 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-[#9ECB32] w-48" />
+               <input 
+                 type="text" 
+                 placeholder="Search" 
+                 value={searchTerm} // Now properly controlled
+                 onChange={(e) => setSearchTerm(e.target.value)}
+                 className="bg-[#141613] border border-[#2A2E2A] rounded-lg py-2 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-[#9ECB32] w-48" 
+               />
              </div>
              <button className="p-2 border border-[#2A2E2A] bg-[#141613] rounded-lg text-[#9ECB32] hover:bg-[#1F221F]">
                <Filter size={16} />
@@ -396,4 +408,4 @@ export default function Reports() {
 
     </div>
   );
-    }
+}
