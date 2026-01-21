@@ -302,21 +302,25 @@ export default function About() {
                   {activeTab === "About Us" && (
                     <>
                       <p>
-                        The Defcomm Bug Bounty Program is a continental defence technology initiative focused on improving the security, reliability, and performance of digital defence systems used across Africa. It brings together ethical hackers, engineers, researchers, and defence innovators to identify weaknesses, propose solutions, and contribute to a stronger defence technology ecosystem.
+                        The African Defence Tech Programme is a continental defence technology initiative focused on strengthening the security, reliability, and performance of digital defence systems across Africa. It brings together ethical hackers, engineers, researchers, innovators, and defence stakeholders to identify vulnerabilities, develop solutions, and contribute to a resilient and sovereign defence technology ecosystem.
+
                       </p>
                       <p>
-                        As African nations confront rising insecurity, cross-border threats, surveillance challenges, and rapid digital transformation, Defcomm provides a structured platform that supports collaboration, research, and growth. The program serves both as a security improvement initiative and as a talent development pipeline for Africa’s next generation of defence innovators.
+                        As African nations confront rising insecurity, cross-border threats, surveillance challenges, and rapid digital transformation, the programme provides a structured platform for collaboration, research, and capability development. It serves both as a security enhancement initiative and a talent development pipeline, nurturing the next generation of African defence and cybersecurity innovators.
+
                       </p>
                     </>
                   )}
                   {activeTab === "Our Mission" && (
                     <p>
-                      To accelerate innovation, strengthen cybersecurity, and empower talented researchers through structured bug bounty challenges and modern defence tech initiatives. We aim to identify vulnerabilities before adversaries do and create a sovereign, resilient defence ecosystem.
+                      To accelerate African defence innovation, strengthen cybersecurity capabilities, and empower talented researchers through structured challenges and modern defence technology initiatives proactively identifying vulnerabilities before adversaries do and building a sovereign, resilient African defence ecosystem.
+
                     </p>
                   )}
                   {activeTab === "Our Vision" && (
                     <p>
-                      A secure, self-reliant African digital ecosystem where critical infrastructure is protected by homegrown talent, and where defence technology drives economic growth, national stability, and technological sovereignty.
+                      A secure, self-reliant African defence and digital ecosystem where critical infrastructure is protected by homegrown talent, and where defence technology strengthens national security, drives economic growth, and advances technological sovereignty across the continent.
+
                     </p>
                   )}
                 </div>
