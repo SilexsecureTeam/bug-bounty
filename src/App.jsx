@@ -128,7 +128,7 @@ export default function App() {
             <Route path="comms" element={<Communication />} />
             <Route path="reports" element={<ReportsManagement />} />
             <Route path="payments" element={<PaymentManagement />} />
-            <Route path="program" element={<ProgramVenue />
+            <Route path="program" element={<ProgramVenue />} />
             <Route path="venue/:id" element={<Venue />} />
             <Route path="integrations" element={<Integration />} />
             <Route path="logs" element={<AdminDashboard />} />
