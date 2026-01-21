@@ -137,11 +137,10 @@ export default function Landing() {
   return (
     <div className="bg-[#060706] text-white">
       <Helmet>
-        <title>Defcomm | Africa’s Defense Tech Vision and Bug Bounty Program</title>
+        <title>African Defence Tech | Sovereign Security, Cyber & Defence Innovation</title>
         <meta
           name="description"
-          content="Defcomm leads Africa’s defense technology vision by accelerating innovation, strengthening cybersecurity, and empowering talented researchers through structured bug bounty challenges and modern defense tech initiatives."
-        />
+          content="African Defence Tech is a pan-African platform advancing sovereign defence, cybersecurity, aerospace, and military technology through innovation, collaboration, and research."  />
       </Helmet>
 
       {/* --- NEW HERO SECTION START --- */}
