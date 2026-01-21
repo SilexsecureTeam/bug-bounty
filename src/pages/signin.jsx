@@ -133,7 +133,7 @@ export default function SignIn() {
       
       // Special check for "blocked" status to show Restricted Access message
       if (apiMsg.toLowerCase().includes("account is block") || apiError.status === 400) {
-          const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on December 4, 2025.\nHold your firewalls and check back soon.";
+          const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on March 5, 2026.\nHold your firewalls and check back soon.";
           setError(restrictedMsg);
           setIsRestricted(true);
           toast.error(restrictedMsg);
