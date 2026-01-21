@@ -149,9 +149,11 @@ export default function About() {
     <div className="min-h-screen bg-[#060706] text-white selection:bg-[#9FC24D] selection:text-black">
       <Helmet>
         <title>About African Defence Tech | Building Africa’s Defence Innovation Ecosystem</title>
-      </Helmet>
-
-
+        <meta
+          name="description"
+          content="Learn about African Defence Tech’s mission to strengthen Africa’s security through defence technology, encrypted communications, cyber resilience, and strategic partnerships." />
+     </Helmet>
+ 
       <main className="flex-1">
 
         {/* --- Hero Section --- */}
