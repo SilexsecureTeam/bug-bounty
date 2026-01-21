@@ -52,9 +52,10 @@ const impactBullets = [
 ];
 
 const agendaItems = [
-  { label: "March 2026", title: "Pre Event", time: "Private briefings and threat modelling" },
-  { label: "March 5", title: "Event Day", time: "Strategy labs · 09:30 – 18:00" },
-  { label: "March 5, 2026", title: "Event Day", time: "CTF finals · 09:30 – 18:00" }
+  { label: "February 2026", title: "Pre Event", time: "Private briefings,  Researcher registration and briefing." },
+  { label: "March 5", title: "Event Day", time: " Private briefings,  Researcher registration and briefing." },
+  { label: "March 6, 2026", title: "Event Day", time: "DevCorner : Designed for developers, cybersecurity engineers, and risk and compliance experts building secure, mission-ready defence solutions." }, 
+  { label: "March 7", title: "Event Day", time: "Operation Topspin: Defcomm Defence Championship" }
 ];
 
 const speakerCardStyles = {
