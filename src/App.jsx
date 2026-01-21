@@ -29,6 +29,7 @@ import SouvenirManagement from "./pages/Admin/SouvenirManagement";
 import Communication from "./pages/Admin/Communication";
 import ReportsManagement from "./pages/Admin/Reports";
 import ProgramVenue from "./pages/Admin/ProgramVenue";
+import Venue from "./pages/Admin/Venue";
 
 
 import DebugOverlay from "./components/DebugOverlay";
@@ -127,6 +128,7 @@ export default function App() {
             <Route path="reports" element={<ReportsManagement />} />
             <Route path="payments" element={<PaymentManagement />} />
             <Route path="program" element={<ProgramVenue />
+            <Route path="venue/:id" element={<Venue />} />
             <Route path="integrations" element={<AdminDashboard />} />
             <Route path="logs" element={<AdminDashboard />} />
             <Route path="team" element={<AdminDashboard />} />
