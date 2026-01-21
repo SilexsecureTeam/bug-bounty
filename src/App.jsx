@@ -32,6 +32,7 @@ import ProgramVenue from "./pages/Admin/ProgramVenue";
 import Venue from "./pages/Admin/Venue";
 import Integration from "./pages/Admin/Integration";
 import Audit from "./pages/Admin/Audit";
+import Teams from "./pages/Admin/Teams";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -132,7 +133,7 @@ export default function App() {
             <Route path="venue/:id" element={<Venue />} />
             <Route path="integrations" element={<Integration />} />
             <Route path="logs" element={<Audit />} />
-            <Route path="team" element={<AdminDashboard />} />
+            <Route path="team" element={<Teams />} />
             <Route path="settings" element={<AdminDashboard />} />
             <Route path="help" element={<AdminDashboard />} />
             <Route path="account" element={<AdminDashboard />} />
