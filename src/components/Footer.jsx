@@ -21,7 +21,8 @@ export default function Footer() {
                 <span className="text-[#9FC24D]">Stay Informed</span>
               </h3>
               <p className="mt-2 max-w-xs text-[15px] text-[#9CA3AF]">
-                Get The Latest Security Insights, Product Updates, And Best Practices Delivered To Your Inbox.
+                Get the latest African defence technology insights, updates, and best practices delivered straight to your inbox.
+
               </p>
             </div>
           </div>
