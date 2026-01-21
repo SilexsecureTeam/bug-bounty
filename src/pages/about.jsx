@@ -148,7 +148,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-[#060706] text-white selection:bg-[#9FC24D] selection:text-black">
       <Helmet>
-        <title>About Us | Defcomm</title>
+        <title>About African Defence Tech | Building Africa’s Defence Innovation Ecosystem</title>
       </Helmet>
 
 
