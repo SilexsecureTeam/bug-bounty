@@ -137,11 +137,11 @@ export default function Program() {
               
               <div className="reveal-child space-y-6">
                  <h2 className="text-3xl font-black text-white sm:text-4xl">
-                    Defcomm Programme Overview
+                    African Defence Tech Programme Overview
                  </h2>
                  <div className="space-y-4 text-[16px] leading-relaxed text-[#D1D5DB]">
                     <p>
-                      The Defcomm Bug Bounty Program brings together ethical hackers, engineers, and researchers to improve the security, reliability, and performance of defence technologies across Africa. Participants identify vulnerabilities, propose solutions, and contribute to a stronger defence technology ecosystem.
+                      The African Defence Tech Programme brings together ethical hackers, engineers, and researchers to strengthen the security, reliability, and performance of defence technologies across Africa identifying vulnerabilities, developing solutions, and building a resilient, indigenous defence technology ecosystem.
                     </p>
                     
                  </div>
