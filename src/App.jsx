@@ -27,6 +27,7 @@ import EventAttendanceDetails from "./pages/Admin/EventAttendanceDetails";
 import Certificates from "./pages/Admin/Certificates";
 import SouvenirManagement from "./pages/Admin/SouvenirManagement";
 import Communication from "./pages/Admin/Communication";
+import PaymentManagement from "./pages/Admin/Payment";
 import ReportsManagement from "./pages/Admin/Reports";
 import ProgramVenue from "./pages/Admin/ProgramVenue";
 import Venue from "./pages/Admin/Venue";
