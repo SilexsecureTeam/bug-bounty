@@ -446,10 +446,12 @@ export default function Landing() {
           >
             <div className="space-y-6">
               <h2 className="text-3xl font-bold leading-tight text-white sm:text-[2.6rem]">
-                Fortifying Africa's Digital Future
+                Fortifying Africa’s Digital Defence Sovereignty
               </h2>
               <p className="text-base leading-relaxed text-[#173008]">
-                Operation Iron Shield unites ethical hackers, defence partners, and government leaders to anticipate, neutralise, and outpace emerging threats across critical infrastructure.
+                Africa’s security landscape is rapidly evolving, driven by digital transformation, emerging cyber threats, and the increasing reliance on connected systems across defence, government, and critical infrastructure. Fortifying Africa’s Digital Defence Future represents a strategic commitment to strengthening the continent’s resilience through indigenous technology, secure innovation, and collaborative defence ecosystems.
+<br /><br />This vision emphasizes the development and deployment of secure communications, cybersecurity capabilities, wargaming and simulation technologies, and resilient digital infrastructure tailored to Africa’s unique operational environments. It prioritizes sovereignty, trust, and readiness, ensuring that sensitive defence and security operations remain protected from external interference and evolving cyber risks.
+
               </p>
             </div>
             <a
