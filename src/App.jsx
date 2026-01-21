@@ -30,6 +30,7 @@ import Communication from "./pages/Admin/Communication";
 import ReportsManagement from "./pages/Admin/Reports";
 import ProgramVenue from "./pages/Admin/ProgramVenue";
 import Venue from "./pages/Admin/Venue";
+import Integration from "./pages/Admin/Integration";
 
 
 import DebugOverlay from "./components/DebugOverlay";
@@ -129,7 +130,7 @@ export default function App() {
             <Route path="payments" element={<PaymentManagement />} />
             <Route path="program" element={<ProgramVenue />
             <Route path="venue/:id" element={<Venue />} />
-            <Route path="integrations" element={<AdminDashboard />} />
+            <Route path="integrations" element={<Integration />} />
             <Route path="logs" element={<AdminDashboard />} />
             <Route path="team" element={<AdminDashboard />} />
             <Route path="settings" element={<AdminDashboard />} />
