@@ -74,10 +74,10 @@ export default function Program() {
   return (
     <div className="flex min-h-screen flex-col bg-[#1E1E1E] text-white selection:bg-[#9FC24D] selection:text-black">
       <Helmet>
-        <title>Programme | Defcomm</title>
+        <title>African Defence Tech Programme | Events, Hackathons & Defence Innovation</title>
         <meta
           name="description"
-          content="Defcomm's Defence Tech and Bug Bounty Programme: Strengthening cybersecurity, fostering talent, and accelerating innovation across Africa."
+          content= "Explore the African Defence Tech programme featuring defence summits, cybersecurity hackathons, R&D showcases, and policy-driven innovation across Africa."
         />
       </Helmet>
 
