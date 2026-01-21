@@ -103,10 +103,10 @@ export default function Highlights() {
    return (
       <div className="flex min-h-screen text-[16px] flex-col bg-[#121212] text-white selection:bg-[#9FC24D] selection:text-black">
          <Helmet>
-            <title>Highlights & Updates | Defcomm</title>
+            <title>African Defence Tech Highlights | Defence Innovation & Cyber Excellence</title>
             <meta
                name="description"
-               content="Explore major milestones shaping Africa's defence technology, cybersecurity advancements, and community achievements."
+               content="Discover key highlights from African Defence Tech events, including defence technology showcases, cyber challenges, expert panels, and strategic outcomes."
             />
          </Helmet>
 
