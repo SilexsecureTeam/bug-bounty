@@ -293,7 +293,7 @@ export default function About() {
               {/* Right: Content */}
               <div className="space-y-6">
                 <h2 className="text-2xl flex justify-between font-bold text-white md:text-3xl">
-                  {activeTab === "About Us" && "About Defcomm Bug Bounty"}
+                  {activeTab === "About Us" && "About African Defence Tech"}
                   {activeTab === "Our Mission" && "Our Mission"}
                   {activeTab === "Our Vision" && "Our Vision"}
                 </h2>
