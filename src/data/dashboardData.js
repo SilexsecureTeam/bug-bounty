@@ -41,6 +41,7 @@ export const sidebarMenu = [
   {
     category: "SUPPORT",
     items: [
+      { name: "Security & Policies", icon: ShieldAlert, path: "/admin/security" },
       { name: "Help & Guides", icon: HelpCircle, path: "/admin/help" },
       { name: "Account Settings", icon: UserCog, path: "/admin/account" },
     ]
