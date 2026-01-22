@@ -35,6 +35,8 @@ import Integration from "./pages/Admin/Integration";
 import Audit from "./pages/Admin/Audit";
 import Teams from "./pages/Admin/Teams";
 import Settings from "./pages/Admin/Settings";
+import Security from "./pages/Admin/Security";
+
 
 
 import DebugOverlay from "./components/DebugOverlay";
@@ -138,6 +140,7 @@ export default function App() {
             <Route path="logs" element={<Audit />} />
             <Route path="team" element={<Teams />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="security" element={<Security />} />
             <Route path="help" element={<AdminDashboard />} />
             <Route path="account" element={<AdminDashboard />} />
           </Route>
