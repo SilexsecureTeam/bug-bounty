@@ -45,7 +45,8 @@ export default function Footer() {
         <div className="grid gap-12 pt-12 text-[16px] sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <p className="max-w-xs text-[15px] leading-relaxed text-[#9CA3AF]">
-              Military-Grade Security For The Digital Age. Protecting Your Most Sensitive Communications With Enterprise-Level Encryption And Zero-Knowledge Architecture.
+              African Defence Tech advancing Africa’s security through innovation, collaboration, and indigenous defence technology.
+
             </p>
           </div>
 
