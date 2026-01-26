@@ -502,9 +502,9 @@ export default function Landing() {
         <section
           id="agenda"
           ref={agendaRef}
-          className="reveal-section mt-24 flex flex-col gap-16 rounded-[55px] border border-[#1F2611] bg-[#131516] px-6 py-16 sm:px-10 lg:px-16"
+          className="reveal-section mt-24 flex flex-col gap-16 rounded-[55px] border border-[#1F2611] bg-[#131516] sm:px-6 py-16 sm:px-10 lg:px-16"
         >
-          <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.08s" }}>
+         <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.08s" }}>
             <div>
               <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
                 Agenda
@@ -553,7 +553,7 @@ export default function Landing() {
         <section
           id="sponsors"
           ref={sponsorsRef}
-          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1D2115] bg-[#101213] px-6 py-16 sm:px-10 lg:px-16"
+          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1D2115] bg-[#101213] px-1 py-16 sm:px-10 lg:px-16"
         >
           <div className="reveal-child flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between" style={{ "--reveal-child-delay": "0.08s" }}>
             <div>
@@ -646,7 +646,7 @@ export default function Landing() {
         <section
           id="contact"
           ref={contactRef}
-          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1E1F23] bg-[#0D0F10] px-6 py-16 sm:px-10 lg:px-16"
+          className="reveal-section mt-24 flex flex-col gap-14 rounded-[55px] border border-[#1E1F23] bg-[#0D0F10] px-1 py-16 sm:px-10 lg:px-16"
         >
           <div className="reveal-child flex flex-col gap-10 lg:flex-row lg:gap-16" style={{ "--reveal-child-delay": "0.08s" }}>
             <div className="flex-1 space-y-8">
@@ -710,7 +710,7 @@ export default function Landing() {
             </div>
 
             <div className="flex-1">
-              <div className="reveal-child rounded-[36px] border border-[#2B2D31] bg-[#F2F3F8] p-8 text-[#1B2126] shadow-[0_30px_70px_rgba(7,8,9,0.45)]" style={{ "--reveal-child-delay": "0.28s" }}>
+              <div className="reveal-child rounded-[36px] border border-[#2B2D31] bg-[#F2F3F8] p-3 sm:p-8 text-[#1B2126] shadow-[0_30px_70px_rgba(7,8,9,0.45)]" style={{ "--reveal-child-delay": "0.28s" }}>
                 <h3 className="text-lg font-bold uppercase tracking-[0.25em]">Get In Touch</h3>
                 <p className="mt-3 text-sm text-[#4B545E]">
                   Reach out with inquiries about sponsorships, partnerships, or event details.
