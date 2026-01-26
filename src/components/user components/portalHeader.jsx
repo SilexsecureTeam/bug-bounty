@@ -31,7 +31,7 @@ export default function PortalHeader({ onToggleSidebar }) {
                         </button>
 
                         <div className="flex items-center gap-3 max-h-16">
-                            <img src={DefcommLogo} alt="Defcomm Logo" className="md:-ml-5!" />
+                            <img src={DefcommLogo} alt="Defcomm Logo" className="md:-ml-5! max-h-16! " />
                             <div className="hidden md:block">
                                 
                                  </div>
