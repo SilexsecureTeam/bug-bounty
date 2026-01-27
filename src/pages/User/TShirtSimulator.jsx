@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Loader2, Shirt, User, Users, Palette, Ruler, MessageSquare, Tag } from "lucide-react";
-import { fetchUserProfile, submitGuestRegistration } from "../../api";
+import { fetchUserProfile, submitGuestEvent } from "../../api";
 import PortalHeader from "../../components/user components/portalHeader";
 import PortalSidebar from "../../components/user components/portalSidebar";
 
@@ -84,7 +84,7 @@ export default function TShirtSimulator() {
     payload.append("additional_requests", formData.additionalRequests);
 
     try {
-      await submitGuestRegistration(payload); // Using the generic form submission endpoint
+      await submitGuestEvent(payload); // Using the generic form submission endpoint
       toast.success("T-Shirt preferences saved successfully!");
       
       // Save local flag to hide notification
