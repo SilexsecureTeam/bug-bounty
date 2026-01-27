@@ -15,7 +15,6 @@ const FORM_ID = "eyJpdiI6Ik1TQzJKOXBlbGhlTUVCZUJxTDZkclE9PSIsInZhbHVlIjoiNms3RUN
  * A clean, realistic vector representation of a standard crew-neck T-shirt with embedded text.
  */
 const StandardTShirt = ({ color, border, textTop, textBottom, textColor, className, style, isLightColor }) => {
-  // Decide blending mode for realism: multiply for dark ink on light fabric, screen for light ink on dark.
   const textBlendMode = isLightColor ? 'multiply' : 'screen';
   const logoFilter = isLightColor ? 'none' : 'brightness(0) invert(1)';
 
@@ -27,20 +26,17 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        {/* Radial gradient for a more realistic chest shape */}
         <radialGradient id="chestShadow" cx="50%" cy="40%" r="50%" fx="50%" fy="30%">
             <stop offset="0%" stopColor="white" stopOpacity="0.05"/>
             <stop offset="40%" stopColor="black" stopOpacity="0.05"/>
             <stop offset="100%" stopColor="black" stopOpacity="0.3"/>
         </radialGradient>
-        {/* Fabric texture pattern */}
         <pattern id="fabricPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
             <path d="M1 1L3 3M3 1L1 3" stroke="black" strokeWidth="0.5" strokeOpacity="0.05" />
         </pattern>
       </defs>
       
       <g transform="translate(0, 20)">
-        {/* Main Shirt Body */}
         <path
           fill={color}
           stroke={border}
@@ -48,30 +44,20 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
           strokeLinejoin="round"
         />
-        
-        {/* Fabric Texture Overlay */}
         <path
           fill="url(#fabricPattern)"
           className="pointer-events-none"
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
         />
-        
-        {/* Shadow Overlay for Depth */}
         <path
           fill="url(#chestShadow)"
           className="mix-blend-multiply pointer-events-none"
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
         />
-
-        {/* Neck Detail */}
         <path fill="none" stroke={border} strokeWidth="2" strokeOpacity="0.4" d="M197,100 c0,0,10,30,59,30 s59-30,59-30" />
-        {/* Sleeve Details */}
         <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M141,200 l30-10" />
         <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M371,200 l-30-10" />
 
-        {/* --- EMBEDDED LOGO & TEXT --- */}
-        
-        {/* Logo Image */}
         <image 
             href={logo} 
             x="226" 
@@ -81,7 +67,6 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
             style={{ filter: logoFilter }}
         />
 
-        {/* Top Text (Preferred Name) */}
         {textTop && (
             <text
                 x="256"
@@ -98,7 +83,6 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
             </text>
         )}
 
-        {/* Bottom Text (Organization) */}
         {textBottom && (
             <text
                 x="256"
@@ -137,7 +121,7 @@ export default function TShirtSimulator() {
     additionalRequests: ""
   });
 
-  // Fetch User Profile
+  // Fetch User Profile (Optional for pre-fill, but strictly required for ID in previous version)
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -148,12 +132,9 @@ export default function TShirtSimulator() {
             ...prev,
             fullName: response.data.name || ""
           }));
-        } else {
-          toast.error("Could not verify user identity.");
         }
       } catch (error) {
         console.error("Profile fetch error:", error);
-        toast.error("Failed to load user profile.");
       } finally {
         setFetchingUser(false);
       }
@@ -176,19 +157,27 @@ export default function TShirtSimulator() {
 
     setLoading(true);
 
-    const payload = new FormData();
-    payload.append("userId", userProfile.encrypt_id);
-    payload.append("id", FORM_ID);
-    payload.append("name", formData.fullName);
-    payload.append("preferred_name", formData.preferredName);
-    payload.append("group_organization", formData.groupName);
-    payload.append("size", formData.size);
-    payload.append("color", formData.color);
-    payload.append("brand_name", formData.brandName);
-    payload.append("additional_requests", formData.additionalRequests);
+    // Construct the payload structure matching register.jsx
+    const eventPayload = {
+      form_id: FORM_ID,
+      name: formData.fullName,
+      email: userProfile?.email || "", // Assuming userProfile has email
+      phone: userProfile?.phone || "", // Assuming userProfile has phone
+      data: {
+        tshirt_details: {
+            full_name: formData.fullName,
+            preferred_name_on_shirt: formData.preferredName,
+            group_organization_name: formData.groupName,
+            tshirt_size: formData.size,
+            preferred_tshirt_color: formData.color,
+            preferred_brand_name: formData.brandName,
+            additional_requests: formData.additionalRequests
+        }
+      }
+    };
 
     try {
-      await submitGuestEvent(payload);
+      await submitGuestEvent(eventPayload);
       toast.success("T-Shirt preferences saved successfully!");
       
       localStorage.setItem("tshirt_ordered", "true");
@@ -403,7 +392,7 @@ export default function TShirtSimulator() {
                                                     onChange={handleChange}
                                                     className="peer sr-only"
                                                 />
-                                                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#232936] bg-[#151A23] text-sm font-bold text-[#9CA3AF] transition-all group-hover:border-[#9FC24D]/50 peer-checked:border-[#9FC24D] peer-checked:bg-[#9FC24D] peer-checked:text-[#0B0F05] peer-checked:shadow-[0_0_15px_rgba(159,194,77,0.4)]">
+                                                <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#232936] bg-[#151A23] text-sm font-bold text-[#9CA3AF] transition-all group-hover:border-[#9FC24D]/50 peer-checked:border-[#9FC24D] peer-checked:bg-[#9FC24D] peer-checked:text-[#0B0F05] peer-checked:shadow-[0_0_15px_rgba(159,194,77,0.4)]">
                                                     {size}
                                                 </div>
                                             </label>
