@@ -166,54 +166,60 @@ export default function TShirtSimulator() {
                                     >
                                         <defs>
                                             {/* Lighting Gradient for Depth */}
-                                            <linearGradient id="fabricSheen" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                <stop offset="0%" stopColor="white" stopOpacity="0.05"/>
-                                                <stop offset="50%" stopColor="white" stopOpacity="0"/>
-                                                <stop offset="100%" stopColor="white" stopOpacity="0.05"/>
+                                            <linearGradient id="fabricShadows" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="white" stopOpacity="0.1"/>
+                                                <stop offset="20%" stopColor="white" stopOpacity="0.05"/>
+                                                <stop offset="50%" stopColor="black" stopOpacity="0"/>
+                                                <stop offset="80%" stopColor="black" stopOpacity="0.1"/>
+                                                <stop offset="100%" stopColor="black" stopOpacity="0.3"/>
                                             </linearGradient>
                                         </defs>
 
+                                        {/* Realistic T-Shirt Path */}
                                         <path
                                             fill="currentColor"
                                             stroke={currentStyle.border}
-                                            strokeWidth="2"
-                                            d="M378.5,64.5c-15.8,18.1-40.6,22.2-61.9,13.6L307.1,74l-9.9-4.2c-12.7-5.3-26.9-5.3-39.6,0l-9.9,4.2
-                                            l-9.5,4.1c-21.3,8.6-46.1,4.5-61.9-13.6L129,24.3C116.3,10.1,95.7,5.5,77.5,12.8L37,29.1c-19.1,7.6-30.2,28-26.3,48.2l23.9,123.6
-                                            c3.2,16.6,17.4,28.8,34.3,29.5l37.7,1.5v240.8c0,20.6,16.7,37.3,37.3,37.3h224.2c20.6,0,37.3-16.7,37.3-37.3V231.9l37.7-1.5
-                                            c16.9-0.7,31.1-12.9,34.3-29.5l23.9-123.6c3.9-20.1-7.2-40.5-26.3-48.2l-40.5-16.2c-18.2-7.3-38.8-2.7-51.5,11.5L378.5,64.5z"
+                                            strokeWidth="1.5"
+                                            d="M399.2,102.6c-9.1-3.5-38.4-12.8-59.9-15.4c-6.8-0.8-13.4,2.5-17.6,7.6c-17.5,21.3-40.4,33.5-65.7,33.5
+                                            s-48.2-12.2-65.7-33.5c-4.2-5.1-10.8-8.4-17.6-7.6c-21.5,2.6-50.8,11.9-59.9,15.4c-12.3,4.7-19.1,18.5-14.7,30.9l24.4,68.6
+                                            c3.8,10.8,15.4,16.7,26.4,13.4l15.9-4.8v222.8c0,14.6,11.9,26.5,26.5,26.5h221.4c14.6,0,26.5-11.9,26.5-26.5V210.7l15.9,4.8
+                                            c11,3.3,22.6-2.6,26.4-13.4l24.4-68.6C418.3,121.1,411.5,107.3,399.2,102.6z"
                                         />
-                                        {/* Overlay gradient for folds/depth */}
+                                        
+                                        {/* Overlay for Folds/Wrinkles to add Realism */}
                                         <path 
-                                            fill="url(#fabricSheen)" 
-                                            d="M378.5,64.5c-15.8,18.1-40.6,22.2-61.9,13.6L307.1,74l-9.9-4.2c-12.7-5.3-26.9-5.3-39.6,0l-9.9,4.2
-                                            l-9.5,4.1c-21.3,8.6-46.1,4.5-61.9-13.6L129,24.3C116.3,10.1,95.7,5.5,77.5,12.8L37,29.1c-19.1,7.6-30.2,28-26.3,48.2l23.9,123.6
-                                            c3.2,16.6,17.4,28.8,34.3,29.5l37.7,1.5v240.8c0,20.6,16.7,37.3,37.3,37.3h224.2c20.6,0,37.3-16.7,37.3-37.3V231.9l37.7-1.5
-                                            c16.9-0.7,31.1-12.9,34.3-29.5l23.9-123.6c3.9-20.1-7.2-40.5-26.3-48.2l-40.5-16.2c-18.2-7.3-38.8-2.7-51.5,11.5L378.5,64.5z"
-                                            className="pointer-events-none"
+                                            fill="url(#fabricShadows)" 
+                                            className="pointer-events-none mix-blend-multiply opacity-50"
+                                            d="M399.2,102.6c-9.1-3.5-38.4-12.8-59.9-15.4c-6.8-0.8-13.4,2.5-17.6,7.6c-17.5,21.3-40.4,33.5-65.7,33.5
+                                            s-48.2-12.2-65.7-33.5c-4.2-5.1-10.8-8.4-17.6-7.6c-21.5,2.6-50.8,11.9-59.9,15.4c-12.3,4.7-19.1,18.5-14.7,30.9l24.4,68.6
+                                            c3.8,10.8,15.4,16.7,26.4,13.4l15.9-4.8v222.8c0,14.6,11.9,26.5,26.5,26.5h221.4c14.6,0,26.5-11.9,26.5-26.5V210.7l15.9,4.8
+                                            c11,3.3,22.6-2.6,26.4-13.4l24.4-68.6C418.3,121.1,411.5,107.3,399.2,102.6z"
+                                        />
+                                        
+                                        {/* Neck Detail Line */}
+                                        <path
+                                            fill="none"
+                                            stroke={currentStyle.border}
+                                            strokeWidth="1"
+                                            strokeOpacity="0.5"
+                                            d="M193,126c15,18,38,28,63,28s48-10,63-28"
                                         />
                                     </svg>
 
                                     {/* Content Overlay (Absolute Positioning on top of shirt) */}
-                                    <div className="absolute inset-0 flex flex-col items-center pt-[32%] z-10">
-                                        
-                                        {/* Mock Logo Area */}
-                                        <div 
-                                            className="mb-5 flex h-14 w-14 items-center justify-center rounded border-2 border-dashed opacity-70 mix-blend-overlay" 
-                                            style={{ borderColor: currentStyle.text }}
-                                        >
-                                            <span className="text-[10px] font-black tracking-widest" style={{ color: currentStyle.text }}>LOGO</span>
-                                        </div>
+                                    <div className="absolute inset-0 flex flex-col items-center pt-[28%] z-10">
                                         
                                         {/* Dynamic Name Printing */}
                                         {formData.preferredName && (
-                                            <div className="max-w-[180px] px-2 text-center">
+                                            <div className="max-w-[160px] px-2 text-center">
                                                 <span 
                                                     className="block font-mono text-xl font-bold uppercase tracking-[0.15em] break-words leading-tight"
                                                     style={{ 
                                                         color: currentStyle.text, 
                                                         opacity: 0.9,
                                                         // Makes it look printed on fabric
-                                                        mixBlendMode: formData.color === 'white' ? 'multiply' : 'lighten' 
+                                                        mixBlendMode: formData.color === 'white' ? 'multiply' : 'lighten',
+                                                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
                                                     }}
                                                 >
                                                     {formData.preferredName}
@@ -223,7 +229,7 @@ export default function TShirtSimulator() {
                                         
                                         {/* Group/Org Printing */}
                                         {formData.groupName && (
-                                            <div className="mt-3 max-w-[160px] px-2 text-center">
+                                            <div className="mt-2 max-w-[140px] px-2 text-center">
                                                 <span 
                                                     className="block font-sans text-[10px] font-bold uppercase tracking-widest opacity-80"
                                                     style={{ color: currentStyle.text }}
@@ -426,4 +432,4 @@ export default function TShirtSimulator() {
       </div>
     </div>
   );
-}
+                                              }
