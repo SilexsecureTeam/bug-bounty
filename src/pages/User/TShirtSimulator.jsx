@@ -116,7 +116,7 @@ export default function TShirtSimulator() {
       <div className="flex flex-1 flex-col">
         <PortalHeader activeLabel="Swag Simulator" />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 ml-64! ">
           <div className="mx-auto max-w-6xl">
             
             <div className="mb-8">
