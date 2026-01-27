@@ -11,6 +11,7 @@ import OtpVerification from "./pages/otp";
 import SubmitReport from "./pages/submit-report";
 import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
+import TShirtSimulator from "./pages/User/TShirtSimulator";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";  
 import About from "./pages/about";
@@ -113,6 +114,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shirt"
+            element={
+              <ProtectedRoute>
+                <TShirtSimulator />
               </ProtectedRoute>
             }
           />
