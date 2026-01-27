@@ -1,6 +1,8 @@
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { getAuthToken } from "./hooks/useAuthToken";
 import Navbar from "./components/Navbar";
+import { AlertTriangle, Shirt, X } from "lucide-react"; // Import Icons
 
 // Public & User Pages
 import Landing from "./pages/landing";
@@ -51,6 +53,73 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Global Notification Component
+const TShirtNotificationBanner = () => {
+  const [visible, setVisible] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Only check if user is logged in
+    const token = getAuthToken();
+    if (!token) {
+      setVisible(false);
+      return;
+    }
+
+    // Check if on the T-Shirt page itself (don't show banner there)
+    if (location.pathname === "/shirt") {
+      setVisible(false);
+      return;
+    }
+
+    // Check local storage status
+    const hasOrdered = localStorage.getItem("tshirt_ordered");
+    setVisible(hasOrdered !== "true");
+  }, [location]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 z-[60] w-full max-w-sm animate-in slide-in-from-bottom-5 duration-500 sm:bottom-8 sm:right-8">
+      <div className="relative overflow-hidden rounded-2xl bg-[#0E1218] border border-[#9FC24D] p-5 shadow-[0_0_40px_rgba(159,194,77,0.15)]">
+        {/* Background Accent */}
+        <div className="absolute -right-6 -top-6 text-[#9FC24D]/10">
+          <Shirt size={120} />
+        </div>
+
+        <div className="relative z-10 flex flex-col gap-3">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2 text-[#9FC24D]">
+              <AlertTriangle size={20} />
+              <span className="text-xs font-bold uppercase tracking-widest">Action Required</span>
+            </div>
+            <button 
+              onClick={() => setVisible(false)}
+              className="text-[#5E667B] hover:text-white transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white">Claim Your Event Kit</h4>
+            <p className="mt-1 text-xs text-[#9CA3AF] leading-relaxed">
+              Your official Defcomm gear is pending customization. Secure your size before inventory locks.
+            </p>
+          </div>
+
+          <Link 
+            to="/shirt"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#9FC24D] py-3 text-xs font-bold uppercase tracking-widest text-[#0B0F05] shadow-lg shadow-[#9FC24D]/20 transition-transform hover:scale-[1.02] hover:bg-[#B2D660]"
+          >
+            Customize Now <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const location = useLocation();
 
@@ -65,6 +134,7 @@ export default function App() {
     "/dashboard",
     "/reports",
     "/leaderboard",
+    "/shirt", // Added shirt page to hidden navbar list
   ].includes(location.pathname);
 
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -74,6 +144,10 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <DebugOverlay />
+      
+      {/* Global Notification */}
+      <TShirtNotificationBanner />
+
       {/* Conditionally render the Public Navbar */}
       {!shouldHideNavbar && <Navbar />}
 
