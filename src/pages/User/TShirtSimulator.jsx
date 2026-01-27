@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Loader2, Shirt, User, Users, Palette, Ruler, MessageSquare, Tag, Info, ShieldCheck } from "lucide-react";
+import { Loader2, Shirt, User, Users, Palette, Ruler, MessageSquare, Tag, ShieldCheck } from "lucide-react";
 import { fetchUserProfile, submitGuestEvent } from "../../api";
 import PortalHeader from "../../components/user components/portalHeader";
 import PortalSidebar from "../../components/user components/portalSidebar";
-import logo from "../../assets/images/bug-bounty-logo - Copy.png"; 
 
 // Form ID for T-Shirt Registration
 const FORM_ID = "eyJpdiI6Ik1TQzJKOXBlbGhlTUVCZUJxTDZkclE9PSIsInZhbHVlIjoiNms3RUN2ejNpR25JenZoVFdoWXRYZz09IiwibWFjIjoiZmUzYzA5NTljZmJiMTQ3NDUzNTZhMmViMGU4MWM1NDlhYWYyMzNkOGFlMjEwMGFlZDczMmZjMDBhOGI4N2U0OCIsInRhZyI6IiJ9";
@@ -15,8 +14,8 @@ const FORM_ID = "eyJpdiI6Ik1TQzJKOXBlbGhlTUVCZUJxTDZkclE9PSIsInZhbHVlIjoiNms3RUN
  * A clean, realistic vector representation of a standard crew-neck T-shirt with embedded text.
  */
 const StandardTShirt = ({ color, border, textTop, textBottom, textColor, className, style, isLightColor }) => {
+  // Decide blending mode for realism: multiply for dark ink on light fabric, screen for light ink on dark.
   const textBlendMode = isLightColor ? 'multiply' : 'screen';
-  const logoFilter = isLightColor ? 'none' : 'brightness(0) invert(1)';
 
   return (
     <svg 
@@ -26,17 +25,20 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
+        {/* Radial gradient for a more realistic chest shape */}
         <radialGradient id="chestShadow" cx="50%" cy="40%" r="50%" fx="50%" fy="30%">
             <stop offset="0%" stopColor="white" stopOpacity="0.05"/>
             <stop offset="40%" stopColor="black" stopOpacity="0.05"/>
             <stop offset="100%" stopColor="black" stopOpacity="0.3"/>
         </radialGradient>
+        {/* Fabric texture pattern */}
         <pattern id="fabricPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
             <path d="M1 1L3 3M3 1L1 3" stroke="black" strokeWidth="0.5" strokeOpacity="0.05" />
         </pattern>
       </defs>
       
       <g transform="translate(0, 20)">
+        {/* Main Shirt Body */}
         <path
           fill={color}
           stroke={border}
@@ -44,56 +46,58 @@ const StandardTShirt = ({ color, border, textTop, textBottom, textColor, classNa
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
           strokeLinejoin="round"
         />
+        
+        {/* Fabric Texture Overlay */}
         <path
           fill="url(#fabricPattern)"
           className="pointer-events-none"
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
         />
+        
+        {/* Shadow Overlay for Depth */}
         <path
           fill="url(#chestShadow)"
           className="mix-blend-multiply pointer-events-none"
           d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
         />
+
+        {/* Neck Detail */}
         <path fill="none" stroke={border} strokeWidth="2" strokeOpacity="0.4" d="M197,100 c0,0,10,30,59,30 s59-30,59-30" />
+        {/* Sleeve Details */}
         <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M141,200 l30-10" />
         <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M371,200 l-30-10" />
 
-        <image 
-            href={logo} 
-            x="226" 
-            y="140" 
-            height="60" 
-            width="60" 
-            style={{ filter: logoFilter }}
-        />
-
+        {/* --- EMBEDDED TEXT (No Logo) --- */}
+        
+        {/* Top Text (Preferred Name) - BOLDER & LARGER */}
         {textTop && (
             <text
                 x="256"
-                y="220"
+                y="190" // Moved slightly up since logo is gone
                 textAnchor="middle"
                 fill={textColor}
-                fontFamily="monospace"
+                fontFamily="Impact, sans-serif" // More impactful font stack
                 fontWeight="900"
-                fontSize="24"
-                letterSpacing="0.15em"
+                fontSize="32" // Larger font size
+                letterSpacing="0.1em"
                 style={{ mixBlendMode: textBlendMode, textTransform: 'uppercase', pointerEvents: 'none' }}
             >
                 {textTop}
             </text>
         )}
 
+        {/* Bottom Text (Organization) */}
         {textBottom && (
             <text
                 x="256"
-                y="245"
+                y="225"
                 textAnchor="middle"
                 fill={textColor}
                 fontFamily="sans-serif"
-                fontWeight="700"
-                fontSize="10"
-                letterSpacing="0.2em"
-                opacity="0.8"
+                fontWeight="800"
+                fontSize="12"
+                letterSpacing="0.25em"
+                opacity="0.85"
                 style={{ mixBlendMode: textBlendMode, textTransform: 'uppercase', pointerEvents: 'none' }}
             >
                 {textBottom}
@@ -121,7 +125,7 @@ export default function TShirtSimulator() {
     additionalRequests: ""
   });
 
-  // Fetch User Profile (Optional for pre-fill, but strictly required for ID in previous version)
+  // Fetch User Profile
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -161,8 +165,8 @@ export default function TShirtSimulator() {
     const eventPayload = {
       form_id: FORM_ID,
       name: formData.fullName,
-      email: userProfile?.email || "", // Assuming userProfile has email
-      phone: userProfile?.phone || "", // Assuming userProfile has phone
+      email: userProfile?.email || "", 
+      phone: userProfile?.phone || "", 
       data: {
         tshirt_details: {
             full_name: formData.fullName,
