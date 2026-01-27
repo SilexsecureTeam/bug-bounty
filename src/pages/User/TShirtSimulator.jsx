@@ -11,60 +11,92 @@ const FORM_ID = "eyJpdiI6Ik1TQzJKOXBlbGhlTUVCZUJxTDZkclE9PSIsInZhbHVlIjoiNms3RUN
 
 /**
  * StandardTShirt Component
- * A clean, realistic vector representation of a standard crew-neck T-shirt.
- * We use this instead of the Lucide icon to get a more natural "fabric" look.
+ * A clean, realistic vector representation of a standard crew-neck T-shirt with embedded text.
  */
-const StandardTShirt = ({ color, border, className, style }) => (
-  <svg 
-    viewBox="0 0 512 512" 
-    className={className}
-    style={style}
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      {/* Fabric Shadow Gradient - gives the shirt depth/folds */}
-      <linearGradient id="shirtFold" x1="50%" y1="0%" x2="50%" y2="100%">
-        <stop offset="0%" stopColor="white" stopOpacity="0.05" />
-        <stop offset="20%" stopColor="black" stopOpacity="0.02" />
-        <stop offset="40%" stopColor="black" stopOpacity="0" />
-        <stop offset="80%" stopColor="black" stopOpacity="0.05" />
-        <stop offset="100%" stopColor="black" stopOpacity="0.2" />
-      </linearGradient>
-    </defs>
-    
-    <g transform="translate(0, 20)">
-      {/* Main Shirt Body - Standard Cut */}
-      <path
-        fill={color}
-        stroke={border}
-        strokeWidth="2"
-        d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
-        strokeLinejoin="round"
-      />
-      
-      {/* Shadow Overlay for Realism */}
-      <path
-        fill="url(#shirtFold)"
-        className="mix-blend-multiply"
-        d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
-        style={{ pointerEvents: 'none' }}
-      />
+const StandardTShirt = ({ color, border, textTop, textBottom, textColor, className, style, isLightColor }) => {
+  // Decide blending mode for realism: multiply for dark ink on light fabric, screen for light ink on dark.
+  const textBlendMode = isLightColor ? 'multiply' : 'screen';
 
-      {/* Neck Ribbing Detail */}
-      <path
-        fill="none"
-        stroke={border}
-        strokeWidth="2"
-        strokeOpacity="0.4"
-        d="M197,100 c0,0,10,30,59,30 s59-30,59-30"
-      />
+  return (
+    <svg 
+      viewBox="0 0 512 512" 
+      className={className}
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        {/* Radial gradient for a more realistic chest shape */}
+        <radialGradient id="chestShadow" cx="50%" cy="40%" r="50%" fx="50%" fy="30%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.05"/>
+            <stop offset="40%" stopColor="black" stopOpacity="0.05"/>
+            <stop offset="100%" stopColor="black" stopOpacity="0.3"/>
+        </radialGradient>
+      </defs>
       
-      {/* Sleeve Hem Details */}
-      <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M141,200 l30-10" />
-      <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M371,200 l-30-10" />
-    </g>
-  </svg>
-);
+      <g transform="translate(0, 20)">
+        {/* Main Shirt Body */}
+        <path
+          fill={color}
+          stroke={border}
+          strokeWidth="2"
+          d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
+          strokeLinejoin="round"
+        />
+        
+        {/* Shadow Overlay for Depth */}
+        <path
+          fill="url(#chestShadow)"
+          className="mix-blend-multiply pointer-events-none"
+          d="M370,120 c0,0-20,0-30-5 c-10-5-25-15-25-15 s-10,30-59,30 s-59-30-59-30 s-15,10-25,15 c-10,5-30,5-30,5 l-55,25 l20,60 l30-10 v220 h238 v-220 l30,10 l20-60 Z"
+        />
+
+        {/* Neck Detail */}
+        <path fill="none" stroke={border} strokeWidth="2" strokeOpacity="0.4" d="M197,100 c0,0,10,30,59,30 s59-30,59-30" />
+        {/* Sleeve Details */}
+        <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M141,200 l30-10" />
+        <path fill="none" stroke={border} strokeWidth="1" strokeOpacity="0.3" d="M371,200 l-30-10" />
+
+        {/* --- EMBEDDED SVG TEXT --- */}
+        {/* By embedding text directly in the SVG, it stays perfectly aligned on the shirt. */}
+        
+        {/* Top Text (Name) */}
+        {textTop && (
+            <text
+                x="256"
+                y="195"
+                textAnchor="middle"
+                fill={textColor}
+                fontFamily="monospace"
+                fontWeight="900"
+                fontSize="26"
+                letterSpacing="0.15em"
+                style={{ mixBlendMode: textBlendMode, textTransform: 'uppercase', pointerEvents: 'none' }}
+            >
+                {textTop}
+            </text>
+        )}
+
+        {/* Bottom Text (Organization) */}
+        {textBottom && (
+            <text
+                x="256"
+                y="225"
+                textAnchor="middle"
+                fill={textColor}
+                fontFamily="sans-serif"
+                fontWeight="700"
+                fontSize="12"
+                letterSpacing="0.1em"
+                opacity="0.8"
+                style={{ mixBlendMode: textBlendMode, textTransform: 'uppercase', pointerEvents: 'none' }}
+            >
+                {textBottom}
+            </text>
+        )}
+      </g>
+    </svg>
+  );
+};
 
 export default function TShirtSimulator() {
   const navigate = useNavigate();
@@ -153,9 +185,9 @@ export default function TShirtSimulator() {
   // --- Visualizer Configurations ---
 
   const shirtColors = {
-    black: { bg: "#1a1a1a", text: "#ffffff", border: "#333333" },
-    white: { bg: "#f3f4f6", text: "#1a1a1a", border: "#d1d5db" },
-    grey:  { bg: "#4b5563", text: "#ffffff", border: "#374151" }
+    black: { bg: "#1a1a1a", text: "#ffffff", border: "#333333", isLight: false },
+    white: { bg: "#f3f4f6", text: "#1a1a1a", border: "#d1d5db", isLight: true },
+    grey:  { bg: "#4b5563", text: "#ffffff", border: "#374151", isLight: false }
   };
 
   const sizeScales = {
@@ -208,49 +240,24 @@ export default function TShirtSimulator() {
 
                             <div className="relative flex min-h-[500px] flex-col items-center justify-center p-8">
                                 
-                                {/* Shirt Container */}
+                                {/* Shirt Container - Scales the whole SVG */}
                                 <div 
-                                    className="relative flex aspect-[4/5] w-full max-w-[340px] items-center justify-center transition-transform duration-500 ease-spring"
+                                    className="relative flex aspect-[4/5] w-full max-w-[360px] items-center justify-center transition-transform duration-500 ease-spring"
                                     style={{ transform: `scale(${currentScale})` }}
                                 >
-                                    {/* The Standard T-Shirt Component */}
+                                    {/* The Standard T-Shirt Component.
+                                      We now pass the text data directly into the component so it renders INSIDE the SVG.
+                                    */}
                                     <StandardTShirt 
                                         color={currentStyle.bg}
                                         border={currentStyle.border}
-                                        className="h-full w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition-colors duration-500"
+                                        textColor={currentStyle.text}
+                                        isLightColor={currentStyle.isLight}
+                                        textTop={formData.preferredName}
+                                        textBottom={formData.groupName}
+                                        className="h-full w-full drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-colors duration-500"
                                     />
-
-                                    {/* Text Overlay Layer */}
-                                    <div className="absolute inset-0 flex flex-col items-center pt-[25%] z-10 pointer-events-none">
-                                        
-                                        {/* Name on Chest */}
-                                        {formData.preferredName && (
-                                            <div className="max-w-[180px] px-2 text-center">
-                                                <span 
-                                                    className="block font-mono text-xl font-bold uppercase tracking-[0.15em] break-words leading-tight"
-                                                    style={{ 
-                                                        color: currentStyle.text, 
-                                                        opacity: 0.9,
-                                                        mixBlendMode: formData.color === 'white' ? 'multiply' : 'lighten',
-                                                    }}
-                                                >
-                                                    {formData.preferredName}
-                                                </span>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Organization below Name */}
-                                        {formData.groupName && (
-                                            <div className="mt-3 max-w-[160px] px-2 text-center">
-                                                <span 
-                                                    className="block font-sans text-[10px] font-bold uppercase tracking-widest opacity-70"
-                                                    style={{ color: currentStyle.text }}
-                                                >
-                                                    {formData.groupName}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
+                                     {/* No more HTML overlay div here! */}
                                 </div>
 
                                 {/* Controls */}
