@@ -8,6 +8,7 @@ import paymentIcon from '../../assets/images/paymentIcon.png';
 import { getUser, clearAuthToken } from "../../hooks/useAuthToken";
 import { fetchUserProfileEvent } from "../../api"; 
 import QRCodeModal from "./QRCodeModal"; // Import the new modal
+import { Shirt } from "lucide-react";
 
 // The fixed form ID for the QR code
 const FIXED_FORM_ID = "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
@@ -32,6 +33,11 @@ const navItems = [
         icon: submitIcon,
         item: "Submit Report",
         path: "/submit-report"
+    }, 
+    {
+        icon: Shirt,
+        item: "Event Kit",
+        path: "/shirt"
     }
 ];
 
