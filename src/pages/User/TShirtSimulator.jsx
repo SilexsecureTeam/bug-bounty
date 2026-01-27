@@ -145,11 +145,6 @@ export default function TShirtSimulator() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!userProfile?.encrypt_id) {
-      toast.error("User identification missing. Please refresh.");
-      return;
-    }
 
     if (!formData.size) {
         toast.error("Please select a T-Shirt size.");
