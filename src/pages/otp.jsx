@@ -36,9 +36,9 @@ export default function OtpVerification() {
 
   const verifyAccountFlag =
     Boolean(urlEmail) || location.state?.verifyAccount === true; // important
-  console.log("[DEBUG] userlogin value:", userlogin);
-  console.log("[DEBUG] emailAddress value:", emailAddress);
-  console.log("[DEBUG] verifyAccountFlag:", verifyAccountFlag);
+  // console.log("[DEBUG] userlogin value:", userlogin);
+  // console.log("[DEBUG] emailAddress value:", emailAddress);
+  // console.log("[DEBUG] verifyAccountFlag:", verifyAccountFlag);
 
   const [digits, setDigits] = useState(["", "", "", ""]);
   const [loading, setLoading] = useState(false);

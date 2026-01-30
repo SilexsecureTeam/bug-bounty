@@ -100,8 +100,18 @@ export default function InviteMembers() {
       console.error("Invite member error:", error);
 
       let errMsg = "Failed to invite member. Please try again.";
-      if (error.response?.data?.message) {
-        errMsg = error.response.data.message;
+
+      if (error.response?.data) {
+        const resData = error.response.data;
+
+        // Check for the email-specific error first
+        if (resData.data?.email?.[0]) {
+          errMsg = resData.data.email[0]; // "The email has already been taken."
+        }
+        // Fallback to the general message if no field-specific error
+        else if (resData.message) {
+          errMsg = resData.message;
+        }
       } else if (error.message) {
         errMsg = error.message;
       }
