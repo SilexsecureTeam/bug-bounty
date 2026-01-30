@@ -28,7 +28,12 @@ export default function OtpVerification() {
   const userlogin =
     location.state?.userlogin ??
     storedUserLogin ??
-    (emailAddress ? emailAddress : "");
+    emailAddress ?? // emailAddress is already a string or ""
+    "";
+
+  console.log("[DEBUG] userlogin value:", userlogin);
+  console.log("[DEBUG] emailAddress value:", emailAddress);
+  console.log("[DEBUG] verifyAccountFlag:", verifyAccountFlag);
   const verifyAccountFlag = location.state?.verifyAccount === true; // important
 
   const [digits, setDigits] = useState(["", "", "", ""]);
@@ -74,7 +79,7 @@ export default function OtpVerification() {
       return;
     }
 
-    if (!userlogin) {
+    if (!userlogin && !verifyAccountFlag) {
       const message =
         "We couldn't determine which account to verify. Please sign in again.";
       setError(message);
@@ -88,7 +93,7 @@ export default function OtpVerification() {
       if (verifyAccountFlag) {
         // user is verifying their account (account creation flow)
         data = await verifyUserOtp({
-          email: emailAddress, // ← send email instead of (or in addition to) userlogin
+          userlogin: emailAddress || userlogin, // ← prefer emailAddress
           otp,
         });
         // After successful account verification, redirect back to signin so user can login
