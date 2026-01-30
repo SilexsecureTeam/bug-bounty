@@ -15,21 +15,24 @@ export default function OtpVerification() {
   const storedPhone = window.localStorage.getItem("defcommOtpPhone") ?? "";
   const storedUserLogin =
     window.localStorage.getItem("defcommOtpUserLogin") ?? "";
+  const phoneNumber = location.state?.phone ?? storedPhone;
   const [searchParams] = useSearchParams();
   const urlEmailEncoded = searchParams.get("email"); // "adedominion101%40gmail.com"
   const urlEmail = urlEmailEncoded
     ? decodeURIComponent(urlEmailEncoded) // ← ADD THIS: turns %40 → @
     : null;
-  const emailAddress =
-    urlEmail || // ← from magic link / invite
-    location.state?.email ||
-    storedEmail;
-  const phoneNumber = location.state?.phone ?? storedPhone;
-  const userlogin =
-    location.state?.userlogin ??
-    storedUserLogin ??
-    emailAddress ?? // emailAddress is already a string or ""
-    "";
+
+  const emailAddress = urlEmail || location.state?.email || storedEmail;
+
+  // Explicit fallback
+  let userlogin = location.state?.userlogin ?? storedUserLogin ?? "";
+
+  if (!userlogin && emailAddress) {
+    userlogin = emailAddress;
+  }
+
+  // If still empty, set fallback empty string
+  userlogin = userlogin || "";
 
   console.log("[DEBUG] userlogin value:", userlogin);
   console.log("[DEBUG] emailAddress value:", emailAddress);
@@ -78,8 +81,8 @@ export default function OtpVerification() {
       toast.error(message);
       return;
     }
-
     if (!userlogin && !verifyAccountFlag) {
+      // only block non-activation flows
       const message =
         "We couldn't determine which account to verify. Please sign in again.";
       setError(message);
