@@ -16,7 +16,10 @@ export default function OtpVerification() {
   const storedUserLogin =
     window.localStorage.getItem("defcommOtpUserLogin") ?? "";
   const [searchParams] = useSearchParams();
-  const urlEmail = searchParams.get("email"); // e.g. "loshonine14@gmail.com"
+  const urlEmailEncoded = searchParams.get("email"); // "adedominion101%40gmail.com"
+  const urlEmail = urlEmailEncoded
+    ? decodeURIComponent(urlEmailEncoded) // ← ADD THIS: turns %40 → @
+    : null;
   const emailAddress =
     urlEmail || // ← from magic link / invite
     location.state?.email ||
