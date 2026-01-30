@@ -34,7 +34,8 @@ export default function OtpVerification() {
   // If still empty, set fallback empty string
   userlogin = userlogin || "";
 
-  const verifyAccountFlag = location.state?.verifyAccount === true; // important
+  const verifyAccountFlag =
+    Boolean(urlEmail) || location.state?.verifyAccount === true; // important
   console.log("[DEBUG] userlogin value:", userlogin);
   console.log("[DEBUG] emailAddress value:", emailAddress);
   console.log("[DEBUG] verifyAccountFlag:", verifyAccountFlag);
