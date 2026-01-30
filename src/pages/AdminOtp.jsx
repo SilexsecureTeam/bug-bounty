@@ -48,7 +48,7 @@ const AdminOtp = () => {
           text: "Login successful! Redirecting...",
         });
         // Real: navigate("/admin/dashboard");
-        setTimeout(() => navigate("/admin"), 1000);
+        setTimeout(() => navigate("/subadmin"), 1000);
       } else {
         setMessage({ type: "error", text: "Invalid OTP. Try again." });
       }

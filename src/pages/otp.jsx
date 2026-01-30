@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
 import { requestOtp, verifyLoginOtp, verifyUserOtp } from "../api"; // added verifyUserOtp
+import { useSearchParams } from "react-router-dom";
 
 const otpInputClasses =
   "h-16 w-16 rounded-2xl border border-white/15 bg-[#0C0F14] text-center text-2xl font-semibold text-white focus:border-[#9DB347] focus:outline-none focus:ring-0";
@@ -12,11 +13,19 @@ export default function OtpVerification() {
   const navigate = useNavigate();
   const storedEmail = window.localStorage.getItem("defcommOtpEmail") ?? "";
   const storedPhone = window.localStorage.getItem("defcommOtpPhone") ?? "";
-  const storedUserLogin = window.localStorage.getItem("defcommOtpUserLogin") ?? "";
-
-  const emailAddress = location.state?.email ?? storedEmail;
+  const storedUserLogin =
+    window.localStorage.getItem("defcommOtpUserLogin") ?? "";
+  const [searchParams] = useSearchParams();
+  const urlEmail = searchParams.get("email"); // e.g. "loshonine14@gmail.com"
+  const emailAddress =
+    urlEmail || // ← from magic link / invite
+    location.state?.email ||
+    storedEmail;
   const phoneNumber = location.state?.phone ?? storedPhone;
-  const userlogin = location.state?.userlogin ?? storedUserLogin;
+  const userlogin =
+    location.state?.userlogin ??
+    storedUserLogin ??
+    (emailAddress ? emailAddress : "");
   const verifyAccountFlag = location.state?.verifyAccount === true; // important
 
   const [digits, setDigits] = useState(["", "", "", ""]);
@@ -75,7 +84,10 @@ export default function OtpVerification() {
       let data;
       if (verifyAccountFlag) {
         // user is verifying their account (account creation flow)
-        data = await verifyUserOtp({ userlogin, otp });
+        data = await verifyUserOtp({
+          email: emailAddress, // ← send email instead of (or in addition to) userlogin
+          otp,
+        });
         // After successful account verification, redirect back to signin so user can login
         const message = data?.message ?? "Account verified successfully!";
         setSuccess(message);
@@ -108,7 +120,8 @@ export default function OtpVerification() {
         }, 900);
       }
     } catch (apiError) {
-      const message = apiError?.message ?? "Unable to verify OTP. Please try again.";
+      const message =
+        apiError?.message ?? "Unable to verify OTP. Please try again.";
       setError(message);
       toast.error(message);
     } finally {
@@ -155,8 +168,17 @@ export default function OtpVerification() {
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-white">Verify with OTP</h2>
           <p className="text-sm text-[#C7CBD7]">
-            To ensure your security, please enter the One-Time Password (OTP) sent to{" "}
-            {emailAddress || "your email"}.
+            {urlEmail ? (
+              <>
+                Welcome! Enter the OTP sent to <strong>{emailAddress}</strong>{" "}
+                to activate your account and complete your registration.
+              </>
+            ) : (
+              <>
+                To ensure your security, please enter the One-Time Password
+                (OTP) sent to <strong>{emailAddress || "your email"}</strong>.
+              </>
+            )}
           </p>
         </div>
 
@@ -197,7 +219,11 @@ export default function OtpVerification() {
               disabled={resendLoading || !canResend}
               className="text-[#C6D176] transition-colors duration-150 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {resendLoading ? "Sending..." : canResend ? "Resend" : "Sign in again"}
+              {resendLoading
+                ? "Sending..."
+                : canResend
+                  ? "Resend"
+                  : "Sign in again"}
             </button>
           </p>
 

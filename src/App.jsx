@@ -43,8 +43,13 @@ import Settings from "./pages/Admin/Settings";
 import Security from "./pages/Admin/Security";
 import Help from "./pages/Admin/Help";
 import AccountSettings from "./pages/Admin/AccountSettings";
+
 import AdminSignIn from "./pages/AdminSignIn";
 import AdminOtp from "./pages/AdminOtp";
+
+// subadmin imports
+import SubadminLayout from "./components/subadmin/SubadminLayout";
+import SubadminHome from "./pages/subadmin/SubadminHome";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -152,7 +157,10 @@ export default function App() {
     location.pathname.startsWith("/admin") &&
     location.pathname !== "/admin/signin";
 
-  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute;
+  const isSubadminRoute = location.pathname.startsWith("/subadmin");
+
+  const shouldHideNavbar =
+    isExactHiddenRoute || isAdminRoute || isSubadminRoute;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -257,6 +265,17 @@ export default function App() {
             <Route path="security" element={<Security />} />
             <Route path="help" element={<Help />} />
             <Route path="account" element={<AccountSettings />} />
+          </Route>
+          {/* --- SubAdmin Routes --- */}
+
+          <Route path="/subadmin" element={<SubadminLayout />}>
+            <Route index element={<SubadminHome />} /> {/* /subadmin */}
+            {/* <Route path="account" element={<Account />} />
+  <Route path="notifications" element={<Notifications />} />
+  <Route path="groups" element={<Groups />} />
+  <Route path="forms" element={<Forms />} />
+  <Route path="files" element={<Files />} />
+  <Route path="profile" element={<Profile />} /> */}
           </Route>
 
           {/* --- Catch-all --- */}

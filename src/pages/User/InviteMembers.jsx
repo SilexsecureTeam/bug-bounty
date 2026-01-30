@@ -25,7 +25,7 @@ export default function InviteMembers() {
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
+  // const activationBase = "https://bugbounty.defcomm.ng/otp";
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -48,6 +48,16 @@ export default function InviteMembers() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const payload = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    username: formData.username,
+    email: formData.email,
+    phone: formData.phone,
+    country: formData.country,
+    url: `https://bugbounty.defcomm.ng/otp?email=${encodeURIComponent(formData.email.trim())}`,
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -66,7 +76,7 @@ export default function InviteMembers() {
 
       const response = await axios.post(
         "https://backend.defcomm.ng/api/bounty/createUser",
-        formData,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
