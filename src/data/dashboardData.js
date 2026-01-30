@@ -46,7 +46,7 @@ export const sidebarMenu = [
       { name: "Account Settings", icon: UserCog, path: "/admin/account" },
     ]
   }
-];
+]; 
 
 export const statsData = [
   { label: "Total Events", value: "50", change: "8.5% Up from 2024", icon: CalendarDays, trend: "up" },

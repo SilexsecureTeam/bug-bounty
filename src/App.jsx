@@ -13,9 +13,11 @@ import OtpVerification from "./pages/otp";
 import SubmitReport from "./pages/submit-report";
 import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
+import InviteMembers from "./pages/User/InviteMembers";
+import MembersList from "./pages/User/MembersList";
 import TShirtSimulator from "./pages/User/TShirtSimulator";
 import Reports from "./pages/Reports";
-import NotFound from "./pages/NotFound";  
+import NotFound from "./pages/NotFound";
 import About from "./pages/about";
 import Highlights from "./pages/highlights";
 import Program from "./pages/program";
@@ -41,6 +43,8 @@ import Settings from "./pages/Admin/Settings";
 import Security from "./pages/Admin/Security";
 import Help from "./pages/Admin/Help";
 import AccountSettings from "./pages/Admin/AccountSettings";
+import AdminSignIn from "./pages/AdminSignIn";
+import AdminOtp from "./pages/AdminOtp";
 
 import DebugOverlay from "./components/DebugOverlay";
 
@@ -91,9 +95,11 @@ const TShirtNotificationBanner = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 text-[#9FC24D]">
               <AlertTriangle size={20} />
-              <span className="text-xs font-bold uppercase tracking-widest">Action Required</span>
+              <span className="text-xs font-bold uppercase tracking-widest">
+                Action Required
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setVisible(false)}
               className="text-[#5E667B] hover:text-white transition-colors"
             >
@@ -104,11 +110,12 @@ const TShirtNotificationBanner = () => {
           <div>
             <h4 className="font-bold text-white">Claim Your Event Kit</h4>
             <p className="mt-1 text-xs text-[#9CA3AF] leading-relaxed">
-              Your official Defcomm gear is pending customization. Secure your size before inventory locks.
+              Your official Defcomm gear is pending customization. Secure your
+              size before inventory locks.
             </p>
           </div>
 
-          <Link 
+          <Link
             to="/shirt"
             className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#9FC24D] py-3 text-xs font-bold uppercase tracking-widest text-[#0B0F05] shadow-lg shadow-[#9FC24D]/20 transition-transform hover:scale-[1.02] hover:bg-[#B2D660]"
           >
@@ -135,16 +142,22 @@ export default function App() {
     "/reports",
     "/leaderboard",
     "/shirt", // Added shirt page to hidden navbar list
+    "/admin/signin",
+    "/admin/otp",
+    "/group/invite-members",
+    "/group/members-list",
   ].includes(location.pathname);
 
-  const isAdminRoute = location.pathname.startsWith("/admin");
+  const isAdminRoute =
+    location.pathname.startsWith("/admin") &&
+    location.pathname !== "/admin/signin";
 
   const shouldHideNavbar = isExactHiddenRoute || isAdminRoute;
 
   return (
     <div className="min-h-screen flex flex-col">
       <DebugOverlay />
-      
+
       {/* Global Notification */}
       <TShirtNotificationBanner />
 
@@ -200,12 +213,30 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/group/invite-members"
+            element={
+              <ProtectedRoute>
+                <InviteMembers />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/group/members-list"
+            element={
+              <ProtectedRoute>
+                <MembersList />
+              </ProtectedRoute>
+            }
+          />
+
           {/* --- Admin Routes --- */}
           {/* This renders the AdminLayout (Sidebar + Header) */}
           <Route path="/admin" element={<AdminLayout />}>
             {/* Index maps to /admin and renders the Dashboard */}
             <Route index element={<AdminDashboard />} />
-            
+
             {/* Map other admin sidebar links to the same dashboard 
               (or create specific pages for them later) 
             */}
@@ -230,6 +261,8 @@ export default function App() {
 
           {/* --- Catch-all --- */}
           <Route path="*" element={<NotFound />} />
+          <Route path="admin/signin" element={<AdminSignIn />} />
+          <Route path="/admin/otp" element={<AdminOtp />} />
         </Routes>
       </main>
     </div>

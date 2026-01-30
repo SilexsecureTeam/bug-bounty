@@ -27,7 +27,7 @@ export default function SignIn() {
     // Check if user is already logged in
     const token = getAuthToken();
     const user = getUser();
-    
+
     if (token && user) {
       setLoggedInUser(user);
     }
@@ -124,21 +124,26 @@ export default function SignIn() {
       });
 
       const responseData = response?.data ?? response ?? {};
-      
+
       // Proceed directly to OTP
       processLoginSuccess(responseData, response);
-
     } catch (apiError) {
       const apiMsg = apiError?.message ?? "";
-      
+
       // Special check for "blocked" status to show Restricted Access message
-      if (apiMsg.toLowerCase().includes("account is block") || apiError.status === 400) {
-          const restrictedMsg = "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on March 5, 2026.\nHold your firewalls and check back soon.";
-          setError(restrictedMsg);
-          setIsRestricted(true);
-          toast.error(restrictedMsg);
-      }
-      else if (apiError?.status === "400" || apiMsg.includes("not verify yet")) {
+      if (
+        apiMsg.toLowerCase().includes("account is block") ||
+        apiError.status === 400
+      ) {
+        const restrictedMsg =
+          "🔐 Access Restricted\nYou’re early! The DefComm Bug Bounty event portal will unlock on March 5, 2026.\nHold your firewalls and check back soon.";
+        setError(restrictedMsg);
+        setIsRestricted(true);
+        toast.error(restrictedMsg);
+      } else if (
+        apiError?.status === "400" ||
+        apiMsg.includes("not verify yet")
+      ) {
         setError("Your account is not verified yet.");
         setShowVerifyButton(true);
         toast.error("Account not verified. Please verify your account.");
@@ -174,9 +179,10 @@ export default function SignIn() {
       >
         <div className="flex flex-col gap-6 text-center items-center justify-center py-10">
           <div className="h-20 w-20 rounded-full bg-[#1A2334] flex items-center justify-center text-2xl font-bold text-[#DDE4F7] mb-2 border border-[#2A303C]">
-            {loggedInUser.firstName?.[0]}{loggedInUser.lastName?.[0]}
+            {loggedInUser.firstName?.[0]}
+            {loggedInUser.lastName?.[0]}
           </div>
-          
+
           <div className="space-y-1">
             <h3 className="text-xl font-bold text-white">
               {loggedInUser.firstName} {loggedInUser.lastName}
@@ -217,7 +223,7 @@ export default function SignIn() {
         {error && (
           <div className="rounded-2xl border border-[#532E40] bg-[#211219] p-4 text-[13px] text-[#F2B3C8] whitespace-pre-wrap">
             {error}
-            
+
             {showVerifyButton && (
               <button
                 type="button"
@@ -232,7 +238,7 @@ export default function SignIn() {
 
         {/* If restricted, hide inputs to force user to wait or try later (optional UX choice) 
             For now we keep inputs visible so they can retry if it was a mistake */}
-            
+
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
           <span>
             Username or Email <span className="text-[#C77661]">*</span>
