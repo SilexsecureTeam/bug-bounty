@@ -103,7 +103,7 @@ export default function ResetPassword() {
             name="userlogin"
             value={form.userlogin}
             onChange={handleChange}
-            placeholder="Username or email"
+            placeholder="Username or  email"
             className={inputClasses}
             disabled={!!prefillUserlogin} // lock if pre-filled
           />
