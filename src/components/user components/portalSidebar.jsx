@@ -22,7 +22,7 @@ const navItems = [
   {
     icon: paymentIcon,
     item: "Payments",
-    path: "/payments",
+    // path: "/payments",
   },
   {
     icon: reportIcon,

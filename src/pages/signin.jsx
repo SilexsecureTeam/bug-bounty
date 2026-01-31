@@ -181,7 +181,8 @@ export default function SignIn() {
       <AuthLayout
         title="Welcome Back"
         infoText="You are currently logged in."
-        activeTab="Create a User Account"
+         activeTab={null}           
+      tabs={[]} 
       >
         <div className="flex flex-col gap-6 text-center items-center justify-center py-10">
           <div className="h-20 w-20 rounded-full bg-[#1A2334] flex items-center justify-center text-2xl font-bold text-[#DDE4F7] mb-2 border border-[#2A303C]">

@@ -1,12 +1,12 @@
 // src/components/AdminOtp.jsx
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // for back to sign-in
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/Defcomm-04 2.svg";
 import bgImage from "../assets/images/defcoobg.jpg";
 import "../index.css"; // your Tailwind base
 
 const AdminOtp = () => {
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", ""]); // 4 digits
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({
     type: "success",
@@ -14,43 +14,84 @@ const AdminOtp = () => {
   });
   const navigate = useNavigate();
 
-  // Theme mode setup (same as AdminSignIn)
+  // Refs for each input box
+  const inputRefs = useRef([]);
+
+  // Theme mode setup (same as before)
   useEffect(() => {
     let mode = "light";
     const attr = document.documentElement.getAttribute("data-bs-theme-mode");
     if (attr) mode = attr;
-    else if (localStorage.getItem("data-bs-theme"))
-      mode = localStorage.getItem("data-bs-theme");
+    else if (localStorage.getItem("data-bs-theme")) mode = localStorage.getItem("data-bs-theme");
 
     if (mode === "system") {
-      mode = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
+      mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
 
     document.documentElement.setAttribute("data-bs-theme", mode);
   }, []);
 
+  // Focus first input on mount
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  const handleChange = (index, value) => {
+    if (!/^\d?$/.test(value)) return; // only allow digits or empty
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input if value entered
+    if (value && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      // Move to previous box on backspace when empty
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").trim();
+    if (/^\d{4}$/.test(pastedData)) {
+      const digits = pastedData.split("");
+      setOtp(digits);
+      // Focus last box after paste
+      inputRefs.current[3]?.focus();
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!otp.trim()) return;
+    const otpValue = otp.join("").trim();
+    if (otpValue.length !== 4) return;
 
     setIsSubmitting(true);
 
-    // Simulate OTP verification (replace with real API call)
+    // Simulate OTP verification (replace with real API)
     setTimeout(() => {
       setIsSubmitting(false);
 
-      if (otp === "1234") {
-        // ← demo success condition
+      if (otpValue === "1234") { // ← demo success
         setMessage({
           type: "success",
           text: "Login successful! Redirecting...",
         });
-        // Real: navigate("/admin/dashboard");
         setTimeout(() => navigate("/subadmin"), 1000);
       } else {
         setMessage({ type: "error", text: "Invalid OTP. Try again." });
+        setOtp(["", "", "", ""]); // clear on error
+        inputRefs.current[0]?.focus();
       }
     }, 1500);
   };
@@ -71,7 +112,7 @@ const AdminOtp = () => {
             <img src={logo} alt="Logo" className="w-52 h-auto" />
           </a>
           <h2 className="text-white text-xl lg:text-2xl font-normal">
-            Redefining Defence, Communcation
+            Redefining Defence, Communication
           </h2>
         </div>
       </div>
@@ -83,13 +124,13 @@ const AdminOtp = () => {
             Check your mail for Your OTP to Login
           </h1>
 
-          {/* Message (green success or red error) */}
+          {/* Message */}
           {message && (
             <div
-              className={`mb-6 px-1 py-1 rounded-lg text-center text-sm font-medium w-fit ${
+              className={`mb-6 px-4 py-2 rounded-lg text-center text-sm font-medium w-fit ${
                 message.type === "success"
-                  ? "bg-[#17C653] text-white"
-                  : "bg-red-100 text-red-800"
+                  ? "bg-[#17C653]/20 text-[#17C653] border border-[#17C653]/30"
+                  : "bg-red-100 text-red-800 border border-red-300"
               }`}
             >
               {message.text}
@@ -98,24 +139,34 @@ const AdminOtp = () => {
 
           {/* OTP Form */}
           <form className="w-full" onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.trim())}
-                maxLength={6}
-                className="w-full border border-[#DBDFE9] rounded-lg px-4 py-3 focus:outline-none  text-black text-center text-lg tracking-widest"
-                required
-              />
+            <div className="mb-8">
+              <label className="block text-gray-700 text-sm font-medium mb-3 text-center">
+                Enter 4-digit OTP
+              </label>
+
+              <div className="flex justify-center gap-4">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => (inputRefs.current[index] = el)}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    onPaste={handlePaste}
+                    className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-[#36460A] focus:outline-none focus:ring-2 focus:ring-[#36460A]/30 bg-white text-gray-900 transition-all"
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Verify Button */}
             <button
               type="submit"
-              disabled={isSubmitting || !otp.trim()}
-              className={`w-full bg-[#36460A] hover:bg-[#36460A]/70 text-white py-3 rounded-lg font-semibold flex justify-center items-center transition-all ${
-                isSubmitting || !otp.trim()
+              disabled={isSubmitting || otp.join("").trim().length !== 4}
+              className={`w-full bg-[#36460A] hover:bg-[#36460A]/90 text-white py-3 rounded-lg font-semibold flex justify-center items-center transition-all ${
+                isSubmitting || otp.join("").trim().length !== 4
                   ? "opacity-70 cursor-not-allowed"
                   : ""
               }`}
@@ -129,14 +180,7 @@ const AdminOtp = () => {
                     fill="none"
                     viewBox="0 0 24 24"
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path
                       className="opacity-75"
                       fill="currentColor"
@@ -145,14 +189,14 @@ const AdminOtp = () => {
                   </svg>
                 </>
               ) : (
-                "Verify"
+                "Verify OTP"
               )}
             </button>
           </form>
 
-          {/* Back to Sign In link */}
+          {/* Back to Sign In */}
           <p className="mt-6 text-sm text-gray-600 text-center">
-            Click on?{" "}
+            Back to?{" "}
             <button
               onClick={() => navigate("/admin/signin")}
               className="text-blue-600 hover:underline font-medium"
