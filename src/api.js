@@ -182,6 +182,31 @@ export async function verifyLoginOtp({ userlogin, otp }) {
   return data;
 }
 
+// ------------------ Password Reset APIs ------------------
+
+// Forgot Password - request reset OTP/link
+export async function forgotPassword({ userlogin }) {
+  const payload = { userlogin };
+  return request("/bounty/forgot-password", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+// Reset Password - set new password with OTP
+export async function resetPassword({ userlogin, otp, password, password_confirm }) {
+  const payload = {
+    userlogin,
+    otp,
+    password,
+    password_confirm,
+  };
+  return request("/bounty/reset-password", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 // ------------------ Public APIs ------------------
 
 export async function fetchLeaderboard() {
