@@ -13,25 +13,30 @@ export default function Footer() {
         <div className="flex flex-col justify-between gap-8 border-b border-[#3A3D42] pb-12 lg:flex-row lg:items-center">
           <div className="flex items-start gap-4">
             <div className="rounded-lg p-3 text-white">
-              <img src={bugBountyLogo} alt="" />
+              <img
+                src={bugBountyLogo}
+                alt="Bug Bounty Logo"
+                className="w-30 h-30 md:w-70 md:h-auto"
+              />
             </div>
             <div>
               <h3 className="text-lg font-bold">
-                Stay Secure,<br />
+                Stay Secure,
+                <br />
                 <span className="text-[#9FC24D]">Stay Informed</span>
               </h3>
               <p className="mt-2 max-w-xs text-[15px] text-[#9CA3AF]">
-                Get the latest African defence technology insights, updates, and best practices delivered straight to your inbox.
-
+                Get the latest African defence technology insights, updates, and
+                best practices delivered straight to your inbox.
               </p>
             </div>
           </div>
 
           <div className="flex w-full max-w-md flex-col items-end gap-2">
             <div className="relative w-full">
-              <input 
-                type="email" 
-                placeholder="Enter Your Email Address" 
+              <input
+                type="email"
+                placeholder="Enter Your Email Address"
                 className="w-full rounded-lg border border-[#3A3D42] bg-transparent px-4 py-3 text-[16px] text-white placeholder-gray-500 focus:border-[#9FC24D] focus:outline-none"
               />
             </div>
@@ -45,28 +50,60 @@ export default function Footer() {
         <div className="grid gap-12 pt-12 text-[16px] sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <p className="max-w-xs text-[15px] leading-relaxed text-[#9CA3AF]">
-              African Defence Tech advancing Africa’s security through innovation, collaboration, and indigenous defence technology.
-
+              African Defence Tech advancing Africa’s security through
+              innovation, collaboration, and indigenous defence technology.
             </p>
           </div>
 
           <div>
             <h4 className="mb-4 text-[#9FC24D] font-bold">Solutions</h4>
             <ul className="space-y-3 text-[15px] text-[#E0E0E0]">
-              <li><a href="#" className="hover:text-white">Secure Messaging</a></li>
-              <li><a href="#" className="hover:text-white">File Encryption</a></li>
-              <li><a href="#" className="hover:text-white">Video Conferencing</a></li>
-              <li><a href="#" className="hover:text-white">Enterprise Suite</a></li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Secure Messaging
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  File Encryption
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Video Conferencing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Enterprise Suite
+                </a>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="mb-4 text-[#9FC24D] font-bold">Company</h4>
             <ul className="space-y-3 text-[15px] text-[#E0E0E0]">
-              <li><a href="#" className="hover:text-white">About Us</a></li>
-              <li><a href="#" className="hover:text-white">Careers</a></li>
-              <li><a href="#" className="hover:text-white">Security Blog</a></li>
-              <li><a href="#" className="hover:text-white">Contact</a></li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Security Blog
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
         </div>
