@@ -26,15 +26,20 @@ export default function ForgotPassword() {
 
     setLoading(true);
 
-    try {
-      await forgotPassword({ userlogin: userlogin.trim() });
-      toast.success("Reset instructions sent! Check your email.");
-      navigate("/signin", { replace: true });
-    } catch (err) {
-      const msg = err?.message ?? "Failed to send reset request. Try again.";
-      setError(msg);
-      toast.error(msg);
-    } finally {
+  try {
+  await forgotPassword({ userlogin: userlogin.trim() });
+  toast.success("Reset instructions sent! Check your email for the OTP.");
+
+  // Redirect to reset-password page and pre-fill the userlogin
+  navigate("/reset-password", {
+    replace: true,
+    state: { userlogin: userlogin.trim() },
+  });
+} catch (err) {
+  const msg = err?.message ?? "Failed to send reset request. Try again.";
+  setError(msg);
+  toast.error(msg);
+} finally {
       setLoading(false);
     }
   };
