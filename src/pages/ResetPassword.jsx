@@ -1,6 +1,6 @@
 // src/pages/ResetPassword.jsx
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import AuthLayout from "../components/AuthLayout";
 import { resetPassword } from "../api"; // Assume you add this to api.js
