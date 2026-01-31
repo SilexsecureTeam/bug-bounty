@@ -10,6 +10,8 @@ import RegisterSelection from "./pages/register-selection";
 import Register from "./pages/register";
 import SignIn from "./pages/signin";
 import OtpVerification from "./pages/otp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import SubmitReport from "./pages/submit-report";
 import Leaderboard from "./pages/leaderboard";
 import UserDashboard from "./pages/User/userDashboard";
@@ -151,6 +153,8 @@ export default function App() {
     "/admin/otp",
     "/group/invite-members",
     "/group/members-list",
+    "/forgot-password",
+    "/reset-password",
   ].includes(location.pathname);
 
   const isAdminRoute =
@@ -185,6 +189,8 @@ export default function App() {
           <Route path="/register/create" element={<Register />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/otp" element={<OtpVerification />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
 
           {/* --- User Protected Routes --- */}

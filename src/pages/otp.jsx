@@ -117,7 +117,10 @@ console.log("[OTP SUBMIT] User identifier:", userlogin);
         window.localStorage.removeItem("defcommOtpPassword");
 
         setTimeout(() => {
-          navigate("/signin", { replace: true });
+         navigate("/signin", {
+  replace: true,
+  state: { justActivated: true, userlogin: emailAddress },
+});
         }, 900);
       } else {
         console.log("[OTP SUBMIT] Using LOGIN 2FA endpoint: verifyLoginOtp");

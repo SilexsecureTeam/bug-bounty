@@ -24,6 +24,12 @@ export default function SignIn() {
   const [loggedInUser, setLoggedInUser] = useState(null);
 
   useEffect(() => {
+  if (location.state?.justActivated) {
+    toast("Account activated! Set your password to sign in.", { duration: 6000 });
+  }
+}, [location.state]);
+
+  useEffect(() => {
     // Check if user is already logged in
     const token = getAuthToken();
     const user = getUser();
@@ -276,6 +282,15 @@ export default function SignIn() {
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
+
+        <div className="text-right mt-2">
+  <Link
+    to="/forgot-password"
+    className="text-sm text-[#C6D176] hover:text-white transition-colors"
+  >
+    Forgot password?
+  </Link>
+</div>
 
         <div className="rounded-3xl border border-white/12 bg-[#11151C] p-6 text-sm text-[#C7CBD7]">
           <p className="text-[13px]">Don't have an account.</p>
