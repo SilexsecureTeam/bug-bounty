@@ -75,6 +75,9 @@ export default function OtpVerification() {
     setSuccess(null);
 
     const otp = digits.join("");
+    console.log("[OTP SUBMIT] Entered OTP:", otp);
+console.log("[OTP SUBMIT] User identifier:", userlogin);
+
 
     if (otp.length !== digits.length) {
       const message = "Please enter the complete OTP code.";
@@ -95,6 +98,8 @@ export default function OtpVerification() {
     try {
       let data;
       if (verifyAccountFlag) {
+          console.log("[OTP SUBMIT] Using ACTIVATION endpoint: verifyUserOtp");
+  console.log("[OTP SUBMIT] Payload:", { userlogin: emailAddress || userlogin, otp });
         // user is verifying their account (account creation flow)
         data = await verifyUserOtp({
           userlogin: emailAddress || userlogin, // ← prefer emailAddress
@@ -115,6 +120,8 @@ export default function OtpVerification() {
           navigate("/signin", { replace: true });
         }, 900);
       } else {
+        console.log("[OTP SUBMIT] Using LOGIN 2FA endpoint: verifyLoginOtp");
+  console.log("[OTP SUBMIT] Payload:", { userlogin, otp });
         // login verification flow
         data = await verifyLoginOtp({ userlogin, otp });
         const message = data?.message ?? "Login verification successful!";
