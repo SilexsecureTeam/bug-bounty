@@ -11,15 +11,15 @@ const defaultTabs = [
     state: { role: "user" },
   },
   {
-    label: "Register a New Group",
+    label: "Register a New Group/Company",
     to: "/register/create",
     state: { role: "group" },
   },
-  {
-    label: "Register a New Company",
-    to: "/register/create",
-    state: { role: "company" },
-  },
+  // {
+  //   label: "Register a New Company",
+  //   to: "/register/create",
+  //   state: { role: "company" },
+  // },
 ];
 
 const navLinks = [
@@ -41,10 +41,12 @@ export default function AuthLayout({
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#05070B] text-white flex flex-col">
       <Helmet>
-        <title>Join Defcomm | Register or Log In to Africa’s Defence Tech Program</title>
-        <meta 
-          name="description" 
-          content="Create an account or log in to the Defcomm platform to take part in responsible security research, access innovation challenges, and contribute to Africa’s growing defence technology ecosystem." 
+        <title>
+          Join Defcomm | Register or Log In to Africa’s Defence Tech Program
+        </title>
+        <meta
+          name="description"
+          content="Create an account or log in to the Defcomm platform to take part in responsible security research, access innovation challenges, and contribute to Africa’s growing defence technology ecosystem."
         />
       </Helmet>
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-[#090D14] via-[#05070B] to-[#03050A] opacity-95" />
