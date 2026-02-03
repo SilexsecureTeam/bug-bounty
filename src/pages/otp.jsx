@@ -76,8 +76,7 @@ export default function OtpVerification() {
 
     const otp = digits.join("");
     console.log("[OTP SUBMIT] Entered OTP:", otp);
-console.log("[OTP SUBMIT] User identifier:", userlogin);
-
+    console.log("[OTP SUBMIT] User identifier:", userlogin);
 
     if (otp.length !== digits.length) {
       const message = "Please enter the complete OTP code.";
@@ -98,33 +97,42 @@ console.log("[OTP SUBMIT] User identifier:", userlogin);
     try {
       let data;
       if (verifyAccountFlag) {
-          console.log("[OTP SUBMIT] Using ACTIVATION endpoint: verifyUserOtp");
-  console.log("[OTP SUBMIT] Payload:", { userlogin: emailAddress || userlogin, otp });
-        // user is verifying their account (account creation flow)
-        data = await verifyUserOtp({
-          userlogin: emailAddress || userlogin, // ← prefer emailAddress
+        console.log("[OTP SUBMIT] Using ACTIVATION endpoint: verifyUserOtp");
+        console.log("[OTP SUBMIT] Payload:", {
+          userlogin: emailAddress || userlogin,
           otp,
         });
-        // After successful account verification, redirect back to signin so user can login
+
+        data = await verifyUserOtp({
+          userlogin: emailAddress || userlogin,
+          otp,
+        });
+
         const message = data?.message ?? "Account verified successfully!";
         setSuccess(message);
         toast.success(message);
 
-        // clear OTP-related storage
+        // Clear storage (keep this)
         window.localStorage.removeItem("defcommOtpEmail");
         window.localStorage.removeItem("defcommOtpPhone");
         window.localStorage.removeItem("defcommOtpUserLogin");
         window.localStorage.removeItem("defcommOtpPassword");
 
+        // NEW: Instead of going to /signin, go to /reset-password
+        // Pass BOTH userlogin AND the just-verified OTP via state
         setTimeout(() => {
-         navigate("/signin", {
-  replace: true,
-  state: { justActivated: true, userlogin: emailAddress },
-});
+          navigate("/reset-password", {
+            replace: true,
+            state: {
+              userlogin: emailAddress || userlogin, // for pre-filling username/email
+              otp: digits.join(""), // the OTP they just successfully entered
+              justActivated: true, // optional flag if you want special messaging
+            },
+          });
         }, 900);
       } else {
         console.log("[OTP SUBMIT] Using LOGIN 2FA endpoint: verifyLoginOtp");
-  console.log("[OTP SUBMIT] Payload:", { userlogin, otp });
+        console.log("[OTP SUBMIT] Payload:", { userlogin, otp });
         // login verification flow
         data = await verifyLoginOtp({ userlogin, otp });
         const message = data?.message ?? "Login verification successful!";

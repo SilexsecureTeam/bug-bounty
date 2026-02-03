@@ -14,10 +14,11 @@ export default function ResetPassword() {
 
   // Try to pre-fill from state (if came from forgot password or activation)
   const prefillUserlogin = location.state?.userlogin || "";
+  const prefillOtp = location.state?.otp || "";
 
   const [form, setForm] = useState({
     userlogin: prefillUserlogin,
-    otp: "",
+    otp: prefillOtp || "",
     password: "",
     password_confirm: "",
   });
@@ -40,7 +41,12 @@ export default function ResetPassword() {
     e.preventDefault();
     setError(null);
 
-    if (!form.userlogin || !form.otp || !form.password || !form.password_confirm) {
+    if (
+      !form.userlogin ||
+      !form.otp ||
+      !form.password ||
+      !form.password_confirm
+    ) {
       setError("All fields are required.");
       toast.error("All fields are required.");
       return;
@@ -95,6 +101,11 @@ export default function ResetPassword() {
             {error}
           </div>
         )}
+        {location.state?.justActivated && (
+          <p className="text-xs text-[#C6D176] mt-1">
+            Your account is now verified! Just set a password to finish.
+          </p>
+        )}
 
         <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8F96A7]">
           Username or Email
@@ -120,6 +131,7 @@ export default function ResetPassword() {
             className={inputClasses}
             maxLength={6}
             inputMode="numeric"
+            disabled={!!location.state?.otp}
           />
         </label>
 

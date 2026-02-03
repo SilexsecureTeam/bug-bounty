@@ -526,7 +526,18 @@ export default function SubmitReport() {
     <div className="min-h-screen bg-[#05070C] text-white">
       <PortalHeader activeLabel="Submit a report" />
 
-      <main className="mx-auto flex w-full text-sm! gap-10 px-4 md:px-12 pb-20 pt-6 lg:gap-8">
+
+<div className="mx-auto flex w-full text-sm! gap-10 px-4 md:px-12 pt-4">
+     <button
+                type="button"
+                className="rounded-full bg-[#97C94F] px-3 py-1 text-[14px] font-semibold tracking-[0.35em] text-[#172007] shadow-[0_10px_25px_rgba(109,155,45,0.45)]"
+               onClick={() => navigate(-1)}
+                >
+                back
+                </button>
+                </div>
+                      <main className="mx-auto flex w-full text-sm! gap-10 px-4 md:px-12 pb-20 pt-6 lg:gap-8">
+      
         {/* Sidebar */}
         <aside className="hidden md:w-[330px] shrink-0 flex-col rounded-3xl border border-[#1B1F2A] bg-[#080C14] p-6 text-sm text-[#C5CBD8] shadow-[0_25px_70px_rgba(5,8,15,0.55)] lg:flex">
           <div className="flex items-center justify-between text-xs font-semibold tracking-[0.32em] text-[#E4E9F6]">
