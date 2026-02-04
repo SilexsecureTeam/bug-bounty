@@ -25,6 +25,7 @@ import Highlights from "./pages/highlights";
 import Program from "./pages/program";
 import Contact from "./pages/contact";
 import HomepageRegisterModal from "./components/HomepageRegisterModal";
+import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
 // Admin Imports
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -174,6 +175,7 @@ export default function App() {
       {/* Global Notification */}
       <TShirtNotificationBanner />
       <HomepageRegisterModal />
+      <HomepageRegistrationBanner />
 
       {/* Conditionally render the Public Navbar */}
       {!shouldHideNavbar && <Navbar />}
