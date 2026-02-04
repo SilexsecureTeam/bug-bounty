@@ -5,7 +5,7 @@ import shieldBg from "../assets/images/Group-1450.svg";
 const roles = [
   { label: "Bug Hunter", value: "hunter" },
   { label: "Guest", value: "guest" },
-  { label: "Volunteer", value: "volunteer" }
+  { label: "Volunteer", value: "volunteer" },
 ];
 
 export default function RegisterSelection() {
