@@ -111,7 +111,7 @@ const speakerCards = [
     type: "text",
     name: "Adetayo James A.",
     image: keynote5,
-    role: "CTO.  Aggregate Business Solutions Ltd.",
+    role: "CTO.  \nAggregate Business Solutions Ltd.",
     text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   {
@@ -518,14 +518,26 @@ export default function Landing() {
                               {card.name}
                             </h3>
                           )}
+
                           {card.role && (
-                            <p className="mt-1 text-xs sm:text-sm font-bold text-white/ whitespace-pre-line leading-relaxed">
-                              {card.role}
+                            <p className="mt-1 text-xs sm:text-sm leading-relaxed">
+                              {card.role.split("\n").map((line, i) => (
+                                <span
+                                  key={i}
+                                  className={`
+          ${i === 0 ? "font-semibold text-white" : "italic text-gray-200"}
+          ${i > 0 ? "block mt-0.5" : ""}
+        `}
+                                >
+                                  {line.trim()}
+                                </span>
+                              ))}
                             </p>
                           )}
-                          {/* Only show text for OTHER card types */}
-                          {card.text && card.type == "text" && (
-                            <p className="mt-2 text-xs sm:text-sm text-white leading-relaxed whitespace-pre-line">
+
+                          {/* Only show text for text-type cards */}
+                          {card.text && card.type === "text" && (
+                            <p className="mt-2 text-xs sm:text-sm text-white leading-relaxed font-normal whitespace-pre-line">
                               {card.text}
                             </p>
                           )}
