@@ -25,6 +25,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import keynote5 from "../assets/images/keynote5.png";
+import keynote1 from "../assets/images/keynote1.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
@@ -97,10 +98,11 @@ const speakerCardStyles = {
 
 const speakerCards = [
   {
-    type: "image",
-    name: "",
-    role: "Chief AI Scientist, OpenAI",
-    variant: "light",
+    type: "text",
+    name: "CP Ifeanyi Henry",
+    image: keynote1,
+    role: "Director. \nNigeria Police Force National Cybercrime Center (NPF-NCCC).",
+    text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   { type: "image", name: "Dr. Emily Carter", image: speaker1 },
   { type: "image", name: "", role: "CTO, DeepMind", variant: "accent" },
@@ -516,15 +518,14 @@ export default function Landing() {
                               {card.name}
                             </h3>
                           )}
-
                           {card.role && (
-                            <p className="mt-1 text-xs sm:text-sm font-bold text-white/">
+                            <p className="mt-1 text-xs sm:text-sm font-bold text-white/ whitespace-pre-line leading-relaxed">
                               {card.role}
                             </p>
                           )}
-
-                          {card.text && (
-                            <p className="mt-2 text-xs sm:text-sm text-white leading-relaxed">
+                          {/* Only show text for OTHER card types */}
+                          {card.text && card.type == "text" && (
+                            <p className="mt-2 text-xs sm:text-sm text-white leading-relaxed whitespace-pre-line">
                               {card.text}
                             </p>
                           )}
