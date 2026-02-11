@@ -509,14 +509,9 @@ export default function Register() {
           />
           <span>
             I have read, understood, and accept the Defcomm{" "}
-            <a
-              href="https://yourdomain.com/defcomm-terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="!text-blue-400 underline"
-            >
+            <Link to="/terms" className="!text-blue-400 underline">
               Terms and Conditions
-            </a>{" "}
+            </Link>{" "}
             and Privacy Policy
           </span>
         </label>

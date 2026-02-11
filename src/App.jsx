@@ -24,6 +24,7 @@ import About from "./pages/about";
 import Highlights from "./pages/highlights";
 import Program from "./pages/program";
 import Contact from "./pages/contact";
+import Terms from "./pages/Terms";
 import HomepageRegisterModal from "./components/HomepageRegisterModal";
 import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
@@ -292,6 +293,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="admin/signin" element={<AdminSignIn />} />
           <Route path="/admin/otp" element={<AdminOtp />} />
+          <Route path="/terms" element={<Terms />} />
         </Routes>
       </main>
     </div>
