@@ -66,7 +66,7 @@ export default function Register() {
 
   const selectedRole = location.state?.role ?? storedRole ?? "user";
   const selectedRoleLabel = selectedRole
-    ? roleLabels[selectedRole] ?? selectedRole
+    ? (roleLabels[selectedRole] ?? selectedRole)
     : null;
 
   const [formValues, setFormValues] = useState({
@@ -107,7 +107,7 @@ export default function Register() {
     if (!selectedRole) errors.role = "Please select a registration type.";
     if (!formValues.firstName) errors.firstName = "First name is required.";
     if (!formValues.lastName) errors.lastName = "Last name is required.";
-    
+
     // Username is not required for guests
     if (selectedRole !== "guest") {
       if (!formValues.username) errors.username = "Username is required.";
@@ -151,15 +151,17 @@ export default function Register() {
       // Normalize phone before sending
       const formattedPhone = normalizePhoneNumber(
         formValues.phone,
-        formValues.country
+        formValues.country,
       );
       const userType = userTypeByRole[selectedRole] ?? "user";
       const userlogin = formValues.username || formValues.email;
       const fullName = `${formValues.firstName} ${formValues.lastName}`.trim();
-      const countryName = countryNames[formValues.country] || formValues.country || "";
+      const countryName =
+        countryNames[formValues.country] || formValues.country || "";
 
       // Fixed Form ID for Guest Registration
-      const FIXED_FORM_ID = "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
+      const FIXED_FORM_ID =
+        "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
       // === Guest-specific flow ===
       if (selectedRole === "guest") {
@@ -191,7 +193,9 @@ export default function Register() {
         };
 
         const resp = await submitGuestEvent(eventPayload);
-        toast.success(resp?.message ?? "Guest registration submitted. Thank you!");
+        toast.success(
+          resp?.message ?? "Guest registration submitted. Thank you!",
+        );
         setLoading(false);
         navigate("/", { replace: true });
         return;
@@ -208,7 +212,8 @@ export default function Register() {
         userType,
         password: formValues.password,
         groupname: userType === "group" ? formValues.groupname : undefined,
-        companyname: userType === "company" ? formValues.companyname : undefined,
+        companyname:
+          userType === "company" ? formValues.companyname : undefined,
       });
 
       // === NEW: If Hunter, ALSO register as guest with "hunter: true" ===
@@ -228,10 +233,10 @@ export default function Register() {
               },
               participation_details: {
                 attendance_mode: "Physical",
-                registration_type: "Bug Hunter", 
+                registration_type: "Bug Hunter",
               },
               professional_background: {
-                fields: ["Cybersecurity"], 
+                fields: ["Cybersecurity"],
                 other: null,
               },
               consent: {
@@ -239,11 +244,11 @@ export default function Register() {
                 follow_up_updates: !!formValues.consent,
               },
               // ✅ Flag specific to hunters
-              hunter: true 
+              hunter: true,
             },
           };
-          
-          // We fire this request but don't block the main flow if it fails slightly, 
+
+          // We fire this request but don't block the main flow if it fails slightly,
           // or we can await it. Awaiting it is safer to ensure data consistency.
           await submitGuestEvent(hunterEventPayload);
           console.log("Hunter successfully registered as guest.");
@@ -262,11 +267,13 @@ export default function Register() {
 
       window.localStorage.setItem("defcommOtpEmail", registeredEmail);
       window.localStorage.setItem("defcommOtpPhone", registeredPhone);
-      if (userlogin) window.localStorage.setItem("defcommOtpUserLogin", userlogin);
+      if (userlogin)
+        window.localStorage.setItem("defcommOtpUserLogin", userlogin);
       window.localStorage.setItem("defcommOtpPassword", formValues.password);
 
       toast.success(
-        responseData?.message ?? "Registration successful! Enter the OTP we sent."
+        responseData?.message ??
+          "Registration successful! Enter the OTP we sent.",
       );
 
       navigate("/otp", {
@@ -386,7 +393,11 @@ export default function Register() {
           )}
 
           {selectedRole === "group" && (
-            <FormField label="Group Name" required error={fieldErrors.groupname}>
+            <FormField
+              label="Group Name"
+              required
+              error={fieldErrors.groupname}
+            >
               <input
                 type="text"
                 name="groupname"
@@ -399,7 +410,11 @@ export default function Register() {
           )}
 
           {selectedRole === "company" && (
-            <FormField label="Company Name" required error={fieldErrors.companyname}>
+            <FormField
+              label="Company Name"
+              required
+              error={fieldErrors.companyname}
+            >
               <input
                 type="text"
                 name="companyname"
@@ -448,7 +463,11 @@ export default function Register() {
               />
             </FormField>
 
-            <FormField label="Confirm Password" required error={fieldErrors.confirmPassword}>
+            <FormField
+              label="Confirm Password"
+              required
+              error={fieldErrors.confirmPassword}
+            >
               <input
                 type="password"
                 name="confirmPassword"
@@ -461,7 +480,11 @@ export default function Register() {
           </div>
         )}
 
-        <FormField label="Country of Residence" required error={fieldErrors.country}>
+        <FormField
+          label="Country of Residence"
+          required
+          error={fieldErrors.country}
+        >
           <select
             name="country"
             className={`${inputClasses} appearance-none`}
@@ -485,8 +508,15 @@ export default function Register() {
             onChange={handleChange}
           />
           <span>
-            I have read, understood, and accept the Defcomm General Conditions
-            of Use
+            I have read, understood, and accept the Defcomm terms Conditions{" "}
+            <a
+              href="https://yourdomain.com/defcomm-terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="!text-blue-400 underline"
+            >
+              Read the Defcomm Terms & Conditions
+            </a>
           </span>
         </label>
 
@@ -497,7 +527,9 @@ export default function Register() {
           Privacy Policy.
         </p>
 
-        <p className="text-[11px] font-medium text-[#B0B5C3]">• Mandatory Fields</p>
+        <p className="text-[11px] font-medium text-[#B0B5C3]">
+          • Mandatory Fields
+        </p>
 
         <button
           type="submit"
@@ -537,9 +569,7 @@ function FormField({ label, required, children, error }) {
         {required && <span className="text-[#C77661]"> *</span>}
       </span>
       {children}
-      {error && (
-        <p className="mt-1 text-xs text-[#F2B3C8]">{error}</p>
-      )}
+      {error && <p className="mt-1 text-xs text-[#F2B3C8]">{error}</p>}
     </label>
   );
-        }
+}
