@@ -508,15 +508,16 @@ export default function Register() {
             onChange={handleChange}
           />
           <span>
-            I have read, understood, and accept the Defcomm terms Conditions{" "}
+            I have read, understood, and accept the Defcomm{" "}
             <a
               href="https://yourdomain.com/defcomm-terms"
               target="_blank"
               rel="noopener noreferrer"
               className="!text-blue-400 underline"
             >
-              Read the Defcomm Terms & Conditions
-            </a>
+              Terms and Conditions
+            </a>{" "}
+            and Privacy Policy
           </span>
         </label>
 
