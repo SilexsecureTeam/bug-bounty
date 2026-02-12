@@ -9,8 +9,8 @@ import fallbackImg from "../assets/images/fb.png";
 import Footer from "../components/Footer";
 import sponsor2 from "../assets/images/sponsor2.png";
 import sponsor3 from "../assets/images/sponsor4.png";
-import sponsor5 from "../assets/images/sponsor5.png";
-import sponsor7 from "../assets/images/sponsor7.png";
+// import sponsor5 from "../assets/images/sponsor5.png";
+// import sponsor7 from "../assets/images/sponsor7.png";
 import sponsor8 from "../assets/images/sponsor8.png";
 import sponsor9 from "../assets/images/sponsor9.png";
 import sponsor10 from "../assets/images/sponsor10.png";
@@ -37,7 +37,7 @@ const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
   { id: 2, img: sponsor2, link: "#" },
   { id: 3, img: sponsor8, link: "#" },
-  { id: 4, img: sponsor7, link: "https://aipressroom.com" },
+  // { id: 4, img: sponsor7, link: "https://aipressroom.com" },
   { id: 5, img: sponsor9, link: "#" },
   { id: 6, img: sponsor10, link: "#" },
   { id: 7, img: sponsor11, link: "#" },
