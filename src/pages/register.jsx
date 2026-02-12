@@ -509,7 +509,10 @@ export default function Register() {
           />
           <span>
             I have read, understood, and accept the Defcomm{" "}
-            <Link to="/terms" className="!text-blue-400 underline">
+            <Link
+              to={selectedRole === "guest" ? "/term" : "/terms"}
+              className="!text-[#9DB347] underline"
+            >
               Terms and Conditions
             </Link>{" "}
             and Privacy Policy

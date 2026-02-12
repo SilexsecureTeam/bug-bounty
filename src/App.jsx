@@ -25,6 +25,7 @@ import Highlights from "./pages/highlights";
 import Program from "./pages/program";
 import Contact from "./pages/contact";
 import Terms from "./pages/Terms";
+import Term from "./pages/Term";
 import HomepageRegisterModal from "./components/HomepageRegisterModal";
 import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
@@ -197,6 +198,10 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="admin/signin" element={<AdminSignIn />} />
+          <Route path="/admin/otp" element={<AdminOtp />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/term" element={<Term />} />
 
           {/* --- User Protected Routes --- */}
           <Route
@@ -291,9 +296,6 @@ export default function App() {
 
           {/* --- Catch-all --- */}
           <Route path="*" element={<NotFound />} />
-          <Route path="admin/signin" element={<AdminSignIn />} />
-          <Route path="/admin/otp" element={<AdminOtp />} />
-          <Route path="/terms" element={<Terms />} />
         </Routes>
       </main>
     </div>

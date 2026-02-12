@@ -11,6 +11,11 @@ import sponsor2 from "../assets/images/sponsor2.png";
 import sponsor3 from "../assets/images/sponsor4.png";
 import sponsor5 from "../assets/images/sponsor5.png";
 import sponsor7 from "../assets/images/sponsor7.png";
+import sponsor8 from "../assets/images/sponsor8.png";
+import sponsor9 from "../assets/images/sponsor9.png";
+import sponsor10 from "../assets/images/sponsor10.png";
+import sponsor11 from "../assets/images/sponsor11.png";
+import sponsor12 from "../assets/images/sponsor12.png";
 import { useReveal } from "../hooks/useReveal";
 import linkedIn from "../assets/images/linkedIn.svg";
 import instagram from "../assets/images/instagram.svg";
@@ -26,16 +31,17 @@ import {
 } from "lucide-react";
 import keynote5 from "../assets/images/keynote5.png";
 import keynote1 from "../assets/images/keynote1.png";
+import keynote2 from "../assets/images/keynote2.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
   { id: 2, img: sponsor2, link: "#" },
-  { id: 3, img: sponsor5, link: "#" },
+  { id: 3, img: sponsor8, link: "#" },
   { id: 4, img: sponsor7, link: "https://aipressroom.com" },
-  { id: 5, img: sponsor3, link: "#" },
-  { id: 6, img: sponsor2, link: "#" },
-  { id: 7, img: sponsor5, link: "#" },
-  { id: 8, img: sponsor7, link: "https://aipressroom.com" },
+  { id: 5, img: sponsor9, link: "#" },
+  { id: 6, img: sponsor10, link: "#" },
+  { id: 7, img: sponsor11, link: "#" },
+  { id: 8, img: sponsor12, link: "#" },
 ];
 
 const socialLinks = [
@@ -66,24 +72,24 @@ const impactBullets = [
 
 const agendaItems = [
   {
-    label: "February 2026",
+    label: "Feb \n2026",
     title: "Pre Event",
-    time: "Private briefings,  Researcher registration and briefing.",
+    time: "Researcher registration and briefing.",
   },
   {
-    label: "March 5",
+    label: "March 5, \n2026",
     title: "Event Day",
-    time: " Private briefings,  Researcher registration and briefing.",
+    time: "Keynote Address: Delivered by Senior Military and Government Official.\nPanel Session: Military leadership perspectives\nBug Bounty Session",
   },
   {
-    label: "March 6, 2026",
-    title: "Event Day",
-    time: "DevCorner : Designed for developers, cybersecurity engineers, and risk and compliance experts building secure, mission-ready defence solutions.",
+    label: "March 6, \n2026",
+    title: "Event Day - DevCorner",
+    time: "Designed for Software developers and engineers, Risk & compliance engineers, Cyber Security experts, who build secure, mission-ready defence solutions.",
   },
   {
-    label: "March 7",
-    title: "Event Day",
-    time: "Operation Topspin: Defcomm Defence Championship",
+    label: "March 7, \n2026",
+    title: "Operation Topspin",
+    time: "Defcomm Defence Championship",
   },
 ];
 
@@ -104,7 +110,13 @@ const speakerCards = [
     role: "Director. \nNigeria Police Force National Cybercrime Center (NPF-NCCC).",
     text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
-  { type: "image", name: "Dr. Emily Carter", image: speaker1 },
+  {
+    type: "text",
+    name: "Dr Vincent Olatunji",
+    image: keynote2,
+    role: "National Commissioner/CEO \nNigeria Data Protection Commission (NDPC).",
+    // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
+  },
   { type: "image", name: "", role: "CTO, DeepMind", variant: "accent" },
   { type: "image", name: "Elon Park", image: speaker1 },
   {
@@ -569,7 +581,7 @@ export default function Landing() {
         {/* Sponsors Strip */}
         <div
           ref={logosRef}
-          className="flex items-center justify-between gap-8 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 backdrop-blur-md sm:px-10 overflow-x-auto no-scrollbar"
+          className="flex items-center justify-between gap-8 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8  sm:px-10 overflow-x-auto no-scrollbar"
           style={{ "--reveal-delay": "0.15s" }}
         >
           {sponsors.map((spons) => (
@@ -586,7 +598,7 @@ export default function Landing() {
                 <img
                   src={spons.img}
                   alt="Sponsor logos"
-                  className="w-auto h-12 object-contain grayscale brightness-200 opacity-70 hover:opacity-100 transition-opacity"
+                  className="w-auto h-12 object-contain  "
                 />
               </a>
             </div>
@@ -688,20 +700,17 @@ export default function Landing() {
               <h2 className="text-4xl font-black uppercase tracking-[0.3em] text-white sm:text-5xl">
                 Agenda
               </h2>
-              <p className="mt-4 max-w-md text-sm text-[#B6C197]">
-                Two days engineered around reconnaissance, live testing, and
-                collaborative defence frameworks across the continent.
-              </p>
             </div>
-            <p className="text-right text-xs uppercase tracking-[0.35em] text-[#7D8A5A]">
-              March 5, 2026 ·
+            <p className="text-right text-xs uppercase tracking-[0.35em] text-white max-w-md">
+              December 4-5, 2025 | Shehu Musa Yar'Adua Center, Abuja, Nigeria
             </p>
           </div>
 
           <div
-            className="reveal-child relative overflow-hidden rounded-[48px] border border-[#2C3218] bg-[#1A1D1D]/90 p-10 shadow-[0_35px_90px_rgba(6,10,6,0.6)]"
+            className="reveal-child relative overflow-hidden rounded-[48px] border border-[#2C3218] bg-[#1A1D1D]/90 p-8 sm:p-10 lg:p-12 shadow-[0_35px_90px_rgba(6,10,6,0.6)]"
             style={{ "--reveal-child-delay": "0.2s" }}
           >
+            {/* Background map */}
             <div className="pointer-events-none absolute inset-0 opacity-80">
               <img
                 src={agendaMap}
@@ -709,22 +718,39 @@ export default function Landing() {
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="relative z-10 grid gap-8 text-sm text-[#F3F7E8] lg:grid-cols-2">
-              {agendaItems.map(({ label, title, time }, index) => (
-                <div
-                  key={label}
-                  className="reveal-child flex flex-col gap-2"
-                  style={{ "--reveal-child-delay": `${0.28 + index * 0.08}s` }}
-                >
-                  <span className="text-xs uppercase tracking-[0.35em] text-[#C7E27A]">
-                    {label}
-                  </span>
-                  <h3 className="text-2xl font-semibold text-white">{title}</h3>
-                  <p className="text-sm text-[#DEE7C8]">{time}</p>
-                </div>
-              ))}
+
+            {/* Timeline container */}
+            <div className="relative z-10">
+              <div className="space-y-12 lg:space-y-16">
+                {agendaItems.map(({ label, title, time }, index) => (
+                  <div
+                    key={label}
+                    className="reveal-child flex flex-col gap-3 sm:flex-row sm:items-start justify-between sm:gap-8 lg:gap-12"
+                    style={{ "--reveal-child-delay": `${0.28 + index * 0.1}s` }}
+                  >
+                    {/* Left: Date / Label */}
+                    <div className="flex-shrink-0 sm:w-32 lg:w-40 text-center sm:text-left">
+                      <span className="inline-block text-xl rounded-lg bg-[#2C3218] px-4 py-2  font-semibold uppercase tracking-[0.25em] text-white sm:bg-transparent sm:px-0 sm:py-0 whitespace-pre-line">
+                        {label}
+                      </span>
+                    </div>
+
+                    {/* Right: Content */}
+                    <div className="flex-1 lg:max-w-150">
+                      <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+                        {title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-[#DEE7C8] whitespace-pre-line">
+                        {time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="relative z-10 mt-10 flex justify-center">
+
+            {/* CTA Button */}
+            <div className="relative z-10 mt-12 flex justify-center">
               <Link
                 to="/register"
                 className="reveal-child inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-[#10150A] shadow-[0_15px_40px_rgba(133,171,32,0.4)] transition-transform duration-200 hover:-translate-y-0.5"
@@ -733,7 +759,7 @@ export default function Landing() {
                     "linear-gradient(90deg, #3F550F 0%, #9ECB32 100%)",
                 }}
               >
-                View in executive reader →
+                View detailed schedule →
               </Link>
             </div>
           </div>
