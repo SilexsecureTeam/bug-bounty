@@ -6,7 +6,7 @@ import shieldBg from "../assets/images/Group-1450.svg"; // same background image
 const roles = [
   { label: "Bug Hunter", value: "hunter" },
   { label: "Guest", value: "guest" },
-  { label: "Volunteer", value: "volunteer" },
+  // { label: "Volunteer", value: "volunteer" },
 ];
 
 const HomepageRegisterModal = () => {
@@ -44,10 +44,10 @@ const HomepageRegisterModal = () => {
   const handleSelect = (role) => {
     handleClose(); // close modal immediately
 
-    if (role === "volunteer") {
-      window.location.href = "https://www.defcomm.ng/programme/bug-bounty";
-      return;
-    }
+    // if (role === "volunteer") {
+    //   window.location.href = "https://www.defcomm.ng/programme/bug-bounty";
+    //   return;
+    // }
 
     // Save role like in original page
     if (typeof window !== "undefined") {
