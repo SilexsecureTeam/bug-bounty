@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from "./api"; // Re-using the base URL from your existing api.js
+import { getApiBaseUrl } from "./api"; 
 
 const API_BASE_URL = getApiBaseUrl();
 const ADMIN_SESSION_KEY = "adminSession";
@@ -100,32 +100,41 @@ async function adminRequest(path, { method = "GET", headers = {}, body } = {}) {
 // --- Admin Auth APIs ---
 
 export async function adminLogin({ email, password }) {
-  // Using the base /login endpoint as requested
   const response = await fetch(`${API_BASE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await response.json();
+  const responseBody = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Login failed");
+    throw new Error(responseBody.message || "Login failed");
   }
 
+  // ✅ FIX: Extract the inner 'data' object from the response
+  // The API returns: { status: 200, message: "...", data: { access_token: "...", user: {...} } }
+  const apiData = responseBody.data;
+
+  if (!apiData) {
+    throw new Error("Invalid Server Response: Missing data object");
+  }
+
+  const user = apiData.user;
+  const accessToken = apiData.access_token;
+
   // Validate User is Admin
-  // Checking if name is 'admin' or explicit admin role if available
-  const isNamedAdmin = data.user?.name?.toLowerCase().includes("admin");
-  const isRoleAdmin = data.user?.role === "admin"; // specific backend field if exists
+  const isNamedAdmin = user?.name?.toLowerCase().includes("admin");
+  const isRoleAdmin = user?.role === "admin";
 
   if (!isNamedAdmin && !isRoleAdmin) {
      throw new Error("Access Denied: You do not have administrator privileges.");
   }
 
   // Save Token (access_token) and User
-  saveAdminSession(data.access_token, data.user);
+  saveAdminSession(accessToken, user);
 
-  return data;
+  return responseBody;
 }
 
 // --- Example Protected Admin Endpoint ---
