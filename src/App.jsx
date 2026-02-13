@@ -257,6 +257,8 @@ export default function App() {
             }
           />
 
+          <Route path="/admin/login" element={<AdminLogin />} />
+          
           {/* --- Admin Routes --- */}
           {/* This renders the AdminLayout (Sidebar + Header) */}
          <Route element={<ProtectedAdminRoute />}>
