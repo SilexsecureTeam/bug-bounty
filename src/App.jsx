@@ -30,6 +30,8 @@ import HomepageRegisterModal from "./components/HomepageRegisterModal";
 import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
 // Admin Imports
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminEvents from "./pages/Admin/Events";
@@ -257,7 +259,8 @@ export default function App() {
 
           {/* --- Admin Routes --- */}
           {/* This renders the AdminLayout (Sidebar + Header) */}
-          <Route path="/admin" element={<AdminLayout />}>
+         <Route element={<ProtectedAdminRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
             {/* Index maps to /admin and renders the Dashboard */}
             <Route index element={<AdminDashboard />} />
 
@@ -281,7 +284,8 @@ export default function App() {
             <Route path="security" element={<Security />} />
             <Route path="help" element={<Help />} />
             <Route path="account" element={<AccountSettings />} />
-          </Route>
+         </Route>
+        </Route>
           {/* --- SubAdmin Routes --- */}
 
           <Route path="/subadmin" element={<SubadminLayout />}>
