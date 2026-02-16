@@ -29,9 +29,12 @@ import {
   Plane,
   ShieldCheck,
 } from "lucide-react";
-import keynote5 from "../assets/images/keynote5.png";
-import keynote1 from "../assets/images/keynote1.png";
+import keynote6 from "../assets/images/keynote6.png";
 import keynote2 from "../assets/images/keynote2.png";
+import keynote3 from "../assets/images/keynote3.png";
+import keynote1 from "../assets/images/keynote1.png";
+import keynote4 from "../assets/images/keynote4.png";
+import keynote5 from "../assets/images/keynote5.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
@@ -105,32 +108,45 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
-    name: "CP Ifeanyi Henry",
+    name: "GENERAL CHRISTOPHER GWABIN MUSA (Rtd) OFR",
     image: keynote1,
+    role: "hONOURABLE MINISTER OF DEFENCE \nFEDERAL REPUBLIC OF NIGERIA",
+    // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
+  },
+  {
+    type: "text",
+    name: "CP Ifeanyi Henry",
+    image: keynote2,
     role: "Director. \nNigeria Police Force National Cybercrime Center (NPF-NCCC).",
     text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
     name: "Dr Vincent Olatunji",
-    image: keynote2,
+    image: keynote3,
     role: "National Commissioner/CEO \nNigeria Data Protection Commission (NDPC).",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
-  { type: "image", name: "", role: "CTO, DeepMind", variant: "accent" },
-  { type: "image", name: "Elon Park", image: speaker1 },
+  {
+    type: "text",
+    name: "Prof. Engr. Ibrahim A. Adeyanju",
+    image: keynote4,
+    role: "MANAGING DIRECTOR/ceo \nGALAXY BACKBONE.",
+    // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
+  },
+  {
+    type: "text",
+    name: "Victoria Fabunmi ",
+    image: keynote5,
+    role: "National Coordinator.  \nNational Coordinator, Office for Nigerian Digital Innovation (ONDI).",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
   {
     type: "text",
     name: "Adetayo James A.",
-    image: keynote5,
+    image: keynote6,
     role: "CTO.  \nAggregate Business Solutions Ltd.",
     text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
-  },
-  {
-    type: "image",
-    name: "",
-    role: "AI Policy Advisor, EU Commission",
-    variant: "accent",
   },
   { type: "image", name: "Dr. Alan Foster", image: speaker1 },
   { type: "image", name: "", role: "Stanford AI Lab", variant: "accent" },
