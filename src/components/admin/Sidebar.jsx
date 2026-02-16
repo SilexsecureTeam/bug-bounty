@@ -1,11 +1,20 @@
 import React from 'react';
-import { LogOut, X } from 'lucide-react'; // Added X for mobile close button
+import { LogOut, X } from 'lucide-react'; 
 import { sidebarMenu } from '../../data/dashboardData'; 
 import { Link, useLocation } from 'react-router-dom';
 import defLogo from './Defcomm.svg';
+// 1. Import the logout helper
+import { logoutAdmin } from '../../adminApi'; 
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const location = useLocation();
+
+  // 2. Create the handler
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      logoutAdmin();
+    }
+  };
 
   return (
     <aside 
@@ -18,7 +27,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           {/* Logo Area */}
           <div className="flex items-center justify-between px-6 py-6 h-20">
             <div className={`flex items-center gap-3 transition-opacity max-h-12 duration-200 ${!isOpen && "lg:opacity-0"}`}>
-              <img src={defLogo} className='h-full'/>
+              <img src={defLogo} className='h-full' alt="Defcomm Logo"/>
             </div>
             
             {/* Mobile Close Button */}
@@ -36,7 +45,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                 </h3>
                 <ul className="space-y-1">
                   {section.items.map((item) => {
-                    // Check if active based on current path
                     const isActive = location.pathname === item.path || 
                                     (item.path !== '/admin' && location.pathname.startsWith(item.path));
                     
@@ -68,9 +76,12 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           </div>
         </div>
 
-        {/* Logout */}
+        {/* 3. Attach onClick to the Logout Button */}
         <div className="p-4 border-t border-[#1F2227]">
-          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#AA4D4D] hover:bg-[#1A1D21] transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#AA4D4D] hover:bg-[#1A1D21] transition-colors"
+          >
             <LogOut className="h-5 w-5 shrink-0" />
             <span className={`${!isOpen && "lg:hidden"}`}>Logout Account</span>
           </button>
