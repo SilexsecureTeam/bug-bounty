@@ -108,7 +108,7 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
-    name: "General Christopher Gwabin Musa (Rtd) Ofr",
+    name: "General Christopher Gwabin Musa (Rtd) OFR",
     image: keynote1,
     role: "Honourable Minister Of Defence \nFederal Republic Of Nigeria",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
@@ -118,7 +118,7 @@ const speakerCards = [
     name: "CP Ifeanyi Henry",
     image: keynote2,
     role: "Director. \nNigeria Police Force National Cybercrime Center (NPF-NCCC).",
-    text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
+    // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
@@ -131,14 +131,14 @@ const speakerCards = [
     type: "text",
     name: "Prof. Engr. Ibrahim A. Adeyanju",
     image: keynote4,
-    role: "MANAGING DIRECTOR/ceo \nGALAXY BACKBONE.",
+    role: "Managing Director/CEO \nGalaxy Backbone.",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
     name: "Victoria Fabunmi ",
     image: keynote5,
-    role: "National Coordinator.  \nNational Coordinator, Office for Nigerian Digital Innovation (ONDI).",
+    role: "National Coordinator.  \nOffice for Nigerian Digital Innovation (ONDI).",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   {
@@ -146,7 +146,7 @@ const speakerCards = [
     name: "Adetayo James A.",
     image: keynote6,
     role: "CTO.  \nAggregate Business Solutions Ltd.",
-    text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   { type: "image", name: "Dr. Alan Foster", image: speaker1 },
   { type: "image", name: "", role: "Stanford AI Lab", variant: "accent" },
