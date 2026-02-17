@@ -117,35 +117,35 @@ const speakerCards = [
     type: "text",
     name: "CP Ifeanyi Henry",
     image: keynote2,
-    role: "Director. \nNigeria Police Force National Cybercrime Center (NPF-NCCC).",
+    role: "Director \nNigeria Police Force National Cybercrime Center (NPF-NCCC)",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
     name: "Dr Vincent Olatunji",
     image: keynote3,
-    role: "National Commissioner/CEO \nNigeria Data Protection Commission (NDPC).",
+    role: "National Commissioner/CEO \nNigeria Data Protection Commission (NDPC)",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
     name: "Prof. Engr. Ibrahim A. Adeyanju",
     image: keynote4,
-    role: "Managing Director/CEO \nGalaxy Backbone.",
+    role: "Managing Director/CEO \nGalaxy Backbone",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
     name: "Victoria Fabunmi ",
     image: keynote5,
-    role: "National Coordinator.  \nOffice for Nigerian Digital Innovation (ONDI).",
+    role: "National Coordinator \nOffice for Nigerian Digital Innovation (ONDI)",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   {
     type: "text",
     name: "Adetayo James A.",
     image: keynote6,
-    role: "CTO.  \nAggregate Business Solutions Ltd.",
+    role: "CTO  \nAggregate Business Solutions Ltd",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   { type: "image", name: "Dr. Alan Foster", image: speaker1 },
@@ -542,7 +542,7 @@ export default function Landing() {
                       <div className="absolute inset-0 flex items-end">
                         <div className="w-full p-6 sm:px-7 py-4 rounded-4xl bg-gradient-to-b from-[#85AB20]/90 to-[#36450D]/95">
                           {card.name && (
-                            <h3 className="text-base  font-semibold text-white leading-tight">
+                            <h3 className="text-base  font-bold text-white leading-tight">
                               {card.name}
                             </h3>
                           )}
