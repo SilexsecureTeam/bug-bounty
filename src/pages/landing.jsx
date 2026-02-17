@@ -110,7 +110,7 @@ const speakerCards = [
     type: "text",
     name: "General Christopher Gwabin Musa (Rtd) Ofr",
     image: keynote1,
-    role: "hONOURABLE MINISTER OF DEFENCE \nFEDERAL REPUBLIC OF NIGERIA",
+    role: "Honourable Minister Of Defence \nFederal Republic Of Nigeria",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
