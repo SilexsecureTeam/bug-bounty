@@ -108,7 +108,7 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
-    name: "GENERAL CHRISTOPHER GWABIN MUSA (Rtd) OFR",
+    name: "General Christopher Gwabin Musa (Rtd) Ofr",
     image: keynote1,
     role: "hONOURABLE MINISTER OF DEFENCE \nFEDERAL REPUBLIC OF NIGERIA",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
