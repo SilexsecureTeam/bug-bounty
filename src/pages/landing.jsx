@@ -542,7 +542,7 @@ export default function Landing() {
                       <div className="absolute inset-0 flex items-end">
                         <div className="w-full p-6 sm:px-7 py-4 rounded-4xl bg-gradient-to-b from-[#85AB20]/90 to-[#36450D]/95">
                           {card.name && (
-                            <h3 className="text-base sm:text-lg font-semibold text-white leading-tight">
+                            <h3 className="text-base  font-semibold text-white leading-tight">
                               {card.name}
                             </h3>
                           )}
@@ -553,7 +553,7 @@ export default function Landing() {
                                 <span
                                   key={i}
                                   className={`
-          ${i === 0 ? "font-semibold text-white" : "italic text-gray-200"}
+          ${i === 0 ? "font-normal text-white" : "italic text-gray-200"}
           ${i > 0 ? "block mt-0.5" : ""}
         `}
                                 >
@@ -565,7 +565,7 @@ export default function Landing() {
 
                           {/* Only show text for text-type cards */}
                           {card.text && card.type === "text" && (
-                            <p className="mt-2 text-xs sm:text-sm text-white leading-relaxed font-normal whitespace-pre-line">
+                            <p className="mt-2 text-xs sm:text-xs text-white leading-relaxed font-normal whitespace-pre-line">
                               {card.text}
                             </p>
                           )}
