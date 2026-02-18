@@ -145,7 +145,7 @@ const speakerCards = [
   },
   {
     type: "text",
-    name: "Adetayo James A.",
+    name: "Adetayo James A",
     image: keynote6,
     role: "CTO  \nAggregate Business Solutions Ltd",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
@@ -154,7 +154,7 @@ const speakerCards = [
     type: "text",
     name: "Hamzat ‘Lateef  ",
     image: keynote7,
-    role: "founder/COO  \nCyberPlural MSSP.",
+    role: "founder/COO  \nCyberPlural MSSP",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   {
