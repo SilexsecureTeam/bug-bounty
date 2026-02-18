@@ -170,6 +170,7 @@ export default function Register() {
           name: fullName,
           email: formValues.email,
           phone: formattedPhone,
+          url: "https://dash.africadefence.tech/signin",
           data: {
             personal_information: {
               full_name: fullName,
