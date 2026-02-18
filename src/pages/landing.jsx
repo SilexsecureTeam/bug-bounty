@@ -35,6 +35,8 @@ import keynote3 from "../assets/images/keynote3.png";
 import keynote1 from "../assets/images/keynote1.png";
 import keynote4 from "../assets/images/keynote4.png";
 import keynote5 from "../assets/images/keynote5.png";
+import keynote7 from "../assets/images/keynote7.png";
+import keynote8 from "../assets/images/keynote8.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
@@ -148,8 +150,20 @@ const speakerCards = [
     role: "CTO  \nAggregate Business Solutions Ltd",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
-  { type: "image", name: "Dr. Alan Foster", image: speaker1 },
-  { type: "image", name: "", role: "Stanford AI Lab", variant: "accent" },
+  {
+    type: "text",
+    name: "Hamzat ‘Lateef  ",
+    image: keynote7,
+    role: "founder/COO  \nCyberPlural MSSP.",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
+  {
+    type: "text",
+    name: "Patricia Eromosele",
+    image: keynote8,
+    role: "Director  \nGlobal Anti-Scam Alliance (GASA) Africa Chapter",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
 ];
 
 const sponsorReasons = [
