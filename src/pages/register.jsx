@@ -211,6 +211,7 @@ export default function Register() {
         phone: formattedPhone,
         country: formValues.country,
         userType,
+        // userType,
         password: formValues.password,
         groupname: userType === "group" ? formValues.groupname : undefined,
         companyname:
