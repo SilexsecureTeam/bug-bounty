@@ -759,8 +759,9 @@ export default function Landing() {
                 Agenda
               </h2>
             </div>
-            <p className="text-right text-xs uppercase tracking-[0.35em] text-white max-w-md">
-              December 4-5, 2025 | Shehu Musa Yar'Adua Center, Abuja, Nigeria
+            <p className="text-right text-xs uppercase tracking-[0.35em] text-white max-w-[490px]">
+              March 5-6, 2026 | 3J's Hotels & Apartments, 31 P.O.W Mafemi
+              Crescent, Utako, Abuja
             </p>
           </div>
 
