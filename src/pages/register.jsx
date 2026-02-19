@@ -531,15 +531,23 @@ export default function Register() {
         <p className="text-[11px] font-medium text-[#B0B5C3]">
           • Mandatory Fields
         </p>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? "Submitting..." : "Join the Hunt"}
-        </button>
-
+        {selectedRole === "guest" ? (
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? "Submitting..." : "Register"}
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full bg-linear-to-r from-[#3F4E17] to-[#9DB347] px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-[0_25px_55px_rgba(67,104,18,0.45)] transition-transform duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? "Submitting..." : "Join the Hunt"}
+          </button>
+        )}
         {/* Hide Sign In button for guests */}
         {selectedRole !== "guest" && (
           <>

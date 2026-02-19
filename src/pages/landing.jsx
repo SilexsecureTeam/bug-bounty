@@ -616,28 +616,51 @@ export default function Landing() {
         {/* Sponsors Strip */}
         <div
           ref={logosRef}
-          className="flex flex-wrap items-center gap-6 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8  sm:px-10 overflow-x-auto no-scrollbar"
+          className="relative reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8 sm:px-10 overflow-hidden"
           style={{ "--reveal-delay": "0.15s" }}
         >
-          {sponsors.map((spons) => (
-            <div
-              key={spons.id}
-              className="min-w-[100px] max-h-24 flex items-center justify-center"
-            >
-              <a
-                href={spons.link}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full h-full flex items-center justify-center"
+          {/* Inner wrapper for animation */}
+          <div className="flex flex-nowrap items-center gap-6 animate-marquee">
+            {sponsors.map((spons) => (
+              <div
+                key={`${spons.id}-original`}
+                className="min-w-[100px] max-w-[100px] h-24 flex items-center justify-center flex-shrink-0"
               >
-                <img
-                  src={spons.img}
-                  alt="Sponsor logos"
-                  className="w-auto h-12 object-contain  "
-                />
-              </a>
-            </div>
-          ))}
+                <a
+                  href={spons.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <img
+                    src={spons.img}
+                    alt="Sponsor logos"
+                    className="w-auto max-h-12 object-contain"
+                  />
+                </a>
+              </div>
+            ))}
+            {/* Duplicate the list for infinite loop */}
+            {sponsors.map((spons) => (
+              <div
+                key={`${spons.id}-duplicate`}
+                className="min-w-[100px] max-w-[100px] h-24 flex items-center justify-center flex-shrink-0"
+              >
+                <a
+                  href={spons.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <img
+                    src={spons.img}
+                    alt="Sponsor logos"
+                    className="w-auto max-h-12 object-contain"
+                  />
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
 
         <section
