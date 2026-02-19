@@ -16,6 +16,9 @@ import sponsor9 from "../assets/images/sponsor9.png";
 import sponsor10 from "../assets/images/sponsor10.png";
 import sponsor11 from "../assets/images/sponsor11.png";
 import sponsor12 from "../assets/images/sponsor12.png";
+import sponsor13 from "../assets/images/sponsor13.png";
+import sponsor14 from "../assets/images/sponsor14.png";
+import sponsor15 from "../assets/images/sponsor15.png";
 import { useReveal } from "../hooks/useReveal";
 import linkedIn from "../assets/images/linkedIn.svg";
 import instagram from "../assets/images/instagram.svg";
@@ -42,11 +45,13 @@ const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
   { id: 2, img: sponsor2, link: "#" },
   { id: 3, img: sponsor8, link: "#" },
-  // { id: 4, img: sponsor7, link: "https://aipressroom.com" },
+  { id: 4, img: sponsor15, link: "#" },
   { id: 5, img: sponsor9, link: "#" },
   { id: 6, img: sponsor10, link: "#" },
   { id: 7, img: sponsor11, link: "#" },
   { id: 8, img: sponsor12, link: "#" },
+  { id: 9, img: sponsor13, link: "#" },
+  { id: 10, img: sponsor14, link: "#" },
 ];
 
 const socialLinks = [
@@ -611,13 +616,13 @@ export default function Landing() {
         {/* Sponsors Strip */}
         <div
           ref={logosRef}
-          className="flex items-center justify-between gap-8 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8  sm:px-10 overflow-x-auto no-scrollbar"
+          className="flex flex-wrap items-center gap-6 reveal-section rounded-[45px] border border-[#1E2A0A] bg-[#0E1309]/70 px-6 py-8  sm:px-10 overflow-x-auto no-scrollbar"
           style={{ "--reveal-delay": "0.15s" }}
         >
           {sponsors.map((spons) => (
             <div
               key={spons.id}
-              className="min-w-[120px] max-h-24 flex items-center justify-center"
+              className="min-w-[100px] max-h-24 flex items-center justify-center"
             >
               <a
                 href={spons.link}
