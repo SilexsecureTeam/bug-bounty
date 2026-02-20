@@ -108,7 +108,7 @@ const AppUsers = () => {
                       <div className="flex items-center justify-center gap-3 text-gray-400">
                         <button className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"><MessageSquare size={16} /></button>
                         <button 
-                          onClick={() => navigate('/app-users/details')}
+                          onClick={() => navigate('/superadmin/app-users/details')}
                           className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"
                           title="View App User Details"
                         >
