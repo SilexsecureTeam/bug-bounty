@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Building2, CheckSquare, PauseCircle, Crown, Download, Plus, 
   Search, ChevronDown, Filter, Eye, Edit2, Trash2, Clock, Circle 
@@ -6,6 +7,7 @@ import {
 import DashboardLayout from './DashboardLayout';
 
 const Organisations = () => {
+  const navigate = useNavigate();
   // Mock Data mimicking the exact rows in your design
   const tableData = [
     { name: 'Tech Corp Inds.', email: 'tech@cybersecur...', type: 'Enterprise', status: 'Active', admin: 'Michael Obi', adminEmail: 'mike@cybersecur...', services: '5 Services', users: '208', lastActive: 'A minute ago' },
@@ -122,7 +124,13 @@ const Organisations = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-3 text-gray-400">
-                        <button className="hover:text-gray-900 transition"><Eye size={16} /></button>
+                        <button 
+  onClick={() => navigate(`/companies/details`)} 
+  className="hover:text-gray-900 transition"
+  title="View Organisation Details"
+>
+  <Eye size={16} />
+</button>
                         <button className="hover:text-gray-900 transition"><Edit2 size={16} /></button>
                         <button className="hover:text-red-600 transition"><Trash2 size={16} /></button>
                       </div>
