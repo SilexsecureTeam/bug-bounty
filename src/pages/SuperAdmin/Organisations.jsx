@@ -125,7 +125,7 @@ const Organisations = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-3 text-gray-400">
                         <button 
-  onClick={() => navigate(`/companies/details`)} 
+  onClick={() => navigate(`/superadmin/companies/details`)} 
   className="hover:text-gray-900 transition"
   title="View Organisation Details"
 >
