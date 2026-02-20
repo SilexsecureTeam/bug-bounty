@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAuthToken } from "./hooks/useAuthToken";
 import Navbar from "./components/Navbar";
-import { AlertTriangle, Shirt, X } from "lucide-react"; // Import Icons
+import { AlertTriangle, Shirt, X } from "lucide-react";
 
 // Public & User Pages
 import Landing from "./pages/landing";
@@ -55,11 +55,35 @@ import AccountSettings from "./pages/Admin/AccountSettings";
 import AdminSignIn from "./pages/AdminSignIn";
 import AdminOtp from "./pages/AdminOtp";
 
-// subadmin imports
+// Subadmin imports
 import SubadminLayout from "./components/subadmin/SubadminLayout";
 import SubadminHome from "./pages/subadmin/SubadminHome";
 
 import DebugOverlay from "./components/DebugOverlay";
+
+// Super Admin Imports
+import Overview from "./pages/SuperAdmin/Overview";
+import SystemHealth from "./pages/SuperAdmin/SystemHealth";
+import Users from "./pages/SuperAdmin/Users";
+import Organisations from "./pages/SuperAdmin/Organisations";
+import OrganisationDetails from "./pages/SuperAdmin/OrganisationDetails";
+import AppsManagement from "./pages/SuperAdmin/AppsManagement";
+import AppDetails from "./pages/SuperAdmin/AppDetails";
+import AppUsers from "./pages/SuperAdmin/AppUsers";
+import AppUserDetails from "./pages/SuperAdmin/AppUserDetails";
+import BountyUsers from "./pages/SuperAdmin/BountyUsers";
+import ContactRequests from "./pages/SuperAdmin/ContactRequests";
+import BookingRequests from "./pages/SuperAdmin/BookingRequests";
+import BookingDetails from "./pages/SuperAdmin/BookingDetails";
+import UserActivities from "./pages/SuperAdmin/UserActivities";
+import AdminActivities from "./pages/SuperAdmin/AdminActivities";
+import SystemAlerts from "./pages/SuperAdmin/SystemAlerts";
+import UserGrowth from "./pages/SuperAdmin/UserGrowth";
+import ActivityServices from "./pages/SuperAdmin/ActivityServices";
+import GeneralNotifications from "./pages/SuperAdmin/GeneralNotifications";
+import AgreementCompliance from "./pages/SuperAdmin/AgreementCompliance";
+import SystemMail from "./pages/SuperAdmin/SystemMail";
+import Plans from "./pages/SuperAdmin/Plans";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -76,20 +100,17 @@ const TShirtNotificationBanner = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Only check if user is logged in
     const token = getAuthToken();
     if (!token) {
       setVisible(false);
       return;
     }
 
-    // Check if on the T-Shirt page itself (don't show banner there)
     if (location.pathname === "/shirt") {
       setVisible(false);
       return;
     }
 
-    // Check local storage status
     const hasOrdered = localStorage.getItem("tshirt_ordered");
     setVisible(hasOrdered !== "true");
   }, [location]);
@@ -99,11 +120,9 @@ const TShirtNotificationBanner = () => {
   return (
     <div className="fixed bottom-4 right-4 z-[60] w-full max-w-sm animate-in slide-in-from-bottom-5 duration-500 sm:bottom-8 sm:right-8">
       <div className="relative overflow-hidden rounded-2xl bg-[#0E1218] border border-[#9FC24D] p-5 shadow-[0_0_40px_rgba(159,194,77,0.15)]">
-        {/* Background Accent */}
         <div className="absolute -right-6 -top-6 text-[#9FC24D]/10">
           <Shirt size={120} />
         </div>
-
         <div className="relative z-10 flex flex-col gap-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 text-[#9FC24D]">
@@ -119,7 +138,6 @@ const TShirtNotificationBanner = () => {
               <X size={16} />
             </button>
           </div>
-
           <div>
             <h4 className="font-bold text-white">Claim Your Event Kit</h4>
             <p className="mt-1 text-xs text-[#9CA3AF] leading-relaxed">
@@ -127,7 +145,6 @@ const TShirtNotificationBanner = () => {
               size before inventory locks.
             </p>
           </div>
-
           <Link
             to="/shirt"
             className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#9FC24D] py-3 text-xs font-bold uppercase tracking-widest text-[#0B0F05] shadow-lg shadow-[#9FC24D]/20 transition-transform hover:scale-[1.02] hover:bg-[#B2D660]"
@@ -143,7 +160,6 @@ const TShirtNotificationBanner = () => {
 export default function App() {
   const location = useLocation();
 
-  // Updated logic: Check for exact paths OR if path starts with /admin
   const isExactHiddenRoute = [
     "/register",
     "/register/create",
@@ -154,7 +170,7 @@ export default function App() {
     "/dashboard",
     "/reports",
     "/leaderboard",
-    "/shirt", // Added shirt page to hidden navbar list
+    "/shirt",
     "/admin/signin",
     "/admin/otp",
     "/group/invite-members",
@@ -163,28 +179,23 @@ export default function App() {
     "/reset-password",
   ].includes(location.pathname);
 
-  const isAdminRoute =
-    location.pathname.startsWith("/admin") &&
-    location.pathname !== "/admin/signin";
-
+  const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin/signin";
   const isSubadminRoute = location.pathname.startsWith("/subadmin");
+  const isSuperAdminRoute = location.pathname.startsWith("/superadmin");
 
-  const shouldHideNavbar =
-    isExactHiddenRoute || isAdminRoute || isSubadminRoute;
+  // Hide the public navbar on Admin, SubAdmin, and SuperAdmin pages
+  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute || isSubadminRoute || isSuperAdminRoute;
 
   return (
     <div className="min-h-screen flex flex-col">
       <DebugOverlay />
 
-      {/* Global Notification */}
       <TShirtNotificationBanner />
       <HomepageRegisterModal />
       <HomepageRegistrationBanner />
 
-      {/* Conditionally render the Public Navbar */}
       {!shouldHideNavbar && <Navbar />}
 
-      {/* Adjust margin-top based on whether Navbar is visible */}
       <main className={shouldHideNavbar ? "flex-1" : "flex-1 mt-16"}>
         <Routes>
           {/* --- Public Routes --- */}
@@ -206,98 +217,71 @@ export default function App() {
           <Route path="/term" element={<Term />} />
 
           {/* --- User Protected Routes --- */}
-          <Route
-            path="/submit-report"
-            element={
-              <ProtectedRoute>
-                <SubmitReport />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <UserDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/shirt"
-            element={
-              <ProtectedRoute>
-                <TShirtSimulator />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/group/invite-members"
-            element={
-              <ProtectedRoute>
-                <InviteMembers />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/group/members-list"
-            element={
-              <ProtectedRoute>
-                <MembersList />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/submit-report" element={<ProtectedRoute><SubmitReport /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/shirt" element={<ProtectedRoute><TShirtSimulator /></ProtectedRoute>} />
+          <Route path="/group/invite-members" element={<ProtectedRoute><InviteMembers /></ProtectedRoute>} />
+          <Route path="/group/members-list" element={<ProtectedRoute><MembersList /></ProtectedRoute>} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
-          
-          {/* --- Admin Routes --- */}
-          {/* This renders the AdminLayout (Sidebar + Header) */}
-         <Route element={<ProtectedAdminRoute />}>
+
+          {/* --- Admin & Super Admin Protected Routes --- */}
+          <Route element={<ProtectedAdminRoute />}>
+            
+            {/* Standard Admin */}
             <Route path="/admin" element={<AdminLayout />}>
-            {/* Index maps to /admin and renders the Dashboard */}
-            <Route index element={<AdminDashboard />} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="events" element={<AdminEvents />} />
+              <Route path="attendance" element={<LiveAttendance />} />
+              <Route path="attendees" element={<EventAttendanceDetails />} />
+              <Route path="certificates" element={<Certificates />} />
+              <Route path="souvenirs" element={<SouvenirManagement />} />
+              <Route path="comms" element={<Communication />} />
+              <Route path="reports" element={<ReportsManagement />} />
+              <Route path="payments" element={<PaymentManagement />} />
+              <Route path="program" element={<ProgramVenue />} />
+              <Route path="venue/:id" element={<Venue />} />
+              <Route path="integrations" element={<Integration />} />
+              <Route path="logs" element={<Audit />} />
+              <Route path="team" element={<Teams />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="security" element={<Security />} />
+              <Route path="help" element={<Help />} />
+              <Route path="account" element={<AccountSettings />} />
+            </Route>
 
-            {/* Map other admin sidebar links to the same dashboard 
-              (or create specific pages for them later) 
-            */}
-            <Route path="events" element={<AdminEvents />} />
-            <Route path="attendance" element={<LiveAttendance />} />
-            <Route path="attendees" element={<EventAttendanceDetails />} />
-            <Route path="certificates" element={<Certificates />} />
-            <Route path="souvenirs" element={<SouvenirManagement />} />
-            <Route path="comms" element={<Communication />} />
-            <Route path="reports" element={<ReportsManagement />} />
-            <Route path="payments" element={<PaymentManagement />} />
-            <Route path="program" element={<ProgramVenue />} />
-            <Route path="venue/:id" element={<Venue />} />
-            <Route path="integrations" element={<Integration />} />
-            <Route path="logs" element={<Audit />} />
-            <Route path="team" element={<Teams />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="security" element={<Security />} />
-            <Route path="help" element={<Help />} />
-            <Route path="account" element={<AccountSettings />} />
-         </Route>
-        </Route>
+            {/* Super Admin Routes */}
+            <Route path="/superadmin">
+              <Route index element={<Overview />} />
+              <Route path="system-health" element={<SystemHealth />} />
+              <Route path="users" element={<Users />} />
+              <Route path="companies" element={<Organisations />} />
+              <Route path="companies/details" element={<OrganisationDetails />} />
+              <Route path="apps" element={<AppsManagement />} />
+              <Route path="apps/details" element={<AppDetails />} />
+              <Route path="app-users" element={<AppUsers />} />
+              <Route path="app-users/details" element={<AppUserDetails />} />
+              <Route path="bounty-users" element={<BountyUsers />} />
+              <Route path="contact-requests" element={<ContactRequests />} />
+              <Route path="booking-requests" element={<BookingRequests />} />
+              <Route path="booking-requests/details" element={<BookingDetails />} />
+              <Route path="user-activities" element={<UserActivities />} />
+              <Route path="admin-activities" element={<AdminActivities />} />
+              <Route path="system-alerts" element={<SystemAlerts />} />
+              <Route path="user-growth" element={<UserGrowth />} />
+              <Route path="active-services" element={<ActivityServices />} />
+              <Route path="general-notifications" element={<GeneralNotifications />} />
+              <Route path="agreement-statement" element={<AgreementCompliance />} />
+              <Route path="system-mail" element={<SystemMail />} />
+              <Route path="plans" element={<Plans />} />
+            </Route>
+
+          </Route>
+
           {/* --- SubAdmin Routes --- */}
-
           <Route path="/subadmin" element={<SubadminLayout />}>
-            <Route index element={<SubadminHome />} /> {/* /subadmin */}
-            {/* <Route path="account" element={<Account />} />
-  <Route path="notifications" element={<Notifications />} />
-  <Route path="groups" element={<Groups />} />
-  <Route path="forms" element={<Forms />} />
-  <Route path="files" element={<Files />} />
-  <Route path="profile" element={<Profile />} /> */}
+            <Route index element={<SubadminHome />} />
           </Route>
 
           {/* --- Catch-all --- */}
