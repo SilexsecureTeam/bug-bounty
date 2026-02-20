@@ -117,7 +117,7 @@ const AppsManagement = () => {
                       <div className="flex items-center justify-center gap-3 text-gray-400">
                         <button className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"><MessageSquare size={16} /></button>
                          <button 
-  onClick={() => navigate(`/apps/details`)}
+  onClick={() => navigate(`/superadmin/apps/details`)}
   className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"
 >
   <Eye size={16} />
