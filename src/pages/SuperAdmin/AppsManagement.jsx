@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, LayoutGrid, CheckCircle2, Search, ChevronDown, 
   Download, MessageSquare, Eye, Trash2, Circle 
@@ -6,6 +7,7 @@ import {
 import DashboardLayout from './DashboardLayout';
 
 const AppsManagement = () => {
+  const navigate = useNavigate();
   // Mock Data perfectly matching your Figma design
   const tableData = [
     { prefix: 'AC', name: 'Armoured Vehicle S.', id: 'ID: APP 88219', category: 'Infrastructure', owner: 'Alhaji Mensah', status: 'Active', date: 'Oct 22, 2025' },
@@ -114,7 +116,12 @@ const AppsManagement = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-3 text-gray-400">
                         <button className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"><MessageSquare size={16} /></button>
-                        <button className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"><Eye size={16} /></button>
+                         <button 
+  onClick={() => navigate(`/apps/details`)}
+  className="p-1.5 hover:text-gray-900 hover:bg-gray-100 rounded transition"
+>
+  <Eye size={16} />
+</button>
                         <button className="p-1.5 hover:text-red-600 hover:bg-red-50 rounded transition"><Trash2 size={16} /></button>
                       </div>
                     </td>
