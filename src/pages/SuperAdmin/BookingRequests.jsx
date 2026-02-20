@@ -112,7 +112,7 @@ const BookingRequests = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-3 text-gray-400">
                         <button 
-                          onClick={() => navigate('/booking-requests/details')}
+                          onClick={() => navigate('/superadmin/booking-requests/details')}
                           className="p-1 hover:text-gray-900 transition"
                           title="View Details"
                         >
