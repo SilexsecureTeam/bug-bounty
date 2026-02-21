@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Building2, Box, Activity, Bug, Users, UserCheck, 
-  Crown, CalendarDays, Download, ShieldAlert 
+  Crown, CalendarDays, Download, ShieldAlert, TrendingUp
 } from 'lucide-react';
 import DashboardLayout from './DashboardLayout';
 
