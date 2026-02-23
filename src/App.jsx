@@ -88,7 +88,7 @@ import Plans from "./pages/SuperAdmin/Plans";
 // === UpAdmin Imports ===
 import UpAdminOverview from "./pages/UpAdmin/index";
 import UpAdminTeamManagement from "./pages/UpAdmin/team-management";
-import UpAdminGroupManagement from "./pages/UpAdmin/group";
+import UpAdminGroupManagement from "./pages/UpAdmin/group-management";
 import UpAdminApplications from "./pages/UpAdmin/applications";
 import UpAdminFormsAndRequests from "./pages/UpAdmin/forms-and-requests";
 import UpAdminFilesAndDocuments from "./pages/UpAdmin/files-and-documents";
@@ -96,7 +96,6 @@ import UpAdminNotifications from "./pages/UpAdmin/notifications";
 import UpAdminSupport from "./pages/UpAdmin/support";
 import UpAdminSettings from "./pages/UpAdmin/settings";
 import UpAdminProfile from "./pages/UpAdmin/profile";
-
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -192,13 +191,20 @@ export default function App() {
     "/reset-password",
   ].includes(location.pathname);
 
-  const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin/signin";
+  const isAdminRoute =
+    location.pathname.startsWith("/admin") &&
+    location.pathname !== "/admin/signin";
   const isSubadminRoute = location.pathname.startsWith("/subadmin");
   const isSuperAdminRoute = location.pathname.startsWith("/superadmin");
   const isUpAdminRoute = location.pathname.startsWith("/upadmin");
 
   // Hide the public navbar on Admin, SubAdmin, SuperAdmin, and UpAdmin pages
-  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute || isSubadminRoute || isSuperAdminRoute || isUpAdminRoute;
+  const shouldHideNavbar =
+    isExactHiddenRoute ||
+    isAdminRoute ||
+    isSubadminRoute ||
+    isSuperAdminRoute ||
+    isUpAdminRoute;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -231,18 +237,59 @@ export default function App() {
           <Route path="/term" element={<Term />} />
 
           {/* --- User Protected Routes --- */}
-          <Route path="/submit-report" element={<ProtectedRoute><SubmitReport /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-          <Route path="/shirt" element={<ProtectedRoute><TShirtSimulator /></ProtectedRoute>} />
-          <Route path="/group/invite-members" element={<ProtectedRoute><InviteMembers /></ProtectedRoute>} />
-          <Route path="/group/members-list" element={<ProtectedRoute><MembersList /></ProtectedRoute>} />
+          <Route
+            path="/submit-report"
+            element={
+              <ProtectedRoute>
+                <SubmitReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shirt"
+            element={
+              <ProtectedRoute>
+                <TShirtSimulator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/group/invite-members"
+            element={
+              <ProtectedRoute>
+                <InviteMembers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/group/members-list"
+            element={
+              <ProtectedRoute>
+                <MembersList />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/admin/login" element={<AdminLogin />} />
 
           {/* --- Admin, Super Admin & UpAdmin Protected Routes --- */}
           <Route element={<ProtectedAdminRoute />}>
-            
             {/* Standard Admin */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
@@ -271,7 +318,10 @@ export default function App() {
               <Route path="system-health" element={<SystemHealth />} />
               <Route path="users" element={<Users />} />
               <Route path="companies" element={<Organisations />} />
-              <Route path="companies/details" element={<OrganisationDetails />} />
+              <Route
+                path="companies/details"
+                element={<OrganisationDetails />}
+              />
               <Route path="apps" element={<AppsManagement />} />
               <Route path="apps/details" element={<AppDetails />} />
               <Route path="app-users" element={<AppUsers />} />
@@ -279,14 +329,23 @@ export default function App() {
               <Route path="bounty-users" element={<BountyUsers />} />
               <Route path="contact-requests" element={<ContactRequests />} />
               <Route path="booking-requests" element={<BookingRequests />} />
-              <Route path="booking-requests/details" element={<BookingDetails />} />
+              <Route
+                path="booking-requests/details"
+                element={<BookingDetails />}
+              />
               <Route path="user-activities" element={<UserActivities />} />
               <Route path="admin-activities" element={<AdminActivities />} />
               <Route path="system-alerts" element={<SystemAlerts />} />
               <Route path="user-growth" element={<UserGrowth />} />
               <Route path="active-services" element={<ActivityServices />} />
-              <Route path="general-notifications" element={<GeneralNotifications />} />
-              <Route path="agreement-statement" element={<AgreementCompliance />} />
+              <Route
+                path="general-notifications"
+                element={<GeneralNotifications />}
+              />
+              <Route
+                path="agreement-statement"
+                element={<AgreementCompliance />}
+              />
               <Route path="system-mail" element={<SystemMail />} />
               <Route path="plans" element={<Plans />} />
             </Route>
@@ -295,17 +354,25 @@ export default function App() {
             <Route path="/upadmin">
               <Route index element={<UpAdminOverview />} />
               <Route path="dashboard" element={<UpAdminOverview />} />
-              <Route path="team-management" element={<UpAdminTeamManagement />} />
+              <Route
+                path="team-management"
+                element={<UpAdminTeamManagement />}
+              />
               <Route path="group" element={<UpAdminGroupManagement />} />
               <Route path="applications" element={<UpAdminApplications />} />
-              <Route path="forms-and-requests" element={<UpAdminFormsAndRequests />} />
-              <Route path="files-and-documents" element={<UpAdminFilesAndDocuments />} />
+              <Route
+                path="forms-and-requests"
+                element={<UpAdminFormsAndRequests />}
+              />
+              <Route
+                path="files-and-documents"
+                element={<UpAdminFilesAndDocuments />}
+              />
               <Route path="notifications" element={<UpAdminNotifications />} />
               <Route path="support" element={<UpAdminSupport />} />
               <Route path="settings" element={<UpAdminSettings />} />
               <Route path="profile" element={<UpAdminProfile />} />
             </Route>
-
           </Route>
 
           {/* --- SubAdmin Routes --- */}
