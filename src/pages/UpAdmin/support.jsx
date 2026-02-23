@@ -6,7 +6,7 @@ import {
   Briefcase, Clock, AlertCircle, CheckCircle2
 } from 'lucide-react';
 
-export default function Support() {
+export default function UpAdminSupport() {
   // Support Tickets Mock Data
   const tickets = [
     { id: '#TK-2847', title: 'Database connection timeout', raisedBy: 'Angela Remi', category: 'Technical', priority: 'Critical', status: 'Escalated', assignedTo: 'Michael Obi', updated: '2 hours ago' },
