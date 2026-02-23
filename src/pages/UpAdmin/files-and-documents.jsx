@@ -6,7 +6,7 @@ import {
   FileText, Share2, Edit2, Trash2, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
-export default function FilesAndDocuments() {
+export default function UpAdminFilesAndDocuments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
 
