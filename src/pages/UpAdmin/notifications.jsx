@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight 
 } from 'lucide-react';
 
-export default function Notifications() {
+export default function UpAdminNotifications() {
   // Mock data representing the exact table in the design
   const notifications = [
     { severity: 'CRITICAL', event: 'Unauthorized Access Attempt', eventSub: 'Security', desc: 'Multiple failed login attempts detected from unknown IP', ip: '192.168.45.198', ipType: 'External IP', time: '16/02/2026', timeObj: '13:45:42', status: 'Unread' },
