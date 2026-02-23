@@ -4,20 +4,22 @@ import {
   FileText, FolderOpen, Bell, Headphones, 
   Settings, User, LogOut, ShieldCheck
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
+  const location = useLocation();
+
   const navItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, active: true },
-    { name: 'Team Management', icon: Users },
-    { name: 'Group', icon: UsersRound },
-    { name: 'Applications / Services', icon: Component },
-    { name: 'Forms & Requests', icon: FileText },
-    { name: 'Files & Documents', icon: FolderOpen },
-    { name: 'Notifications', icon: Bell },
-    { name: 'Support', icon: Headphones },
-    { name: 'Settings', icon: Settings },
-    { name: 'Profile', icon: User },
+    { name: 'Dashboard', icon: LayoutDashboard, path: '/upadmin/dashboard' },
+    { name: 'Team Management', icon: Users, path: '/upadmin/team-management' },
+    { name: 'Group', icon: UsersRound, path: '/upadmin/group' },
+    { name: 'Applications / Services', icon: Component, path: '/upadmin/applications' },
+    { name: 'Forms & Requests', icon: FileText, path: '/upadmin/forms-and-requests' },
+    { name: 'Files & Documents', icon: FolderOpen, path: '/upadmin/files-and-documents' },
+    { name: 'Notifications', icon: Bell, path: '/upadmin/notifications' },
+    { name: 'Support', icon: Headphones, path: '/upadmin/support' },
+    { name: 'Settings', icon: Settings, path: '/upadmin/settings' },
+    { name: 'Profile', icon: User, path: '/upadmin/profile' },
   ];
 
   return (
@@ -38,18 +40,24 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
-          {navItems.map((item) => (
-            <Link key={item.name} href="#">
-              <div className={`flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-colors ${
-                item.active 
-                  ? 'bg-[#1A1A1A] text-white' 
-                  : 'text-white/90 hover:bg-white/10'
-              }`}>
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium text-sm">{item.name}</span>
-              </div>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            // Check if active (handles exact path, or /upadmin resolving to dashboard)
+            const isActive = location.pathname === item.path || 
+                             (item.path === '/upadmin/dashboard' && location.pathname === '/upadmin');
+
+            return (
+              <Link key={item.name} to={item.path} onClick={() => setIsOpen(false)}>
+                <div className={`flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-colors ${
+                  isActive 
+                    ? 'bg-[#1A1A1A] text-white' 
+                    : 'text-white/90 hover:bg-white/10'
+                }`}>
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium text-sm">{item.name}</span>
+                </div>
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="px-4 py-6 mt-auto">
