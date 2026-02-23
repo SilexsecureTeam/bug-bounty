@@ -6,7 +6,7 @@ import {
   Clock, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 
-export default function TeamManagement() {
+export default function UpAdminTeamManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
