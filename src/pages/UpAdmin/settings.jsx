@@ -25,7 +25,7 @@ const SelectDropdown = ({ value, options }) => (
   </div>
 );
 
-export default function Settings() {
+export default function UpAdminSettings() {
   const [activeTab, setActiveTab] = useState('Security Policies');
 
   // Using state to manage a few toggles for realism
