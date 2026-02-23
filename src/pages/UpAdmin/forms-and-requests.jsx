@@ -6,7 +6,7 @@ import {
   FileText, Key, AlertOctagon
 } from 'lucide-react';
 
-export default function FormsAndRequests() {
+export default function UpAdminFormsAndRequests() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('All');
