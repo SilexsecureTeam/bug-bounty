@@ -6,7 +6,7 @@ import {
   Eye, Edit2, Trash2, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 
-export default function GroupManagement() {
+export default function UpAdminGroupManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
 
