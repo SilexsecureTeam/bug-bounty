@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Upload, AlertCircle, CalendarClock, User, CheckSquare, 
-  CalendarDays, Zap, Edit2, UserPlus, Clock, ArrowUpToLine, Circle
+  CalendarDays, Zap, Edit2, UserPlus, Clock, ArrowUpToLine, Circle, Plus
 } from 'lucide-react';
 import DashboardLayout from './DashboardLayout';
 
