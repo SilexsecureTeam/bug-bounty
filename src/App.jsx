@@ -85,6 +85,19 @@ import AgreementCompliance from "./pages/SuperAdmin/AgreementCompliance";
 import SystemMail from "./pages/SuperAdmin/SystemMail";
 import Plans from "./pages/SuperAdmin/Plans";
 
+// === UpAdmin Imports ===
+import UpAdminOverview from "./pages/UpAdmin/index";
+import UpAdminTeamManagement from "./pages/UpAdmin/team-management";
+import UpAdminGroupManagement from "./pages/UpAdmin/group";
+import UpAdminApplications from "./pages/UpAdmin/applications";
+import UpAdminFormsAndRequests from "./pages/UpAdmin/forms-and-requests";
+import UpAdminFilesAndDocuments from "./pages/UpAdmin/files-and-documents";
+import UpAdminNotifications from "./pages/UpAdmin/notifications";
+import UpAdminSupport from "./pages/UpAdmin/support";
+import UpAdminSettings from "./pages/UpAdmin/settings";
+import UpAdminProfile from "./pages/UpAdmin/profile";
+
+
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const token = getAuthToken();
@@ -182,9 +195,10 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin/signin";
   const isSubadminRoute = location.pathname.startsWith("/subadmin");
   const isSuperAdminRoute = location.pathname.startsWith("/superadmin");
+  const isUpAdminRoute = location.pathname.startsWith("/upadmin");
 
-  // Hide the public navbar on Admin, SubAdmin, and SuperAdmin pages
-  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute || isSubadminRoute || isSuperAdminRoute;
+  // Hide the public navbar on Admin, SubAdmin, SuperAdmin, and UpAdmin pages
+  const shouldHideNavbar = isExactHiddenRoute || isAdminRoute || isSubadminRoute || isSuperAdminRoute || isUpAdminRoute;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -226,7 +240,7 @@ export default function App() {
 
           <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* --- Admin & Super Admin Protected Routes --- */}
+          {/* --- Admin, Super Admin & UpAdmin Protected Routes --- */}
           <Route element={<ProtectedAdminRoute />}>
             
             {/* Standard Admin */}
@@ -275,6 +289,21 @@ export default function App() {
               <Route path="agreement-statement" element={<AgreementCompliance />} />
               <Route path="system-mail" element={<SystemMail />} />
               <Route path="plans" element={<Plans />} />
+            </Route>
+
+            {/* === UpAdmin Routes === */}
+            <Route path="/upadmin">
+              <Route index element={<UpAdminOverview />} />
+              <Route path="dashboard" element={<UpAdminOverview />} />
+              <Route path="team-management" element={<UpAdminTeamManagement />} />
+              <Route path="group" element={<UpAdminGroupManagement />} />
+              <Route path="applications" element={<UpAdminApplications />} />
+              <Route path="forms-and-requests" element={<UpAdminFormsAndRequests />} />
+              <Route path="files-and-documents" element={<UpAdminFilesAndDocuments />} />
+              <Route path="notifications" element={<UpAdminNotifications />} />
+              <Route path="support" element={<UpAdminSupport />} />
+              <Route path="settings" element={<UpAdminSettings />} />
+              <Route path="profile" element={<UpAdminProfile />} />
             </Route>
 
           </Route>
