@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, Satellite
 } from 'lucide-react';
 
-export default function Applications() {
+export default function UpAdminApplications() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [activeTab, setActiveTab] = useState('All Active Services');
