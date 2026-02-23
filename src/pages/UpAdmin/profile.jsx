@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '../../components/UpAdmin/Layout';
 import { ShieldCheck, Monitor, MapPin } from 'lucide-react';
 
-export default function AdminProfile() {
+export default function UpAdminProfile() {
   const sessions = Array(7).fill({
     device: 'PRO-92X/Device v.12',
     location: 'Abuja, Abuja',
