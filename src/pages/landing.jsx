@@ -136,9 +136,9 @@ const speakerCards = [
   },
   {
     type: "text",
-    name: "Prof. Engr. Ibrahim A. Adeyanju",
+    name: "Prof. Ibrahim A. Adeyanju",
     image: keynote4,
-    role: "Managing Director/CEO \nGalaxy Backbone",
+    role: "Managing Director/CEO \nGalaxy Backbone LTD",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {

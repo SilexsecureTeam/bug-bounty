@@ -26,6 +26,7 @@ import Program from "./pages/program";
 import Contact from "./pages/contact";
 import Terms from "./pages/Terms";
 import Term from "./pages/Term";
+import Engagement from "./pages/Engagement";
 import HomepageRegisterModal from "./components/HomepageRegisterModal";
 import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
@@ -235,6 +236,7 @@ export default function App() {
           <Route path="/admin/otp" element={<AdminOtp />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/term" element={<Term />} />
+          <Route path="/engagement" element={<Engagement />} />
 
           {/* --- User Protected Routes --- */}
           <Route

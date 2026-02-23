@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -672,9 +672,12 @@ export default function SubmitReport() {
                         </p>
                     )}
                     {!editingReportId && (
-                        <a href="/Rules of Engagement.pdf" target="_blank" rel="noopener noreferrer" className="inline-block text-[#A4C94F] font-semibold uppercase tracking-wider text-xs border-b border-[#A4C94F] pb-0.5 hover:text-[#C5E86C] transition-colors">
-                        Please click here for RULES OF ENGAGEMENT
-                        </a>
+                       <Link
+              to="/engagement"
+              className="!text-[#9DB347] underline"
+            >
+              Please click here for RULES OF ENGAGEMENT
+            </Link>
                     )}
                   </div>
                 </div>
