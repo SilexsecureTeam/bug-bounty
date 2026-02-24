@@ -381,9 +381,9 @@ export default function Events() {
                           <button onClick={() => openEditModal(event)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#45F882] transition-colors">
                             <Edit2 className="h-4 w-4" />
                           </button>
-                          <button onClick={() => handleDelete(event.id)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#D14343] transition-colors">
+                          {/* <button onClick={() => handleDelete(event.id)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#D14343] transition-colors">
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
 
