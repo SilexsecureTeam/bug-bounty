@@ -290,3 +290,57 @@ export async function collectSouvenir(data) {
     body: data
   });
 }
+
+// --- Notification/Communications APIs ---
+
+// Fetch all notifications
+export async function fetchNotifications() {
+  return adminRequest("/admin/notification/");
+}
+
+// Create a notification (Multipart/Form-Data)
+export async function createNotification(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/notification/create`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    throw new Error(data.message || "Failed to create notification");
+  }
+  return await response.json();
+}
+
+// Update a notification (Multipart/Form-Data)
+export async function updateNotification(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/notification/edit`, {
+    method: "POST", // Endpoint is /edit but accepts POST with ID in body
+    headers: headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    throw new Error(data.message || "Failed to update notification");
+  }
+  return await response.json();
+}
+
+// Delete a notification
+export async function deleteNotification(id) {
+  return adminRequest(`/admin/notification/delete/${id}`);
+}
