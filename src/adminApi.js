@@ -139,5 +139,5 @@ export async function adminLogin({ email, password }) {
 
 // --- Example Protected Admin Endpoint ---
 export async function fetchAdminDashboardStats() {
-  return adminRequest("/admin/stats");
+  return adminRequest("/admin/dashboard");
 }
