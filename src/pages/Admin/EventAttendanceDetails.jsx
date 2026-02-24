@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Filter, Download, ChevronLeft, ChevronRight, 
   ChevronDown, RefreshCw, FileText, Users, LogOut, 
-  Hourglass, QrCode, Radio, ArrowUpRight, ArrowRight, CheckCircle, Loader
+  Hourglass, QrCode, Radio, ArrowUpRight, ArrowRight, CheckCircle, Loader, Eye, X
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
@@ -77,6 +77,10 @@ export default function EventAttendanceDetails() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+
   // --- 1. HANDLE DEFAULT EVENT REDIRECTION & EVENT NAME ---
   useEffect(() => {
     const initPage = async () => {
@@ -86,7 +90,6 @@ export default function EventAttendanceDetails() {
         const eventsList = eventsRes.data || [];
 
         if (!id) {
-          // If no ID param, find the latest event and redirect
           if (eventsList.length > 0) {
             const latestEvent = eventsList[0]; 
             navigate(`/admin/attendees/${latestEvent.id}`, { replace: true });
@@ -96,16 +99,12 @@ export default function EventAttendanceDetails() {
             setLoading(false);
           }
         } else {
-          // Match ID (Handle string/number difference and potential encoding)
-          // We check if the ID passed in URL matches the item ID
           const currentEvent = eventsList.find(e => String(e.id) === String(id));
-          
           if (currentEvent) {
             setEventName(currentEvent.name);
           } else {
             setEventName("Unknown Event");
           }
-          
           loadAttendeeData(id);
         }
       } catch (error) {
@@ -132,13 +131,9 @@ export default function EventAttendanceDetails() {
       const applicants = applicantsRes.data || [];
       const attendance = attendanceRes.data || [];
 
-      // -----------------------------------------------------------------------
-      // FIX: MATCHING LOGIC
-      // Use EMAIL as the primary key because IDs seem to be dynamic/encrypted strings.
-      // -----------------------------------------------------------------------
+      // Match Logic
       const attendanceMap = new Map();
       attendance.forEach(record => {
-        // Extract email safely from nested user object or direct field
         const email = record.user?.email || record.email;
         if(email) {
             attendanceMap.set(email.toLowerCase().trim(), record);
@@ -146,12 +141,18 @@ export default function EventAttendanceDetails() {
       });
 
       const mergedList = applicants.map(app => {
-        // Get applicant email
         const appEmail = app.user?.email || app.email;
         const normalizedEmail = appEmail ? appEmail.toLowerCase().trim() : null;
         
-        // Find in attendance map
         const attendRecord = normalizedEmail ? attendanceMap.get(normalizedEmail) : null;
+
+        // Parse JSON data for submission details
+        let parsedData = {};
+        try {
+            parsedData = app.data ? JSON.parse(app.data) : {};
+        } catch (e) {
+            // handle error
+        }
 
         let status = "Registered";
         let checkInTime = "---";
@@ -166,13 +167,15 @@ export default function EventAttendanceDetails() {
 
         return {
             id: app.id, 
-            userId: app.user?.id, // ID needed for approval endpoint
+            userId: app.user?.id, 
             name: app.user?.name || app.name || "Unknown",
             email: appEmail || "No Email",
             phone: app.user?.phone || app.phone,
             checkIn: checkInTime,
             status: status,
             verification: attendRecord ? "Verified" : "Pending",
+            submissionData: parsedData, // Store parsed data
+            rawSubmission: app.data // Store raw string just in case
         };
       });
 
@@ -191,7 +194,6 @@ export default function EventAttendanceDetails() {
     setProcessing(userId);
     try {
         await approveAttendance(id, userId);
-        // Refresh data to show updated status
         await loadAttendeeData(id);
     } catch (error) {
         console.error("Approval failed:", error);
@@ -201,14 +203,17 @@ export default function EventAttendanceDetails() {
     }
   };
 
+  const handleViewSubmission = (user) => {
+      setSelectedSubmission(user);
+      setIsModalOpen(true);
+  };
+
   // --- FILTER LOGIC ---
   const filteredData = useMemo(() => {
     return attendees.filter(user => {
-        // Tab Filter
         if (activeTab === "Present" && user.status !== "Present") return false;
         if (activeTab === "Registered" && user.status !== "Registered") return false; 
         
-        // Search Filter
         const search = searchTerm.toLowerCase();
         return (
             user.name.toLowerCase().includes(search) ||
@@ -238,7 +243,7 @@ export default function EventAttendanceDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060706] text-white p-6 font-sans">
+    <div className="min-h-screen bg-[#060706] text-white p-6 font-sans relative">
       
       {/* 1. HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -303,45 +308,24 @@ export default function EventAttendanceDetails() {
         />
       </div>
 
-      {/* 3. TOOLBAR (Tabs + Search + Actions) */}
+      {/* 3. TOOLBAR */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-        {/* Left: Filter Tabs */}
         <div className="flex flex-wrap gap-2">
-          <button 
-            onClick={() => setActiveTab("All")}
-            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-              activeTab === "All" 
-                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
-                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
-            }`}
-          >
-            All Applicants ({totalRegistered})
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab("Present")}
-            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-              activeTab === "Present" 
-                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
-                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
-            }`}
-          >
-            Attendees (Present) ({presentCount})
-          </button>
-
-          <button 
-            onClick={() => setActiveTab("Registered")}
-            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-              activeTab === "Registered" 
-                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
-                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
-            }`}
-          >
-            Pending Check-in ({totalRegistered - presentCount})
-          </button>
+          {["All", "Present", "Registered"].map(tab => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+                  activeTab === tab 
+                    ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
+                    : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
+                }`}
+              >
+                {tab}
+              </button>
+          ))}
         </div>
 
-        {/* Right: Search & Actions */}
         <div className="flex items-center gap-3 w-full lg:w-auto">
           <div className="relative flex-1 lg:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
@@ -370,9 +354,9 @@ export default function EventAttendanceDetails() {
               <tr>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest w-12">#</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">User Details</th>
-                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Check-In Time</th>
+                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Check-In</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Status</th>
-                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Verification</th>
+                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Submission</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Action</th>
               </tr>
             </thead>
@@ -408,10 +392,12 @@ export default function EventAttendanceDetails() {
                         <StatusBadge status={user.status} />
                       </td>
                       <td className="py-4 px-6">
-                        <div className="flex items-center gap-2 text-xs text-white">
-                          <Radio size={16} className={user.status === "Present" ? "text-[#22C55E]" : "text-gray-500"} />
-                          {user.verification}
-                        </div>
+                         <button 
+                            onClick={() => handleViewSubmission(user)}
+                            className="flex items-center gap-2 text-[10px] font-bold text-[#9ECB32] hover:underline"
+                         >
+                            <Eye size={14} /> View Data
+                         </button>
                       </td>
                       <td className="py-4 px-6">
                         {user.status === "Present" ? (
@@ -447,28 +433,13 @@ export default function EventAttendanceDetails() {
           </table>
         </div>
 
-        {/* 5. FOOTER */}
+        {/* Footer */}
         <div className="flex items-center justify-between p-4 border-t border-[#2A2E2A] bg-[#141613]">
           <div className="text-xs text-gray-400">
              {paginatedData.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} - {Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length}
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              Rows per page:
-              <div className="relative">
-                <select 
-                    value={rowsPerPage}
-                    onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                    className="appearance-none bg-[#1F221F] border border-[#2A2E2A] rounded px-2 py-1 pr-6 text-white focus:outline-none cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-                <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-            <div className="flex gap-1">
+             <div className="flex gap-1">
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
@@ -487,6 +458,67 @@ export default function EventAttendanceDetails() {
           </div>
         </div>
       </div>
+
+      {/* 5. SUBMISSION DATA MODAL */}
+      {isModalOpen && selectedSubmission && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+            
+            <div className="absolute right-0 top-0 h-full w-full max-w-md bg-[#0D0F10] border-l border-[#1F2227] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col">
+                <div className="p-6 border-b border-[#1F2227] flex items-center justify-between">
+                    <div>
+                        <h2 className="text-xl font-bold text-white">Applicant Submission</h2>
+                        <p className="text-xs text-gray-400 mt-1">{selectedSubmission.name}</p>
+                    </div>
+                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <div className="p-6 flex-1 overflow-y-auto space-y-6">
+                    {/* Iterate over parsed submission data */}
+                    {Object.keys(selectedSubmission.submissionData).length > 0 ? (
+                        Object.entries(selectedSubmission.submissionData).map(([section, data], idx) => (
+                            <div key={idx} className="bg-[#141613] rounded-xl p-4 border border-[#2A2E2A]">
+                                <h3 className="text-sm font-bold text-[#9ECB32] uppercase tracking-wider mb-3 pb-2 border-b border-[#2A2E2A]">
+                                    {section.replace(/_/g, ' ')}
+                                </h3>
+                                <div className="space-y-3">
+                                    {typeof data === 'object' && data !== null ? (
+                                        Object.entries(data).map(([key, value], i) => (
+                                            <div key={i} className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-bold text-[#545C68] uppercase">{key.replace(/_/g, ' ')}</span>
+                                                <span className="text-sm text-white">
+                                                    {Array.isArray(value) ? value.join(", ") : String(value || "N/A")}
+                                                </span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-sm text-white">{String(data)}</div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-10">
+                            <FileText size={48} className="text-[#2A2E2A] mx-auto mb-4" />
+                            <p className="text-gray-500 text-sm">No structured submission data found.</p>
+                            <p className="text-xs text-gray-600 mt-2 font-mono break-all">{JSON.stringify(selectedSubmission.rawSubmission)}</p>
+                        </div>
+                    )}
+                </div>
+                
+                <div className="p-6 border-t border-[#1F2227] bg-[#141613]">
+                    <button 
+                        onClick={() => setIsModalOpen(false)}
+                        className="w-full py-3 bg-[#1F2227] hover:bg-[#2A2E2A] text-white rounded-xl font-bold text-sm transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
 
     </div>
   );
