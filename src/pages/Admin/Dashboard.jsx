@@ -39,6 +39,8 @@ export default function Dashboard() {
             newValue = data.certificateCount !== undefined ? data.certificateCount.toLocaleString() : stat.value;
           } else if (stat.label === "Souvenirs") {
             newValue = data.souvenirCount !== undefined ? data.souvenirCount.toString() : stat.value;
+          } else if (stat.label === "Active Events") {
+            newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
           }
           // 'Active Events' (Index 1) is left as placeholder because API didn't strictly provide 'activeEventCount'
           
