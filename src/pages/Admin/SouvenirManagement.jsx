@@ -37,7 +37,10 @@ const StatCard = ({ title, value, subtext, subtextColor, icon: Icon, iconColor, 
 const StatusBadge = ({ status }) => {
   let styles = "";
   let dotColor = "";
-  const normStatus = status ? status.toLowerCase() : "";
+  
+  // FIX: Only call toLowerCase if status is actually a string. 
+  // Otherwise preserve the boolean value for the checks below.
+  const normStatus = typeof status === 'string' ? status.toLowerCase() : status;
 
   if (normStatus === "active" || normStatus === "available" || normStatus === "collected" || normStatus === "verified" || normStatus === true) {
     styles = "bg-[#1F3513] text-[#4ADE80] border border-[#2F4523]";
