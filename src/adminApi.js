@@ -164,3 +164,79 @@ export async function fetchEventAttendance(eventId) {
 export async function approveAttendance(eventId, userId) {
   return adminRequest(`/admin/form/attendance/${eventId}/${userId}`);
 }
+
+// --- Certificate APIs ---
+
+// Fetch certificates for an event
+export async function fetchEventCertificates(eventId) {
+  return adminRequest(`/admin/form/certificate/${eventId}`);
+}
+
+// Create a certificate (Uses FormData, so explicit fetch used)
+export async function createCertificate(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/form/certificate/create`, {
+    method: "POST",
+    headers: headers, // No Content-Type, let browser set boundary
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    throw new Error(data.message || "Failed to create certificate");
+  }
+  return await response.json();
+}
+
+// Update a certificate
+export async function updateCertificate(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/form/certificate/update`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    throw new Error(data.message || "Failed to update certificate");
+  }
+  return await response.json();
+}
+
+// Delete a certificate
+export async function deleteCertificate(certificateId) {
+  // Using GET based on pattern, but fallback to checking method if API changes
+  return adminRequest(`/admin/form/certificate/delete/${certificateId}`);
+}
+
+// Fetch applicants for a specific certificate
+export async function fetchCertificateApplicants(certificateId) {
+  return adminRequest(`/admin/form/certificate/applicants/${certificateId}`);
+}
+
+// Mark certificate as collected
+export async function collectCertificate(data) {
+  return adminRequest(`/admin/form/certificate/applicants/collect`, {
+    method: "POST",
+    body: data
+  });
+}
+
+// Send certificate email
+export async function mailCertificate(data) {
+  return adminRequest(`/admin/form/certificate/mail`, {
+    method: "POST",
+    body: data
+  });
+}
