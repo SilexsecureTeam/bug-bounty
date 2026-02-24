@@ -63,15 +63,15 @@ export default function EventAttendanceDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState("All Attendees");
+  const [activeTab, setActiveTab] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   
   // Data State
   const [eventName, setEventName] = useState("Loading Event...");
   const [attendees, setAttendees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [initializing, setInitializing] = useState(true); // For initial redirect check
-  const [processing, setProcessing] = useState(null); // ID of user being approved
+  const [initializing, setInitializing] = useState(true);
+  const [processing, setProcessing] = useState(null); 
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,19 +88,24 @@ export default function EventAttendanceDetails() {
         if (!id) {
           // If no ID param, find the latest event and redirect
           if (eventsList.length > 0) {
-            // Sort by created_at desc if needed, assuming API sends latest first or unshift
             const latestEvent = eventsList[0]; 
             navigate(`/admin/attendees/${latestEvent.id}`, { replace: true });
-            return; // Effect will re-run with new ID
+            return; 
           } else {
             setEventName("No Events Found");
             setLoading(false);
           }
         } else {
-          // If ID exists, find name
-          const currentEvent = eventsList.find(e => e.id.toString() === id.toString());
-          setEventName(currentEvent ? currentEvent.name : "Unknown Event");
-          // Proceed to load data
+          // Match ID (Handle string/number difference and potential encoding)
+          // We check if the ID passed in URL matches the item ID
+          const currentEvent = eventsList.find(e => String(e.id) === String(id));
+          
+          if (currentEvent) {
+            setEventName(currentEvent.name);
+          } else {
+            setEventName("Unknown Event");
+          }
+          
           loadAttendeeData(id);
         }
       } catch (error) {
@@ -119,7 +124,6 @@ export default function EventAttendanceDetails() {
   const loadAttendeeData = async (eventId) => {
     setLoading(true);
     try {
-      // Fetch both lists concurrently
       const [applicantsRes, attendanceRes] = await Promise.all([
         fetchEventApplicants(eventId),
         fetchEventAttendance(eventId)
@@ -128,26 +132,26 @@ export default function EventAttendanceDetails() {
       const applicants = applicantsRes.data || [];
       const attendance = attendanceRes.data || [];
 
-      // Create a map of attendance records for quick lookup using user ID
+      // -----------------------------------------------------------------------
+      // FIX: MATCHING LOGIC
+      // Use EMAIL as the primary key because IDs seem to be dynamic/encrypted strings.
+      // -----------------------------------------------------------------------
       const attendanceMap = new Map();
       attendance.forEach(record => {
-        if(record.user && record.user.id) {
-            attendanceMap.set(record.user.id, record);
+        // Extract email safely from nested user object or direct field
+        const email = record.user?.email || record.email;
+        if(email) {
+            attendanceMap.set(email.toLowerCase().trim(), record);
         }
       });
 
-      // Merge Logic:
-      // Primary Source: Applicants (Everyone who registered).
-      // Check Status: If they exist in `attendanceMap`, they are "Present".
       const mergedList = applicants.map(app => {
-        const userId = app.user?.id;
-        const attendRecord = attendanceMap.get(userId);
-
-        // Parse JSON data if available for extra details
-        let extraData = {};
-        try {
-            extraData = app.data ? JSON.parse(app.data) : {};
-        } catch (e) {}
+        // Get applicant email
+        const appEmail = app.user?.email || app.email;
+        const normalizedEmail = appEmail ? appEmail.toLowerCase().trim() : null;
+        
+        // Find in attendance map
+        const attendRecord = normalizedEmail ? attendanceMap.get(normalizedEmail) : null;
 
         let status = "Registered";
         let checkInTime = "---";
@@ -161,17 +165,14 @@ export default function EventAttendanceDetails() {
         }
 
         return {
-            id: app.id, // Application ID
-            userId: userId, // User ID (Crucial for approval)
-            name: app.name || app.user?.name || extraData.personal_information?.full_name || "Unknown",
-            email: app.email || app.user?.email || extraData.personal_information?.email,
-            phone: app.phone || app.user?.phone,
+            id: app.id, 
+            userId: app.user?.id, // ID needed for approval endpoint
+            name: app.user?.name || app.name || "Unknown",
+            email: appEmail || "No Email",
+            phone: app.user?.phone || app.phone,
             checkIn: checkInTime,
-            checkOut: "---", // API doesn't provide checkout yet
-            duration: "---",
             status: status,
             verification: attendRecord ? "Verified" : "Pending",
-            avatar: null // Placeholder if user avatar existed
         };
       });
 
@@ -190,11 +191,11 @@ export default function EventAttendanceDetails() {
     setProcessing(userId);
     try {
         await approveAttendance(id, userId);
-        // Optimistic update or refresh
+        // Refresh data to show updated status
         await loadAttendeeData(id);
     } catch (error) {
         console.error("Approval failed:", error);
-        alert("Failed to approve attendance. Please try again.");
+        alert("Failed to check in user.");
     } finally {
         setProcessing(null);
     }
@@ -211,7 +212,7 @@ export default function EventAttendanceDetails() {
         const search = searchTerm.toLowerCase();
         return (
             user.name.toLowerCase().includes(search) ||
-            (user.email && user.email.toLowerCase().includes(search))
+            user.email.toLowerCase().includes(search)
         );
     });
   }, [attendees, activeTab, searchTerm]);
@@ -266,18 +267,18 @@ export default function EventAttendanceDetails() {
       {/* 2. STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
-          title="Total Registered" 
+          title="Total Applicants" 
           value={totalRegistered.toString()} 
           icon={FileText} 
           trend={0} 
-          trendLabel="All Applicants"
+          trendLabel="Registered Users"
         />
         <StatCard 
-          title="Present (Approved)" 
+          title="Total Attendees" 
           value={presentCount.toString()} 
           icon={Users} 
           trend={0} 
-          trendLabel="Checked In"
+          trendLabel="Actually Present"
         />
         <StatCard 
           title="Attendance Rate" 
@@ -306,23 +307,38 @@ export default function EventAttendanceDetails() {
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
         {/* Left: Filter Tabs */}
         <div className="flex flex-wrap gap-2">
-          {["All Attendees", "Present", "Registered"].map(tab => (
-             <button 
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-                activeTab === tab 
-                    ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
-                    : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
-                }`}
-            >
-                {tab} ({
-                    tab === "All Attendees" ? totalRegistered : 
-                    tab === "Present" ? presentCount : 
-                    totalRegistered - presentCount
-                })
-            </button>
-          ))}
+          <button 
+            onClick={() => setActiveTab("All")}
+            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+              activeTab === "All" 
+                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
+                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
+            }`}
+          >
+            All Applicants ({totalRegistered})
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab("Present")}
+            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+              activeTab === "Present" 
+                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
+                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
+            }`}
+          >
+            Attendees (Present) ({presentCount})
+          </button>
+
+          <button 
+            onClick={() => setActiveTab("Registered")}
+            className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+              activeTab === "Registered" 
+                ? "bg-[#9ECB32] text-black shadow-[0_0_15px_rgba(158,203,50,0.3)]" 
+                : "border border-[#2A2E2A] text-[#9ECB32] hover:bg-[#141613]"
+            }`}
+          >
+            Pending Check-in ({totalRegistered - presentCount})
+          </button>
         </div>
 
         {/* Right: Search & Actions */}
@@ -353,8 +369,8 @@ export default function EventAttendanceDetails() {
             <thead className="bg-[#1F221F] border-b border-[#2A2E2A]">
               <tr>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest w-12">#</th>
-                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Attendee</th>
-                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Check-In</th>
+                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">User Details</th>
+                <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Check-In Time</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Status</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Verification</th>
                 <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Action</th>
@@ -374,7 +390,7 @@ export default function EventAttendanceDetails() {
                 paginatedData.map((user, index) => {
                   const displayIndex = (currentPage - 1) * rowsPerPage + index + 1;
                   return (
-                    <tr key={user.userId || user.id} className="hover:bg-[#1A1D1A] transition-colors group">
+                    <tr key={user.id} className="hover:bg-[#1A1D1A] transition-colors group">
                       <td className="py-4 px-6 text-xs text-gray-500">{displayIndex}</td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
