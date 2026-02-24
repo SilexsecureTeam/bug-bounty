@@ -118,16 +118,16 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
-    name: "Lt Gen W. Shaibu",
-    image: keynote11,
-    role: "Chief of Army Staff \nNigerian Army",
+    name: "General Christopher Gwabin Musa (Rtd) OFR",
+    image: keynote1,
+    role: "Honourable Minister Of Defence \nFederal Republic Of Nigeria",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
     type: "text",
-    name: "General Christopher Gwabin Musa (Rtd) OFR",
-    image: keynote1,
-    role: "Honourable Minister Of Defence \nFederal Republic Of Nigeria",
+    name: "Lt Gen W. Shaibu",
+    image: keynote11,
+    role: "Chief of Army Staff \nNigerian Army",
     // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
   },
   {
