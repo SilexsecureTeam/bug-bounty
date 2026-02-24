@@ -295,7 +295,7 @@ export async function collectSouvenir(data) {
 
 // Fetch all notifications
 export async function fetchNotifications() {
-  return adminRequest("/admin/notification/");
+  return adminRequest("/admin/notification");
 }
 
 // Create a notification (Multipart/Form-Data)
