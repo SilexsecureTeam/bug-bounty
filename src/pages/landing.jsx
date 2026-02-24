@@ -40,6 +40,9 @@ import keynote4 from "../assets/images/keynote4.png";
 import keynote5 from "../assets/images/keynote5.png";
 import keynote7 from "../assets/images/keynote7.png";
 import keynote8 from "../assets/images/keynote8.png";
+import keynote9 from "../assets/images/keynote9.png";
+import keynote10 from "../assets/images/keynote10.png";
+import keynote11 from "../assets/images/keynote11.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
@@ -115,6 +118,13 @@ const speakerCardStyles = {
 const speakerCards = [
   {
     type: "text",
+    name: "Lt Gen W. Shaibu",
+    image: keynote11,
+    role: "Chief of Army Staff \nNigerian Army",
+    // text: "Also Chairman INTERPOL Africa Working Group on Cybercrime.",
+  },
+  {
+    type: "text",
     name: "General Christopher Gwabin Musa (Rtd) OFR",
     image: keynote1,
     role: "Honourable Minister Of Defence \nFederal Republic Of Nigeria",
@@ -167,6 +177,20 @@ const speakerCards = [
     name: "Patricia Eromosele",
     image: keynote8,
     role: "Director  \nGlobal Anti-Scam Alliance (GASA) Africa Chapter",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
+  {
+    type: "text",
+    name: "Chinenye C. Chizea ",
+    image: keynote9,
+    role: "  \nCISSP",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
+  {
+    type: "text",
+    name: "Fortune Agula Musa ",
+    image: keynote10,
+    role: "Creative Director  \nSpokewise Media and PR",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
 ];
