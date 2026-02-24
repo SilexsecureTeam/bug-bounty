@@ -240,3 +240,65 @@ export async function mailCertificate(data) {
     body: data
   });
 }
+
+// --- Souvenir APIs (New) ---
+
+// Fetch souvenirs for an event
+export async function fetchEventSouvenirs(eventId) {
+  return adminRequest(`/admin/form/souvenir/${eventId}`);
+}
+
+// Create a souvenir (Multipart/Form-Data)
+export async function createSouvenir(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/form/souvenir/create`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch(e) {}
+    throw new Error(data.message || "Failed to create souvenir");
+  }
+  return await response.json();
+}
+
+// Update a souvenir (Multipart/Form-Data)
+export async function updateSouvenir(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await fetch(`${API_BASE_URL}/admin/form/souvenir/update`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+
+  if (!response.ok) throw new Error("Failed to update souvenir");
+  return await response.json();
+}
+
+// Delete a souvenir
+export async function deleteSouvenir(souvenirId) {
+  return adminRequest(`/admin/form/souvenir/delete/${souvenirId}`);
+}
+
+// Fetch applicants/claims for a specific souvenir
+export async function fetchSouvenirApplicants(souvenirId) {
+  return adminRequest(`/admin/form/souvenir/applicants/${souvenirId}`);
+}
+
+// Mark souvenir as collected
+export async function collectSouvenir(data) {
+  return adminRequest(`/admin/form/souvenir/applicants/collect`, {
+    method: "POST",
+    body: data
+  });
+}
