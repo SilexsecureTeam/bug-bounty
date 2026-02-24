@@ -112,8 +112,6 @@ export async function adminLogin({ email, password }) {
     throw new Error(responseBody.message || "Login failed");
   }
 
-  // ✅ FIX: Extract the inner 'data' object from the response
-  // The API returns: { status: 200, message: "...", data: { access_token: "...", user: {...} } }
   const apiData = responseBody.data;
 
   if (!apiData) {
@@ -137,17 +135,31 @@ export async function adminLogin({ email, password }) {
   return responseBody;
 }
 
-// --- Example Protected Admin Endpoint ---
+// --- Admin Dashboard API ---
 export async function fetchAdminDashboardStats() {
   return adminRequest("/admin/dashboard");
 }
-
 
 // --- Event Management APIs ---
 
 // Fetch all events
 export async function fetchEvents() {
   return adminRequest("/admin/form");
+}
+
+// Create Event
+export async function createEvent(data) {
+  return adminRequest("/admin/form/create", { method: "POST", body: data });
+}
+
+// Update Event
+export async function updateEvent(data) {
+  return adminRequest("/admin/form/update", { method: "POST", body: data });
+}
+
+// Delete Event
+export async function deleteEvent(id) {
+  return adminRequest(`/admin/form/delete/${id}`); 
 }
 
 // Fetch applicants for an event
@@ -160,19 +172,17 @@ export async function fetchEventAttendance(eventId) {
   return adminRequest(`/admin/form/attendance/${eventId}`);
 }
 
-// Approve attendance for a user (GET request as specified)
+// Approve attendance for a user
 export async function approveAttendance(eventId, userId) {
   return adminRequest(`/admin/form/attendance/${eventId}/${userId}`);
 }
 
 // --- Certificate APIs ---
 
-// Fetch certificates for an event
 export async function fetchEventCertificates(eventId) {
   return adminRequest(`/admin/form/certificate/${eventId}`);
 }
 
-// Create a certificate (Uses FormData, so explicit fetch used)
 export async function createCertificate(formData) {
   const session = getAdminSession();
   const token = session?.token;
@@ -180,20 +190,14 @@ export async function createCertificate(formData) {
 
   const response = await fetch(`${API_BASE_URL}/admin/form/certificate/create`, {
     method: "POST",
-    headers: headers, // No Content-Type, let browser set boundary
+    headers: headers,
     body: formData,
   });
 
-  if (!response.ok) {
-    const text = await response.text();
-    let data = {};
-    try { data = JSON.parse(text); } catch(e) {}
-    throw new Error(data.message || "Failed to create certificate");
-  }
+  if (!response.ok) throw new Error("Failed to create certificate");
   return await response.json();
 }
 
-// Update a certificate
 export async function updateCertificate(formData) {
   const session = getAdminSession();
   const token = session?.token;
@@ -205,27 +209,18 @@ export async function updateCertificate(formData) {
     body: formData,
   });
 
-  if (!response.ok) {
-    const text = await response.text();
-    let data = {};
-    try { data = JSON.parse(text); } catch(e) {}
-    throw new Error(data.message || "Failed to update certificate");
-  }
+  if (!response.ok) throw new Error("Failed to update certificate");
   return await response.json();
 }
 
-// Delete a certificate
 export async function deleteCertificate(certificateId) {
-  // Using GET based on pattern, but fallback to checking method if API changes
   return adminRequest(`/admin/form/certificate/delete/${certificateId}`);
 }
 
-// Fetch applicants for a specific certificate
 export async function fetchCertificateApplicants(certificateId) {
   return adminRequest(`/admin/form/certificate/applicants/${certificateId}`);
 }
 
-// Mark certificate as collected
 export async function collectCertificate(data) {
   return adminRequest(`/admin/form/certificate/applicants/collect`, {
     method: "POST",
@@ -233,7 +228,6 @@ export async function collectCertificate(data) {
   });
 }
 
-// Send certificate email
 export async function mailCertificate(data) {
   return adminRequest(`/admin/form/certificate/mail`, {
     method: "POST",
@@ -241,14 +235,12 @@ export async function mailCertificate(data) {
   });
 }
 
-// --- Souvenir APIs (New) ---
+// --- Souvenir APIs ---
 
-// Fetch souvenirs for an event
 export async function fetchEventSouvenirs(eventId) {
   return adminRequest(`/admin/form/souvenir/${eventId}`);
 }
 
-// Create a souvenir (Multipart/Form-Data)
 export async function createSouvenir(formData) {
   const session = getAdminSession();
   const token = session?.token;
@@ -269,7 +261,6 @@ export async function createSouvenir(formData) {
   return await response.json();
 }
 
-// Update a souvenir (Multipart/Form-Data)
 export async function updateSouvenir(formData) {
   const session = getAdminSession();
   const token = session?.token;
@@ -285,17 +276,14 @@ export async function updateSouvenir(formData) {
   return await response.json();
 }
 
-// Delete a souvenir
 export async function deleteSouvenir(souvenirId) {
   return adminRequest(`/admin/form/souvenir/delete/${souvenirId}`);
 }
 
-// Fetch applicants/claims for a specific souvenir
 export async function fetchSouvenirApplicants(souvenirId) {
   return adminRequest(`/admin/form/souvenir/applicants/${souvenirId}`);
 }
 
-// Mark souvenir as collected
 export async function collectSouvenir(data) {
   return adminRequest(`/admin/form/souvenir/applicants/collect`, {
     method: "POST",
