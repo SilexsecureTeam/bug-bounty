@@ -15,7 +15,7 @@ export const sidebarMenu = [
       { name: "Dashboard", icon: LayoutDashboard, path: "/admin", active: true },
       { name: "Events", icon: CalendarDays, path: "/admin/events" },
       { name: "Live Attendance", icon: UserCheck, path: "/admin/attendance" },
-      { name: "Attendees", icon: Users, path: "/admin/attendees" },
+      { name: "Attendees", icon: Users, path: "/admin/attendees/:id" },
       { name: "Certificates", icon: FileCheck, path: "/admin/certificates" },
       { name: "Souvenirs", icon: Gift, path: "/admin/souvenirs" },
       { name: "Communications", icon: MessageSquare, path: "/admin/comms" },
