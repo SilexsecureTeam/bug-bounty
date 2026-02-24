@@ -1,23 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
-// FIXED: Added missing icon imports (UserCheck, FileCheck, Gift, Settings, MessageSquare)
 import { 
   ArrowUpRight, ArrowRight, MoreVertical, QrCode, Plus, Eye, 
-  UserCheck, FileCheck, Gift, Settings, MessageSquare 
+  UserCheck, FileCheck, Gift, Settings, MessageSquare, CalendarDays, Layers 
 } from 'lucide-react';
 import { 
-  statsData, chartData, recentActivity, upcomingEvents, organizers 
+  statsData as initialStatsData, chartData, recentActivity, upcomingEvents, organizers 
 } from '../../data/dashboardData'; 
+import { fetchAdminDashboardStats } from '../../adminApi';
 
 export default function Dashboard() {
+  const [stats, setStats] = useState(initialStatsData);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        const response = await fetchAdminDashboardStats();
+        
+        // Ensure we have the data object from the response
+        const data = response.data || {};
+
+        // Map API data to the existing stats structure
+        // We iterate over the initial stats and update values if API provides them
+        const updatedStats = initialStatsData.map((stat) => {
+          let newValue = stat.value;
+
+          // Mapping logic based on labels
+          if (stat.label === "Total Events") {
+            newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
+          } else if (stat.label === "Attendance") {
+            // Mapping usersCount to Attendance as per typical dashboard logic
+            newValue = data.usersCount !== undefined ? data.usersCount.toString() : stat.value;
+          } else if (stat.label === "Certificates Issd.") {
+            newValue = data.certificateCount !== undefined ? data.certificateCount.toLocaleString() : stat.value;
+          } else if (stat.label === "Souvenirs") {
+            newValue = data.souvenirCount !== undefined ? data.souvenirCount.toString() : stat.value;
+          }
+          // 'Active Events' (Index 1) is left as placeholder because API didn't strictly provide 'activeEventCount'
+          
+          return {
+            ...stat,
+            value: newValue
+          };
+        });
+
+        setStats(updatedStats);
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats:", err);
+        setError("Failed to load live stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#060706] p-4 lg:p-8">
       
       {/* 1. TOP STATS ROW */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {statsData.map((stat, index) => (
+        {stats.map((stat, index) => (
           <div key={index} className="flex flex-col justify-between rounded-3xl border border-[#1F2227] bg-[#0D0F10] p-5">
             <div className="flex items-start justify-between">
               <span className="text-sm font-medium text-[#9CA3AF]">{stat.label}</span>
@@ -26,7 +74,9 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
+              <h3 className="text-3xl font-bold text-white">
+                {loading ? "..." : stat.value}
+              </h3>
               <p className={`mt-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider ${stat.highlight ? "text-[#9ECB32]" : "text-[#48C57D]"}`}>
                  {stat.trend === 'up' && <ArrowUpRight className="h-3 w-3" />}
                  {stat.change}
@@ -42,7 +92,7 @@ export default function Dashboard() {
         {/* LEFT COLUMN */}
         <div className="space-y-6">
           
-          {/* CHART SECTION */}
+          {/* CHART SECTION (Placeholder) */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-lg font-semibold text-white">Attendance Overview <span className="text-sm text-[#545C68]">December 12</span></h2>
@@ -72,7 +122,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* MIDDLE ROW: DEFCOMM CARD & STATUS */}
+          {/* MIDDLE ROW: DEFCOMM CARD & STATUS (Placeholder) */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
              <div className="mb-6 flex items-center justify-between">
                 <span className="rounded-md bg-[#E6E8D8] px-2 py-1 text-xs font-bold text-black">Defcomm 2025</span>
@@ -109,7 +159,7 @@ export default function Dashboard() {
              </div>
           </div>
 
-          {/* BOTTOM ROW: ORGANIZERS */}
+          {/* BOTTOM ROW: ORGANIZERS (Placeholder) */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">Organiser Activity Overview</h3>
@@ -158,7 +208,7 @@ export default function Dashboard() {
         {/* RIGHT COLUMN */}
         <div className="flex flex-col gap-6">
           
-          {/* RECENT ACTIVITY */}
+          {/* RECENT ACTIVITY (Placeholder) */}
           <div className="flex-1 rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
              <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
@@ -187,7 +237,7 @@ export default function Dashboard() {
              </div>
           </div>
 
-          {/* UPCOMING EVENTS */}
+          {/* UPCOMING EVENTS (Placeholder) */}
           <div className="flex-1 rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Upcoming Events</h3>
