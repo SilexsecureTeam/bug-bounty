@@ -141,3 +141,26 @@ export async function adminLogin({ email, password }) {
 export async function fetchAdminDashboardStats() {
   return adminRequest("/admin/dashboard");
 }
+
+
+// --- Event Management APIs ---
+
+// Fetch all events
+export async function fetchEvents() {
+  return adminRequest("/admin/form");
+}
+
+// Fetch applicants for an event
+export async function fetchEventApplicants(eventId) {
+  return adminRequest(`/admin/form/application/${eventId}`);
+}
+
+// Fetch approved attendance for an event
+export async function fetchEventAttendance(eventId) {
+  return adminRequest(`/admin/form/attendance/${eventId}`);
+}
+
+// Approve attendance for a user (GET request as specified)
+export async function approveAttendance(eventId, userId) {
+  return adminRequest(`/admin/form/attendance/${eventId}/${userId}`);
+}
