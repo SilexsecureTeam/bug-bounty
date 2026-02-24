@@ -561,78 +561,138 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="py-4">
-          <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
-            {speakerCards.map((card, index) => {
-              const delay = 0.18 + index * 0.06;
-              if (card.type === "text") {
-                const hasName = card.name && card.name.trim() !== "";
-                return (
-                  <article
-                    key={`${card.name || "no-name"}-image-${index}`}
-                    className={`reveal-child relative overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
-                    style={{ "--reveal-child-delay": `${delay}s` }}
-                  >
-                    {/* Image */}
-                    <img
-                      src={card.image || fallbackImg}
-                      alt={card.name || "Speaker"}
-                      className="h-full w-full object-cover"
-                    />
+        <div className="py-8 space-y-16">
+          {/* KEYNOTE CAROUSEL - Auto-scrolls left-to-right infinitely */}
+          <div className="w-full max-w-full overflow-hidden py-4">
+            {" "}
+            {/* Constrains + hides edges */}
+            <div
+              className="flex gap-6 no-scrollbar" // Removed overflow-x-auto (animation handles scroll)
+              style={{
+                animation: "marquee var(--marquee-speed, 10s) linear infinite", // ← Auto-scroll magic (adjust 30s for speed)
+              }}
+            >
+              {[...speakerCards.slice(0, 5), ...speakerCards.slice(0, 5)].map(
+                (card, index) => {
+                  // Doubled for seamless loop
+                  const delay = 0.18 + index * 0.06;
 
-                    {/* Gradient Overlay + Text (only if role/text exists) */}
-                    {(card.role || card.text || card.name) && (
-                      <div className="absolute inset-0 flex items-end">
-                        <div className="w-full p-6 sm:px-7 py-4 rounded-4xl bg-gradient-to-b from-[#85AB20]/90 to-[#36450D]/95">
-                          {card.name && (
-                            <h3 className="text-base  font-bold text-white leading-tight">
-                              {card.name}
-                            </h3>
-                          )}
+                  return (
+                    <article
+                      key={`keynote-${index}`}
+                      className={`reveal-child relative overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] 
+                     min-w-60 sm:min-w-auto flex-shrink-0 h-[450px] ${speakerCardStyles.image || ""}`} // ← Matched size + height
+                      style={{ "--reveal-child-delay": `${delay}s` }}
+                    >
+                      {/* Image */}
+                      <img
+                        src={card.image || fallbackImg}
+                        alt={card.name || "Speaker"}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
 
-                          {card.role && (
-                            <p className="mt-1 text-xs sm:text-sm leading-relaxed">
-                              {card.role.split("\n").map((line, i) => (
-                                <span
-                                  key={i}
-                                  className={`
-          ${i === 0 ? "font-normal text-white" : "italic text-gray-200"}
-          ${i > 0 ? "block mt-0.5" : ""}
-        `}
-                                >
-                                  {line.trim()}
-                                </span>
-                              ))}
-                            </p>
-                          )}
+                      {/* Gradient Overlay + Text */}
+                      {(card.role || card.text || card.name) && (
+                        <div className="absolute inset-0 flex items-end">
+                          <div className="w-full p-6 sm:px-7 py-6 rounded-4xl bg-gradient-to-b from-[#85AB20]/90 to-[#36450D]/95">
+                            {card.name && (
+                              <h3 className="text-base font-bold text-white leading-tight">
+                                {card.name}
+                              </h3>
+                            )}
 
-                          {/* Only show text for text-type cards */}
-                          {card.text && card.type === "text" && (
-                            <p className="mt-2 text-xs sm:text-xs text-white leading-relaxed font-normal whitespace-pre-line">
-                              {card.text}
-                            </p>
-                          )}
+                            {card.role && (
+                              <p className="mt-1 text-xs sm:text-sm leading-relaxed">
+                                {card.role.split("\n").map((line, i) => (
+                                  <span
+                                    key={i}
+                                    className={`
+                          ${i === 0 ? "font-normal text-white" : "italic text-gray-200"}
+                          ${i > 0 ? "block mt-0.5" : ""}
+                        `}
+                                  >
+                                    {line.trim()}
+                                  </span>
+                                ))}
+                              </p>
+                            )}
+
+                            {card.text && card.type === "text" && (
+                              <p className="mt-2 text-xs text-white leading-relaxed font-normal whitespace-pre-line">
+                                {card.text}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </article>
-                );
-              }
-              return (
-                <article
-                  key={`${card.name || "no-name"}-image-${index}`}
-                  className={`reveal-child overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
-                  style={{ "--reveal-child-delay": `${delay}s` }}
-                >
-                  <img
-                    src={card.image || fallbackImg}
-                    alt={card.name || "Speaker"}
-                    className="h-full w-full object-cover"
-                  />
-                </article>
-              );
-            })}
+                      )}
+                    </article>
+                  );
+                },
+              )}
+            </div>
           </div>
+          {/* ==================== REMAINING SPEAKERS - SAME AS BEFORE ==================== */}
+          {speakerCards.length > 5 && (
+            <div>
+              <div className="flex gap-6 sm:gap-6 overflow-x-auto sm:overflow-x-visible w-full no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
+                {speakerCards.slice(5).map((card, index) => {
+                  const delay = 0.18 + (index + 5) * 0.06; // continue animation smoothly
+
+                  if (card.type === "text") {
+                    return (
+                      <article
+                        key={`${card.name || "no-name"}-other-${index}`}
+                        className={`reveal-child relative overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(5,7,9,0.35)] min-w-60 sm:min-w-auto ${speakerCardStyles.image}`}
+                        style={{ "--reveal-child-delay": `${delay}s` }}
+                      >
+                        <img
+                          src={card.image || fallbackImg}
+                          alt={card.name || "Speaker"}
+                          className="h-full w-full object-cover"
+                        />
+
+                        {(card.role || card.text || card.name) && (
+                          <div className="absolute inset-0 flex items-end">
+                            <div className="w-full p-6 sm:px-7 py-4 rounded-4xl bg-gradient-to-b from-[#85AB20]/90 to-[#36450D]/95">
+                              {card.name && (
+                                <h3 className="text-base font-bold text-white leading-tight">
+                                  {card.name}
+                                </h3>
+                              )}
+
+                              {card.role && (
+                                <p className="mt-1 text-xs sm:text-sm leading-relaxed">
+                                  {card.role.split("\n").map((line, i) => (
+                                    <span
+                                      key={i}
+                                      className={`
+                                ${i === 0 ? "font-normal text-white" : "italic text-gray-200"}
+                                ${i > 0 ? "block mt-0.5" : ""}
+                              `}
+                                    >
+                                      {line.trim()}
+                                    </span>
+                                  ))}
+                                </p>
+                              )}
+
+                              {card.text && card.type === "text" && (
+                                <p className="mt-2 text-xs sm:text-xs text-white leading-relaxed font-normal whitespace-pre-line">
+                                  {card.text}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
