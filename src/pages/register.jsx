@@ -216,6 +216,7 @@ export default function Register() {
         country: formValues.country,
         userType,
         // userType,
+        // userType,
         password: formValues.password,
         groupname: userType === "group" ? formValues.groupname : undefined,
         companyname:
