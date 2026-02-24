@@ -1,8 +1,18 @@
-import React from 'react';
-import { Search, Bell, Moon, ChevronLeft } from 'lucide-react'; // <--- FIXED: Added ChevronLeft here
+import React, { useState, useEffect } from 'react';
+import { Search, Bell, Moon, ChevronLeft } from 'lucide-react'; 
 import userAvatar from '../../assets/images/fb.png'; 
+import { getAdminSession } from '../../adminApi'; // Import the helper to get session data
 
 export default function Header({ toggleSidebar }) {
+  const [adminName, setAdminName] = useState("Admin");
+
+  useEffect(() => {
+    const session = getAdminSession();
+    if (session && session.user && session.user.name) {
+      setAdminName(session.user.name);
+    }
+  }, []);
+
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-[#1F2227] bg-[#060706] px-6 lg:px-10">
       <div className="flex items-center gap-4">
@@ -36,10 +46,9 @@ export default function Header({ toggleSidebar }) {
             <img src={userAvatar} alt="User" className="h-full w-full object-cover" />
           </div>
           <div className="hidden text-sm md:block">
-            <p className="font-semibold text-white">Dammy Bright</p>
+            <p className="font-semibold text-white capitalize">{adminName}</p>
           </div>
-          {/* Now this will work because ChevronLeft is imported at the top */}
-          <ChevronLeft className="h-4 w-4 rotate-270 text-[#545C68]" />
+          <ChevronLeft className="h-4 w-4 -rotate-90 text-[#545C68]" />
         </div>
       </div>
     </header>

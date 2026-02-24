@@ -297,6 +297,7 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="events" element={<AdminEvents />} />
               <Route path="attendance" element={<LiveAttendance />} />
+              <Route path="attendees/:id" element={<EventAttendanceDetails />} />
               <Route path="attendees" element={<EventAttendanceDetails />} />
               <Route path="certificates" element={<Certificates />} />
               <Route path="souvenirs" element={<SouvenirManagement />} />
