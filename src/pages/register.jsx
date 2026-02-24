@@ -163,6 +163,10 @@ export default function Register() {
       const FIXED_FORM_ID =
         "eyJpdiI6InFzSklDVzZMYU5zSTM3SDIrb0g0eEE9PSIsInZhbHVlIjoicVRROHVodWlHVzRGSXl2bXp3NFdSQT09IiwibWFjIjoiYTA5ZTA3YmRkMzYwOWE5YzIwNWUwNDgzYTZkZDgwNmQ4MWVlMmJmZWIzZmMyMzQ1NzY0OTEzNWU2ZDcxN2Y3OCIsInRhZyI6IiJ9";
 
+      // bug bunty
+      const HUNTER_FORM_ID =
+        "eyJpdiI6Ik1OR0cxblhmTTNHSGNkZk9HV05nQ3c9PSIsInZhbHVlIjoiUk8zekd3c1pWblVrY2FHVGtTZjhEUT09IiwibWFjIjoiMWYzYzYwZDNiZWU3M2RmZDYzNmMwN2Y2ZTBhYzQzOGM3MWQzODY1MjdmYTNhZWVmNGU3MjJiY2I3MWJkNGM1OSIsInRhZyI6IiJ9";
+
       // === Guest-specific flow ===
       if (selectedRole === "guest") {
         const eventPayload = {
@@ -222,7 +226,7 @@ export default function Register() {
       if (selectedRole === "hunter") {
         try {
           const hunterEventPayload = {
-            form_id: FIXED_FORM_ID,
+            form_id: HUNTER_FORM_ID,
             name: fullName,
             email: formValues.email,
             phone: formattedPhone,
