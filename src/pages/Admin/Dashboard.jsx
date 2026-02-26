@@ -6,54 +6,60 @@ import {
   ArrowUpRight, ArrowRight, MoreVertical, QrCode, Plus, Eye, 
   UserCheck, FileCheck, Gift, Settings, MessageSquare, CalendarDays, Layers 
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  statsData as initialStatsData, chartData, recentActivity, upcomingEvents, organizers 
+  statsData as initialStatsData, chartData as initialChartData, recentActivity, organizers 
 } from '../../data/dashboardData'; 
-import { fetchAdminDashboardStats } from '../../adminApi';
+import { fetchAdminDashboardStats, fetchEvents } from '../../adminApi';
+import sponsor1 from '../../assets/images/sponsor1.png'; // Fallback image
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(initialStatsData);
+  const [events, setEvents] = useState([]); // Real events list
+  const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const response = await fetchAdminDashboardStats();
-        
-        // Ensure we have the data object from the response
-        const data = response.data || {};
+        // Fetch Stats
+        const statsResponse = await fetchAdminDashboardStats();
+        const data = statsResponse.data || {};
 
-        // Map API data to the existing stats structure
-        // We iterate over the initial stats and update values if API provides them
+        // Map Stats
         const updatedStats = initialStatsData.map((stat) => {
           let newValue = stat.value;
-
-          // Mapping logic based on labels
           if (stat.label === "Total Events") {
             newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
           } else if (stat.label === "Attendance") {
-            // Mapping usersCount to Attendance as per typical dashboard logic
             newValue = data.usersCount !== undefined ? data.usersCount.toString() : stat.value;
           } else if (stat.label === "Certificates Issd.") {
             newValue = data.certificateCount !== undefined ? data.certificateCount.toLocaleString() : stat.value;
           } else if (stat.label === "Souvenirs") {
             newValue = data.souvenirCount !== undefined ? data.souvenirCount.toString() : stat.value;
           } else if (stat.label === "Active Events") {
-            newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
+             // Assuming total events roughly correlates for now or use specific active count if available
+             newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
           }
-          // 'Active Events' (Index 1) is left as placeholder because API didn't strictly provide 'activeEventCount'
-          
-          return {
-            ...stat,
-            value: newValue
-          };
+          return { ...stat, value: newValue };
         });
-
         setStats(updatedStats);
+
+        // Fetch Events List for "Upcoming Events"
+        const eventsResponse = await fetchEvents();
+        const eventsList = eventsResponse.data || [];
+        
+        // Sort by date descending (newest first)
+        const sortedEvents = eventsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setEvents(sortedEvents.slice(0, 5)); // Take top 5
+
+        // Mock Chart Data update based on events (optional enhancement)
+        // If we had time-series data from API we would use it here. 
+        // For now, let's keep the mock chart or try to map recent events to it if dates match.
+
       } catch (err) {
-        console.error("Failed to fetch dashboard stats:", err);
-        setError("Failed to load live stats");
+        console.error("Failed to fetch dashboard data:", err);
       } finally {
         setLoading(false);
       }
@@ -94,10 +100,10 @@ export default function Dashboard() {
         {/* LEFT COLUMN */}
         <div className="space-y-6">
           
-          {/* CHART SECTION (Placeholder) */}
+          {/* CHART SECTION */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold text-white">Attendance Overview <span className="text-sm text-[#545C68]">December 12</span></h2>
+              <h2 className="text-lg font-semibold text-white">Attendance Overview <span className="text-sm text-[#545C68]">Recent Activity</span></h2>
               <div className="flex items-center gap-2 rounded-lg bg-[#16181A] p-1">
                 {['Today', 'Week', 'Month', 'Year'].map(tab => (
                   <button key={tab} className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${tab === 'Today' ? 'bg-[#9ECB32] text-black' : 'text-[#8D9197] hover:text-white'}`}>
@@ -124,22 +130,27 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* MIDDLE ROW: DEFCOMM CARD & STATUS (Placeholder) */}
+          {/* MIDDLE ROW: ACTIVE EVENT STATUS (Placeholder/Mock) */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
              <div className="mb-6 flex items-center justify-between">
-                <span className="rounded-md bg-[#E6E8D8] px-2 py-1 text-xs font-bold text-black">Defcomm 2025</span>
-                <button className="flex items-center gap-2 text-xs text-[#9ECB32]">View dashboard <ArrowRight className="h-3 w-3" /></button>
+                <span className="rounded-md bg-[#E6E8D8] px-2 py-1 text-xs font-bold text-black">Active Event Status</span>
+                <button 
+                  onClick={() => navigate('/admin/attendance')}
+                  className="flex items-center gap-2 text-xs text-[#9ECB32]"
+                >
+                  View live data <ArrowRight className="h-3 w-3" />
+                </button>
              </div>
              
              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                <div>
                   <p className="text-[10px] uppercase tracking-wider text-[#545C68]">Current Attendance</p>
                   <div className="mt-1 flex items-end gap-2">
-                    <span className="text-2xl font-bold text-white">5,521</span>
-                    <span className="mb-1 rounded-sm bg-[#112316] px-1 text-[10px] text-[#48C57D]">+30/hr</span>
+                    <span className="text-2xl font-bold text-white">{loading ? "..." : stats[1].value}</span>
+                    <span className="mb-1 rounded-sm bg-[#112316] px-1 text-[10px] text-[#48C57D]">+12%</span>
                   </div>
                   <div className="mt-2 h-1 w-full rounded-full bg-[#1F2227]"><div className="h-1 w-[70%] rounded-full bg-[#9ECB32]"></div></div>
-                  <p className="mt-1 text-[10px] text-[#545C68]">70% capacity</p>
+                  <p className="mt-1 text-[10px] text-[#545C68]">-- capacity</p>
                </div>
 
                <div>
@@ -148,23 +159,23 @@ export default function Dashboard() {
                    <QrCode className="h-5 w-5 text-[#9ECB32]" />
                    <span className="font-semibold text-white">QR SCAN</span>
                  </div>
-                 <p className="mt-1 text-[10px] text-[#545C68]">70% capacity</p>
+                 <p className="mt-1 text-[10px] text-[#545C68]">Default</p>
                </div>
 
                <div className="border-l border-[#1F2227] pl-4">
-                 <p className="text-[10px] uppercase tracking-wider text-[#545C68]">Status</p>
+                 <p className="text-[10px] uppercase tracking-wider text-[#545C68]">Event Flow</p>
                  <div className="mt-2 space-y-2">
-                   <div className="flex justify-between text-xs"><span className="text-white">Active - In</span> <span className="text-[#48C57D]">4000</span></div>
-                   <div className="flex justify-between text-xs"><span className="text-white">Checked-Out</span> <span className="text-[#CC4D22]">1521</span></div>
+                   <div className="flex justify-between text-xs"><span className="text-white">Active</span> <span className="text-[#48C57D]">{events.length}</span></div>
+                   <div className="flex justify-between text-xs"><span className="text-white">Completed</span> <span className="text-[#CC4D22]">--</span></div>
                  </div>
                </div>
              </div>
           </div>
 
-          {/* BOTTOM ROW: ORGANIZERS (Placeholder) */}
+          {/* BOTTOM ROW: ORGANIZERS */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Organiser Activity Overview</h3>
+              <h3 className="text-lg font-semibold text-white">Organiser Activity</h3>
               <span className="text-xs text-[#9ECB32] cursor-pointer">View All</span>
             </div>
             <div className="space-y-4">
@@ -190,17 +201,26 @@ export default function Dashboard() {
 
             {/* ACTION BUTTONS STRIP */}
             <div className="mt-6 flex flex-wrap gap-4">
-               <button className="flex items-center gap-2 rounded-xl bg-[#3F550F] px-4 py-3 text-xs font-bold text-[#D7E4BB] border border-[#4D6B13]">
+               <button 
+                 onClick={() => navigate('/admin/events')}
+                 className="flex items-center gap-2 rounded-xl bg-[#3F550F] px-4 py-3 text-xs font-bold text-[#D7E4BB] border border-[#4D6B13] hover:bg-[#4D6B13] transition-colors"
+               >
                   <Plus className="h-4 w-4" /> Create New Event
-                  <span className="ml-2 block text-[9px] font-normal text-[#9ECB32] opacity-70">Create your event in minutes</span>
+                  <span className="ml-2 block text-[9px] font-normal text-[#9ECB32] opacity-70">Setup details</span>
                </button>
-               <button className="flex items-center gap-2 rounded-xl border border-[#1F2227] bg-[#0B0C0E] px-4 py-3 text-xs font-bold text-white hover:bg-[#16181A]">
-                  <QrCode className="h-4 w-4" /> Generate QR Code
-                  <span className="ml-2 block text-[9px] font-normal text-[#545C68]">Create your event in minutes</span>
+               <button 
+                 onClick={() => navigate('/admin/attendance')}
+                 className="flex items-center gap-2 rounded-xl border border-[#1F2227] bg-[#0B0C0E] px-4 py-3 text-xs font-bold text-white hover:bg-[#16181A] transition-colors"
+               >
+                  <QrCode className="h-4 w-4" /> View Live
+                  <span className="ml-2 block text-[9px] font-normal text-[#545C68]">Check status</span>
                </button>
-               <button className="flex items-center gap-2 rounded-xl border border-[#1F2227] bg-[#0B0C0E] px-4 py-3 text-xs font-bold text-white hover:bg-[#16181A]">
-                  <Eye className="h-4 w-4" /> View Attendance
-                  <span className="ml-2 block text-[9px] font-normal text-[#545C68]">Create your event in minutes</span>
+               <button 
+                 onClick={() => navigate('/admin/attendees')}
+                 className="flex items-center gap-2 rounded-xl border border-[#1F2227] bg-[#0B0C0E] px-4 py-3 text-xs font-bold text-white hover:bg-[#16181A] transition-colors"
+               >
+                  <Eye className="h-4 w-4" /> View Attendees
+                  <span className="ml-2 block text-[9px] font-normal text-[#545C68]">Manage lists</span>
                </button>
             </div>
           </div>
@@ -210,7 +230,7 @@ export default function Dashboard() {
         {/* RIGHT COLUMN */}
         <div className="flex flex-col gap-6">
           
-          {/* RECENT ACTIVITY (Placeholder) */}
+          {/* RECENT ACTIVITY (Placeholder - APIs not ready) */}
           <div className="flex-1 rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
              <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
@@ -218,7 +238,6 @@ export default function Dashboard() {
              </div>
              
              <div className="relative space-y-8 pl-2">
-                {/* Timeline Line */}
                 <div className="absolute left-6 top-2 h-[85%] w-[1px] bg-[#1F2227]"></div>
 
                 {recentActivity.map((item, i) => (
@@ -239,22 +258,30 @@ export default function Dashboard() {
              </div>
           </div>
 
-          {/* UPCOMING EVENTS (Placeholder) */}
+          {/* UPCOMING EVENTS (Real Data) */}
           <div className="flex-1 rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Upcoming Events</h3>
-                <span className="text-xs text-[#9ECB32]">View All</span>
+                <span onClick={() => navigate('/admin/events')} className="text-xs text-[#9ECB32] cursor-pointer">View All</span>
              </div>
              <div className="space-y-6">
-                {upcomingEvents.map((event, i) => (
-                  <div key={i} className="flex gap-4">
-                    <img src={event.image} alt="Event" className="h-12 w-12 rounded-xl object-cover" />
-                    <div>
-                       <h4 className="text-sm font-semibold text-white line-clamp-1">{event.title}</h4>
-                       <p className="text-[10px] font-bold uppercase tracking-wider text-[#545C68]">DATE: {event.date}</p>
-                    </div>
-                  </div>
-                ))}
+                {loading ? (
+                    <div className="text-center text-xs text-gray-500">Loading events...</div>
+                ) : events.length > 0 ? (
+                    events.map((event, i) => (
+                      <div key={event.id} className="flex gap-4 group cursor-pointer" onClick={() => navigate(`/admin/attendees/${event.id}`)}>
+                        <img src={sponsor1} alt="Event" className="h-12 w-12 rounded-xl object-cover border border-[#2A2E2A] group-hover:border-[#9ECB32] transition-colors" />
+                        <div>
+                           <h4 className="text-sm font-semibold text-white line-clamp-1 group-hover:text-[#9ECB32] transition-colors">{event.name}</h4>
+                           <p className="text-[10px] font-bold uppercase tracking-wider text-[#545C68]">
+                             DATE: {new Date(event.created_at).toLocaleDateString()}
+                           </p>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                    <div className="text-center text-xs text-gray-500">No upcoming events found.</div>
+                )}
              </div>
           </div>
 
