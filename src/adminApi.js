@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from "./api"; 
+import { getApiBaseUrl } from "./api";
 
 const API_BASE_URL = getApiBaseUrl();
 const ADMIN_SESSION_KEY = "adminSession";
@@ -97,13 +97,31 @@ async function adminRequest(path, { method = "GET", headers = {}, body } = {}) {
   }
 }
 
-// --- Admin Auth APIs ---
+// --- Admin Auth APIs (OTP FLOW) ---
 
-export async function adminLogin({ email, password }) {
-  const response = await fetch(`${API_BASE_URL}/login`, {
+// 1. Request OTP
+export async function requestAdminOtp(identifier) {
+  // identifier can be email or phone, but endpoint expects "phone" key based on prompt
+  const response = await fetch(`${API_BASE_URL}/requestOtpSms`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ phone: identifier }),
+  });
+
+  const responseBody = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseBody.message || "Failed to send OTP");
+  }
+  return responseBody;
+}
+
+// 2. Verify OTP & Login
+export async function verifyAdminOtpAndLogin({ identifier, otp }) {
+  const response = await fetch(`${API_BASE_URL}/loginWithPhone`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone: identifier, otp: otp }),
   });
 
   const responseBody = await response.json();
@@ -121,17 +139,35 @@ export async function adminLogin({ email, password }) {
   const user = apiData.user;
   const accessToken = apiData.access_token;
 
-  // Validate User is Admin
-  const isNamedAdmin = user?.name?.toLowerCase().includes("admin");
-  const isRoleAdmin = user?.role === "admin";
+  // Validate User is Admin or Volunteer
+  const role = user?.role ? user.role.toLowerCase() : "";
+  const allowedRoles = ["admin", "volunteer"];
 
-  if (!isNamedAdmin && !isRoleAdmin) {
-     throw new Error("Access Denied: You do not have administrator privileges.");
+  if (!allowedRoles.includes(role)) {
+     throw new Error("Access Denied: Restricted to Admins and Volunteers.");
   }
 
   // Save Token (access_token) and User
   saveAdminSession(accessToken, user);
 
+  return responseBody;
+}
+
+// Deprecated Password Login (Kept for reference or fallback if needed, but not used in new flow)
+export async function adminLogin({ email, password }) {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const responseBody = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseBody.message || "Login failed");
+  }
+  const apiData = responseBody.data;
+  saveAdminSession(apiData.access_token, apiData.user);
   return responseBody;
 }
 
