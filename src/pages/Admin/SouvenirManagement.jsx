@@ -38,8 +38,6 @@ const StatusBadge = ({ status }) => {
   let styles = "";
   let dotColor = "";
   
-  // FIX: Only call toLowerCase if status is actually a string. 
-  // Otherwise preserve the boolean value for the checks below.
   const normStatus = typeof status === 'string' ? status.toLowerCase() : status;
 
   if (normStatus === "active" || normStatus === "available" || normStatus === "collected" || normStatus === "verified" || normStatus === true) {
@@ -70,7 +68,7 @@ export default function SouvenirManagement() {
   const [selectedEventId, setSelectedEventId] = useState('');
   const [inventory, setInventory] = useState([]);
   const [redemptionLogs, setRedemptionLogs] = useState([]);
-  const [selectedSouvenir, setSelectedSouvenir] = useState(null); // The item currently viewing logs for
+  const [selectedSouvenir, setSelectedSouvenir] = useState(null);
 
   // UI State
   const [loadingInventory, setLoadingInventory] = useState(false);
@@ -80,6 +78,8 @@ export default function SouvenirManagement() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
+  // For Create: name, image, status, form_id (quantity not needed for create per instruction)
+  // For Update: id, name, image, status, quantity (maybe allowed?)
   const [formData, setFormData] = useState({ name: '', status: 'active', quantity: '' });
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -101,15 +101,13 @@ export default function SouvenirManagement() {
     loadEvents();
   }, []);
 
-  // --- 2. Load Inventory (Souvenirs) ---
+  // --- 2. Load Inventory ---
   const loadInventory = async () => {
     if (!selectedEventId) return;
     setLoadingInventory(true);
     try {
       const res = await fetchEventSouvenirs(selectedEventId);
-      // API response structure check: res.data array
       setInventory(res.data || []);
-      // Reset logs view when event changes
       setRedemptionLogs([]);
       setSelectedSouvenir(null);
     } catch (err) {
@@ -131,7 +129,6 @@ export default function SouvenirManagement() {
     setLoadingLogs(true);
     try {
       const res = await fetchSouvenirApplicants(item.id);
-      // Expected structure: { data: { souvenir: {...}, applicants: [...] } }
       setRedemptionLogs(res.data?.applicants || []);
     } catch (err) {
       console.error("Failed to load applicants", err);
@@ -150,7 +147,6 @@ export default function SouvenirManagement() {
         reg_id: applicantId,
         status: !currentStatus
       });
-      // Optimistic Update
       setRedemptionLogs(prev => prev.map(log => 
         log.id === applicantId ? { ...log, is_collected: !currentStatus } : log
       ));
@@ -181,7 +177,7 @@ export default function SouvenirManagement() {
 
   const openEditModal = (item) => {
     setModalMode('edit');
-    // Assuming item has quantity, if not available in API, user can enter it
+    // Assuming quantity might be relevant for update or display
     setFormData({ id: item.id, name: item.name, status: item.status, quantity: item.quantity || '' });
     setFile(null);
     setIsModalOpen(true);
@@ -194,15 +190,29 @@ export default function SouvenirManagement() {
     const data = new FormData();
     data.append('name', formData.name);
     data.append('status', formData.status);
-    if(formData.quantity) data.append('quantity', formData.quantity);
-    if (file) data.append('template', file);
+    
+    // API Spec Update: 
+    // Create: name, image, status, form_id (NO quantity, NO template param name - use 'image')
+    // Update: id, name, image, status, quantity (maybe?) - Keeping consistent with create for now unless specified otherwise
+    
+    if (modalMode === 'create') {
+        data.append('form_id', selectedEventId);
+        // data.append('quantity') -> Instruction says no quantity for create
+    } else {
+        data.append('id', formData.id);
+        if(formData.quantity) data.append('quantity', formData.quantity);
+    }
+
+    if (file) {
+        // Renaming 'template' to 'image' as per "the fields to pass to the api is name,image..."
+        // If the backend strictly needs 'image' as key for file
+        data.append('image', file); 
+    }
 
     try {
         if (modalMode === 'create') {
-            data.append('form_id', selectedEventId);
             await createSouvenir(data);
         } else {
-            data.append('id', formData.id);
             await updateSouvenir(data);
         }
         setIsModalOpen(false);
@@ -216,10 +226,9 @@ export default function SouvenirManagement() {
   };
 
   // --- Stats Calculation ---
-  const totalItems = inventory.reduce((acc, item) => acc + (parseInt(item.quantity) || 0), 0);
-  const claimedToday = 0; // Requires logic if API provides date
-  const totalLogs = redemptionLogs.length;
+  const totalItems = inventory.length; 
   const logsCollected = redemptionLogs.filter(l => l.is_collected).length;
+  const totalLogs = redemptionLogs.length;
 
   return (
     <div className="min-h-screen bg-[#060706] text-white p-6 font-sans pb-20 relative">
@@ -231,7 +240,6 @@ export default function SouvenirManagement() {
           <p className="text-[#9CA3AF] text-sm">Real-time tracking of Souvenir distributions and stock levels</p>
         </div>
         <div className="flex items-center gap-3">
-           {/* Event Selector */}
            <div className="relative min-w-[200px]">
                 <select 
                     value={selectedEventId} 
@@ -259,7 +267,7 @@ export default function SouvenirManagement() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
           title="Total Types" 
-          value={inventory.length} 
+          value={totalItems} 
           subtext="Item Categories" 
           subtextColor="text-[#9CA3AF]"
           icon={Package}
@@ -464,16 +472,18 @@ export default function SouvenirManagement() {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Quantity</label>
-                            <input 
-                                type="number" 
-                                value={formData.quantity}
-                                onChange={(e) => setFormData({...formData, quantity: e.target.value})}
-                                className="w-full bg-[#16181A] border border-[#2A2E2A] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#9ECB32]"
-                                placeholder="Enter available stock"
-                            />
-                        </div>
+                        {modalMode === 'edit' && (
+                            <div>
+                                <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Quantity</label>
+                                <input 
+                                    type="number" 
+                                    value={formData.quantity}
+                                    onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                                    className="w-full bg-[#16181A] border border-[#2A2E2A] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#9ECB32]"
+                                    placeholder="Enter available stock"
+                                />
+                            </div>
+                        )}
 
                         <div>
                             <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Image</label>
