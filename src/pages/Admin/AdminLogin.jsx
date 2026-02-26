@@ -1,33 +1,56 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "../../adminApi";
-import { ShieldCheck, Lock, Mail, Loader2 } from "lucide-react";
+import { requestAdminOtp, verifyAdminOtpAndLogin } from "../../adminApi";
+import { ShieldCheck, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  
+  // State for steps: 'email' -> 'otp'
+  const [step, setStep] = useState('email');
+  
+  const [formData, setFormData] = useState({ email: "", otp: "" });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleRequestOtp = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.email) return toast.error("Please enter your email");
 
+    setLoading(true);
     try {
-      await adminLogin({
-        email: formData.email,
-        password: formData.password,
+      // API expects "phone" key even if it's an email value
+      await requestAdminOtp(formData.email);
+      toast.success("OTP sent to your email/phone");
+      setStep('otp');
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!formData.otp) return toast.error("Please enter the OTP");
+
+    setLoading(true);
+    try {
+      await verifyAdminOtpAndLogin({
+        identifier: formData.email,
+        otp: formData.otp
       });
       
       toast.success("Welcome back, Administrator");
       navigate("/admin"); // Redirect to Admin Dashboard
     } catch (error) {
       console.error(error);
-      toast.error(error.message || "Invalid credentials");
+      toast.error(error.message || "Invalid OTP or Access Denied");
     } finally {
       setLoading(false);
     }
@@ -55,59 +78,96 @@ const AdminLogin = () => {
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-8 pb-10 space-y-5">
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
-              Email Address
-            </label>
-            <div className="relative group">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E667B] group-focus-within:text-[#9FC24D] transition-colors" size={18} />
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-[#060706] border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#9FC24D]/50 focus:ring-1 focus:ring-[#9FC24D]/50 transition-all placeholder:text-gray-700"
-                placeholder="admin@defcomm.ng"
-              />
+        {/* Step 1: Email Form */}
+        {step === 'email' && (
+          <form onSubmit={handleRequestOtp} className="px-8 pb-10 space-y-5 animate-fade-in">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
+                Email Address / Phone
+              </label>
+              <div className="relative group">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E667B] group-focus-within:text-[#9FC24D] transition-colors" size={18} />
+                <input
+                  type="text"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full bg-[#060706] border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#9FC24D]/50 focus:ring-1 focus:ring-[#9FC24D]/50 transition-all placeholder:text-gray-700"
+                  placeholder="admin@defcomm.ng"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
-              Password
-            </label>
-            <div className="relative group">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E667B] group-focus-within:text-[#9FC24D] transition-colors" size={18} />
-              <input
-                type="password"
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-[#060706] border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#9FC24D]/50 focus:ring-1 focus:ring-[#9FC24D]/50 transition-all placeholder:text-gray-700"
-                placeholder="••••••••"
-              />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#9FC24D] hover:bg-[#B2D660] text-[#0B0F05] font-bold py-3.5 rounded-lg transition-all duration-200 shadow-[0_0_20px_rgba(159,194,77,0.2)] hover:shadow-[0_0_30px_rgba(159,194,77,0.4)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  <span>Sending OTP...</span>
+                </>
+              ) : (
+                <>
+                  Send OTP <ArrowRight size={18} />
+                </>
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* Step 2: OTP Form */}
+        {step === 'otp' && (
+          <form onSubmit={handleVerifyOtp} className="px-8 pb-10 space-y-5 animate-fade-in">
+             <div className="text-center mb-4">
+                <p className="text-sm text-gray-400">Enter the OTP sent to <br/><span className="text-white font-mono">{formData.email}</span></p>
+             </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
+                One-Time Password
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E667B] group-focus-within:text-[#9FC24D] transition-colors" size={18} />
+                <input
+                  type="text"
+                  name="otp"
+                  required
+                  value={formData.otp}
+                  onChange={handleChange}
+                  className="w-full bg-[#060706] border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#9FC24D]/50 focus:ring-1 focus:ring-[#9FC24D]/50 transition-all placeholder:text-gray-700 tracking-widest font-mono text-center text-lg"
+                  placeholder="• • • •"
+                  maxLength={6}
+                />
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#9FC24D] hover:bg-[#B2D660] text-[#0B0F05] font-bold py-3.5 rounded-lg transition-all duration-200 shadow-[0_0_20px_rgba(159,194,77,0.2)] hover:shadow-[0_0_30px_rgba(159,194,77,0.4)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
-          >
-            {loading ? (
-              <>
-                <Loader2 size={20} className="animate-spin" />
-                <span>Authenticating...</span>
-              </>
-            ) : (
-              "Access Dashboard"
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#9FC24D] hover:bg-[#B2D660] text-[#0B0F05] font-bold py-3.5 rounded-lg transition-all duration-200 shadow-[0_0_20px_rgba(159,194,77,0.2)] hover:shadow-[0_0_30px_rgba(159,194,77,0.4)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                "Verify & Login"
+              )}
+            </button>
+            
+            <button 
+                type="button"
+                onClick={() => setStep('email')}
+                className="w-full text-xs text-gray-500 hover:text-white transition-colors mt-2"
+            >
+                Back to Email
+            </button>
+          </form>
+        )}
 
         {/* Footer */}
         <div className="bg-[#060706] py-4 text-center border-t border-white/5">
