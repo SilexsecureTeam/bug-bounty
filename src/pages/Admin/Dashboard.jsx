@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   statsData as initialStatsData, chartData as initialChartData, recentActivity, organizers 
 } from '../../data/dashboardData'; 
-import { fetchAdminDashboardStats, fetchEvents } from '../../adminApi';
+import { fetchAdminDashboardStats, fetchEvents, fetchEventApplicants } from '../../adminApi';
 import sponsor1 from '../../assets/images/sponsor1.png'; // Fallback image
 
 export default function Dashboard() {
@@ -23,7 +23,7 @@ export default function Dashboard() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // Fetch Stats
+        // 1. Fetch Stats
         const statsResponse = await fetchAdminDashboardStats();
         const data = statsResponse.data || {};
 
@@ -39,24 +39,45 @@ export default function Dashboard() {
           } else if (stat.label === "Souvenirs") {
             newValue = data.souvenirCount !== undefined ? data.souvenirCount.toString() : stat.value;
           } else if (stat.label === "Active Events") {
-             // Assuming total events roughly correlates for now or use specific active count if available
              newValue = data.eventCount !== undefined ? data.eventCount.toString() : stat.value;
           }
           return { ...stat, value: newValue };
         });
         setStats(updatedStats);
 
-        // Fetch Events List for "Upcoming Events"
+        // 2. Fetch Events List
         const eventsResponse = await fetchEvents();
         const eventsList = eventsResponse.data || [];
         
         // Sort by date descending (newest first)
         const sortedEvents = eventsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setEvents(sortedEvents.slice(0, 5)); // Take top 5
+        setEvents(sortedEvents.slice(0, 5)); // Take top 5 for the "Upcoming Events" list
 
-        // Mock Chart Data update based on events (optional enhancement)
-        // If we had time-series data from API we would use it here. 
-        // For now, let's keep the mock chart or try to map recent events to it if dates match.
+        // 3. Prepare Chart Data (Top 7 recent events)
+        // We need to fetch attendance count for each to make the chart meaningful
+        const chartEvents = sortedEvents.slice(0, 7).reverse(); // Oldest to newest for chart L-R
+        
+        // Fetch counts in parallel
+        const chartDataPromises = chartEvents.map(async (event) => {
+            try {
+                const applicantsRes = await fetchEventApplicants(event.id);
+                const count = applicantsRes.data ? applicantsRes.data.length : 0;
+                return {
+                    name: event.name.length > 10 ? event.name.substring(0, 10) + '..' : event.name,
+                    value: count,
+                    fullDate: event.created_at
+                };
+            } catch (e) {
+                return { name: event.name, value: 0 };
+            }
+        });
+
+        const newChartData = await Promise.all(chartDataPromises);
+        
+        // Only update chart if we actually got data, otherwise keep initial/mock or show empty
+        if (newChartData.length > 0) {
+            setChartData(newChartData);
+        }
 
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
@@ -103,7 +124,7 @@ export default function Dashboard() {
           {/* CHART SECTION */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold text-white">Attendance Overview <span className="text-sm text-[#545C68]">Recent Activity</span></h2>
+              <h2 className="text-lg font-semibold text-white">Applicants Overview <span className="text-sm text-[#545C68]">(Recent Events)</span></h2>
               <div className="flex items-center gap-2 rounded-lg bg-[#16181A] p-1">
                 {['Today', 'Week', 'Month', 'Year'].map(tab => (
                   <button key={tab} className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${tab === 'Today' ? 'bg-[#9ECB32] text-black' : 'text-[#8D9197] hover:text-white'}`}>
