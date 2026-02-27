@@ -113,13 +113,21 @@ const TShirtNotificationBanner = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const token = getAuthToken();
-    if (!token) {
+    // Hide banner on any admin/subadmin/superadmin/upadmin routes
+    const path = location.pathname;
+    if (
+      path.startsWith("/admin") ||
+      path.startsWith("/superadmin") ||
+      path.startsWith("/subadmin") ||
+      path.startsWith("/upadmin") ||
+      path === "/shirt"
+    ) {
       setVisible(false);
       return;
     }
 
-    if (location.pathname === "/shirt") {
+    const token = getAuthToken();
+    if (!token) {
       setVisible(false);
       return;
     }
