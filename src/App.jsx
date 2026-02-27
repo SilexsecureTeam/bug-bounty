@@ -113,7 +113,6 @@ const TShirtNotificationBanner = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Hide banner on any admin/subadmin/superadmin/upadmin routes
     const path = location.pathname;
     if (
       path.startsWith("/admin") ||
