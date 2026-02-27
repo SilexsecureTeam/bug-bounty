@@ -19,15 +19,13 @@ export default function Dashboard() {
   const [events, setEvents] = useState([]); // Real events list
   const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // 1. Fetch Stats
+        // 1. Fetch Top Stats
         const statsResponse = await fetchAdminDashboardStats();
         const data = statsResponse.data || {};
 
-        // Map Stats
         const updatedStats = initialStatsData.map((stat) => {
           let newValue = stat.value;
           if (stat.label === "Total Events") {
@@ -45,13 +43,29 @@ export default function Dashboard() {
         });
         setStats(updatedStats);
 
-        // 2. Fetch Events List
+        // 2. Fetch Events List for "Upcoming Events"
         const eventsResponse = await fetchEvents();
         const eventsList = eventsResponse.data || [];
+        const now = new Date();
         
-        // Sort by date descending (newest first)
-        const sortedEvents = eventsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setEvents(sortedEvents.slice(0, 5)); // Take top 5 for the "Upcoming Events" list
+        // Filter events that have NOT ended yet and are active
+        const upcomingOrLiveEvents = eventsList.filter(e => {
+            if (e.status !== 'active') return false;
+            if (e.ended_at && new Date(e.ended_at) < now) return false; // Event has ended
+            return true;
+        });
+
+        // Sort so the soonest upcoming events appear first, fallback to newest created
+        upcomingOrLiveEvents.sort((a, b) => {
+            if (a.started_at && b.started_at) {
+                return new Date(a.started_at) - new Date(b.started_at);
+            }
+            if (a.started_at) return -1;
+            if (b.started_at) return 1;
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        setEvents(upcomingOrLiveEvents.slice(0, 5));
 
         // 3. Prepare Chart Data (Top 7 recent events)
         // We need to fetch attendance count for each to make the chart meaningful
