@@ -11,15 +11,16 @@ import {
   statsData as initialStatsData, chartData as initialChartData, recentActivity, organizers 
 } from '../../data/dashboardData'; 
 import { fetchAdminDashboardStats, fetchEvents, fetchEventApplicants } from '../../adminApi';
-import sponsor1 from '../../assets/images/sponsor1.png'; // Fallback image
+import sponsor1 from '../../assets/images/sponsor1.png'; 
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState(initialStatsData);
-  const [events, setEvents] = useState([]); // Real events list
+  const [events, setEvents] = useState([]); // Upcoming/Live events list
   const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
-useEffect(() => {
+
+  useEffect(() => {
     const loadDashboardData = async () => {
       try {
         // 1. Fetch Top Stats
@@ -67,28 +68,31 @@ useEffect(() => {
 
         setEvents(upcomingOrLiveEvents.slice(0, 5));
 
-        // 3. Prepare Chart Data (Top 7 recent events)
-        // We need to fetch attendance count for each to make the chart meaningful
-        const chartEvents = sortedEvents.slice(0, 7).reverse(); // Oldest to newest for chart L-R
+        // 3. Prepare Chart Data (Fetch Applicant Count per Event)
+        // Take the 7 most recently created active events to populate the chart
+        const recentEventsForChart = [...eventsList]
+            .filter(e => e.status === 'active')
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, 7)
+            .reverse(); // Oldest to newest for L-R chart flow
         
-        // Fetch counts in parallel
-        const chartDataPromises = chartEvents.map(async (event) => {
+        // Fetch applicant counts in parallel
+        const chartDataPromises = recentEventsForChart.map(async (event) => {
             try {
                 const applicantsRes = await fetchEventApplicants(event.id);
                 const count = applicantsRes.data ? applicantsRes.data.length : 0;
                 return {
-                    name: event.name.length > 10 ? event.name.substring(0, 10) + '..' : event.name,
-                    value: count,
+                    name: event.name.length > 12 ? event.name.substring(0, 12) + '..' : event.name,
+                    value: count, // Exact applicant count from API
                     fullDate: event.created_at
                 };
             } catch (e) {
-                return { name: event.name, value: 0 };
+                return { name: event.name.substring(0, 12), value: 0 };
             }
         });
 
         const newChartData = await Promise.all(chartDataPromises);
         
-        // Only update chart if we actually got data, otherwise keep initial/mock or show empty
         if (newChartData.length > 0) {
             setChartData(newChartData);
         }
@@ -165,7 +169,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* MIDDLE ROW: ACTIVE EVENT STATUS (Placeholder/Mock) */}
+          {/* MIDDLE ROW: ACTIVE EVENT STATUS (Mock fallback for real-time progress flow) */}
           <div className="rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
              <div className="mb-6 flex items-center justify-between">
                 <span className="rounded-md bg-[#E6E8D8] px-2 py-1 text-xs font-bold text-black">Active Event Status</span>
@@ -296,26 +300,32 @@ useEffect(() => {
           {/* UPCOMING EVENTS (Real Data) */}
           <div className="flex-1 rounded-[32px] border border-[#1F2227] bg-[#0D0F10] p-6">
             <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">Upcoming Events</h3>
+                <h3 className="text-lg font-semibold text-white">Upcoming/Live Events</h3>
                 <span onClick={() => navigate('/admin/events')} className="text-xs text-[#9ECB32] cursor-pointer">View All</span>
              </div>
              <div className="space-y-6">
                 {loading ? (
                     <div className="text-center text-xs text-gray-500">Loading events...</div>
                 ) : events.length > 0 ? (
-                    events.map((event, i) => (
-                      <div key={event.id} className="flex gap-4 group cursor-pointer" onClick={() => navigate(`/admin/attendees/${event.id}`)}>
-                        <img src={sponsor1} alt="Event" className="h-12 w-12 rounded-xl object-cover border border-[#2A2E2A] group-hover:border-[#9ECB32] transition-colors" />
-                        <div>
-                           <h4 className="text-sm font-semibold text-white line-clamp-1 group-hover:text-[#9ECB32] transition-colors">{event.name}</h4>
-                           <p className="text-[10px] font-bold uppercase tracking-wider text-[#545C68]">
-                             DATE: {new Date(event.created_at).toLocaleDateString()}
-                           </p>
+                    events.map((event, i) => {
+                      const displayDate = new Date(event.started_at || event.created_at).toLocaleDateString(undefined, {
+                          year: 'numeric', month: 'short', day: 'numeric'
+                      });
+
+                      return (
+                        <div key={event.id} className="flex gap-4 group cursor-pointer" onClick={() => navigate(`/admin/attendees/${event.id}`)}>
+                          <img src={sponsor1} alt="Event" className="h-12 w-12 rounded-xl object-cover border border-[#2A2E2A] group-hover:border-[#9ECB32] transition-colors" />
+                          <div>
+                             <h4 className="text-sm font-semibold text-white line-clamp-1 group-hover:text-[#9ECB32] transition-colors" title={event.name}>{event.name}</h4>
+                             <p className="text-[10px] font-bold uppercase tracking-wider text-[#545C68]">
+                               {event.started_at ? 'STARTS: ' : 'CREATED: '} {displayDate}
+                             </p>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      )
+                    })
                 ) : (
-                    <div className="text-center text-xs text-gray-500">No upcoming events found.</div>
+                    <div className="text-center text-xs text-gray-500">No active upcoming events found.</div>
                 )}
              </div>
           </div>
