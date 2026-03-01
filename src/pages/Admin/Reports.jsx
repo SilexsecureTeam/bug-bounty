@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Calendar, Users, FileText, ChevronDown, Filter, 
   Search, RefreshCw, ArrowUpRight, ArrowDownRight,
-  Plus, Layers, User, Loader, ChevronLeft
+  Plus, Layers, User, Loader, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
