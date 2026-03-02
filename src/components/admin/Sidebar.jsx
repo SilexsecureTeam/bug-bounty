@@ -17,7 +17,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     const userRole = session?.user?.role?.toLowerCase() || '';
 
     if (userRole === 'volunteer') {
-      // Filter out restricted items for volunteers
       const restrictedPaths = ['/admin/certificates', '/admin/souvenirs', '/admin/payments'];
       
       const newMenu = initialSidebarMenu.map(section => {
