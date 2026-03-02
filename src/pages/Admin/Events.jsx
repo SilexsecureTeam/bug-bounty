@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Filter, ChevronDown, ChevronLeft, ChevronRight,
-  Edit2, Trash2, CheckSquare, Square, MoreVertical, Calendar, Users, Plus, X, Loader
+  Edit2, Trash2, CheckSquare, Square, Calendar, Users, Plus, X, Loader
 } from 'lucide-react';
 import { 
   fetchEvents, 
   createEvent, 
   updateEvent, 
   deleteEvent, 
-  fetchEventAttendance,
-  fetchEventApplicants 
+  fetchEventApplicants,
+  fetchGroups 
 } from '../../adminApi';
 
 export default function Events() {
   // --- STATE MANAGEMENT ---
   const [events, setEvents] = useState([]);
+  const [groups, setGroups] = useState([]); // List of available groups
   const [loading, setLoading] = useState(true);
   const [attendeeCounts, setAttendeeCounts] = useState({}); // Map eventId -> count
 
@@ -32,28 +33,32 @@ export default function Events() {
   const [formData, setFormData] = useState({
     name: "",
     message: "",
-    group_id: "",
+    group_id: "", // Will now store the group ID (e.g. eyJpdi...)
     meeting_id: "",
     signup: "disabled",
     attendance: "disabled",
     status: "active"
   });
 
-  // --- 1. LOAD EVENTS ---
-  const loadEvents = async () => {
+  // --- 1. LOAD INITIAL DATA ---
+  const loadData = async () => {
     setLoading(true);
     try {
-      const res = await fetchEvents();
-      setEvents(res.data || []);
+      const [eventsRes, groupsRes] = await Promise.all([
+          fetchEvents(),
+          fetchGroups()
+      ]);
+      setEvents(eventsRes.data || []);
+      setGroups(groupsRes.data || []);
     } catch (err) {
-      console.error("Failed to fetch events", err);
+      console.error("Failed to fetch data", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadEvents();
+    loadData();
   }, []);
 
   // --- FILTERS & SORTING LOGIC ---
@@ -65,10 +70,10 @@ export default function Events() {
       
       const matchesTab = activeTab === "All" 
         || (activeTab === "Live" && event.status === "active")
-        || (activeTab === "Upcoming" && event.status === "upcoming") // assuming API supports this status
-        || (activeTab === "Completed" && event.status === "completed"); // assuming API supports this status
+        || (activeTab === "Upcoming" && event.status === "upcoming") 
+        || (activeTab === "Completed" && event.status === "completed"); 
       
-      // Fallback: If API only uses 'active'/'block', map 'All' to everything and 'Live' to 'active'
+      // Fallback map 'Live' to 'active'
       const finalTabMatch = activeTab === "All" || (activeTab === "Live" && event.status === 'active');
 
       return matchesSearch && finalTabMatch;
@@ -90,17 +95,15 @@ export default function Events() {
       const newCounts = { ...attendeeCounts };
       let updated = false;
 
-      // Only fetch for events we haven't fetched yet
       const promises = paginatedData.map(async (event) => {
         if (newCounts[event.id] === undefined) {
           try {
-            // Fetch registered applicants count (or attendance if preferred)
             const res = await fetchEventApplicants(event.id);
             const count = res.data ? res.data.length : 0;
             newCounts[event.id] = count;
             updated = true;
           } catch (e) {
-            newCounts[event.id] = "-"; // Error or unavailable
+            newCounts[event.id] = "-"; 
             updated = true;
           }
         }
@@ -156,11 +159,21 @@ export default function Events() {
 
   const openEditModal = (event) => {
     setModalMode('edit');
+    // If the API returns the group name in group_id, we try to map it back to ID for the dropdown.
+    // If it already returns ID, this works seamlessly.
+    let selectedGroupId = event.group_id;
+    
+    // Attempt to find if the group_id string matches a group name, and use its ID
+    const matchedGroup = groups.find(g => g.name === event.group_id);
+    if (matchedGroup) {
+        selectedGroupId = matchedGroup.id;
+    }
+
     setFormData({
       id: event.id,
-      name: event.name,
+      name: event.name || "",
       message: event.message || "",
-      group_id: event.group_id || "",
+      group_id: selectedGroupId || "",
       meeting_id: event.meeting_id || "",
       signup: event.signup || "disabled",
       attendance: event.attendance || "disabled",
@@ -179,7 +192,7 @@ export default function Events() {
         await updateEvent(formData);
       }
       setIsModalOpen(false);
-      loadEvents(); // Refresh list
+      loadData(); // Refresh list to get updated data
     } catch (err) {
       console.error(err);
       alert("Operation failed: " + err.message);
@@ -194,6 +207,13 @@ export default function Events() {
       case 'block': return "text-[#EF4444] bg-[#351313] border border-[#452323]";
       default: return "text-gray-500 border border-gray-800";
     }
+  };
+
+  // Helper to resolve group name from ID for the table display
+  const resolveGroupName = (groupIdOrName) => {
+      if (!groupIdOrName) return "N/A";
+      const group = groups.find(g => g.id === groupIdOrName);
+      return group ? group.name : groupIdOrName;
   };
 
   return (
@@ -336,8 +356,8 @@ export default function Events() {
 
                       {/* Group */}
                       <td className="px-4 py-5">
-                        <span className="text-xs font-mono text-[#9CA3AF] bg-[#1F2227] px-2 py-1 rounded">
-                            {event.group_id || "N/A"}
+                        <span className="text-xs font-mono text-[#9CA3AF] bg-[#1F2227] px-2 py-1 rounded max-w-[150px] truncate block" title={resolveGroupName(event.group_id)}>
+                            {resolveGroupName(event.group_id)}
                         </span>
                       </td>
 
@@ -381,9 +401,9 @@ export default function Events() {
                           <button onClick={() => openEditModal(event)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#45F882] transition-colors">
                             <Edit2 className="h-4 w-4" />
                           </button>
-                          {/* <button onClick={() => handleDelete(event.id)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#D14343] transition-colors">
+                          <button onClick={() => handleDelete(event.id)} className="p-2 rounded-lg text-[#889088] hover:bg-[#2A2E2A] hover:text-[#D14343] transition-colors">
                             <Trash2 className="h-4 w-4" />
-                          </button> */}
+                          </button>
                         </div>
                       </td>
 
@@ -483,14 +503,19 @@ export default function Events() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Group ID</label>
-                                <input 
-                                    type="text" 
+                                <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Group</label>
+                                {/* Changed from input to select */}
+                                <select 
+                                    required
                                     value={formData.group_id}
                                     onChange={(e) => setFormData({...formData, group_id: e.target.value})}
-                                    className="w-full bg-[#16181A] border border-[#2A2E2A] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#9ECB32]"
-                                    placeholder="Group Identifier"
-                                />
+                                    className="w-full bg-[#16181A] border border-[#2A2E2A] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#9ECB32] appearance-none"
+                                >
+                                    <option value="" disabled>Select Group</option>
+                                    {groups.map(group => (
+                                        <option key={group.id} value={group.id}>{group.name}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Meeting ID</label>
