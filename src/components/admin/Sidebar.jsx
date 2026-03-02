@@ -1,18 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LogOut, X } from 'lucide-react'; 
-import { sidebarMenu } from '../../data/dashboardData'; 
-import { Link, useLocation } from 'react-router-dom';
+import { sidebarMenu as initialSidebarMenu } from '../../data/dashboardData'; 
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import defLogo from './Defcomm.svg';
-// 1. Import the logout helper
-import { logoutAdmin } from '../../adminApi'; 
+// 1. Import the logout helper and session getter
+import { logoutAdmin, getAdminSession } from '../../adminApi'; 
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [filteredMenu, setFilteredMenu] = useState(initialSidebarMenu);
+
+  useEffect(() => {
+    // Fetch user session to determine role
+    const session = getAdminSession();
+    const userRole = session?.user?.role?.toLowerCase() || '';
+
+    if (userRole === 'volunteer') {
+      // Filter out restricted items for volunteers
+      const restrictedPaths = ['/admin/certificates', '/admin/souvenirs', '/admin/payments'];
+      
+      const newMenu = initialSidebarMenu.map(section => {
+        // Remove Super Admin section entirely
+        if (section.category === "ADMINISTRATION (SUPER ADMIN)") {
+          return null;
+        }
+
+        // Filter items within the section
+        const filteredItems = section.items.filter(item => !restrictedPaths.includes(item.path));
+        
+        return {
+          ...section,
+          items: filteredItems
+        };
+      }).filter(Boolean); // Remove null sections (like Super Admin)
+
+      setFilteredMenu(newMenu);
+    } else {
+      // If admin or other, show full menu
+      setFilteredMenu(initialSidebarMenu);
+    }
+  }, []);
 
   // 2. Create the handler
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
       logoutAdmin();
+      navigate('/admin/login'); // Ensure redirection
     }
   };
 
@@ -38,7 +72,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
           {/* Menu Items */}
           <div className="custom-scrollbar h-[calc(100vh-180px)] overflow-y-auto px-4 py-4">
-            {sidebarMenu.map((section, idx) => (
+            {filteredMenu.map((section, idx) => (
               <div key={idx} className="mb-6">
                 <h3 className={`mb-3 px-2 text-[10px] font-bold uppercase tracking-wider text-[#545C68] transition-opacity duration-300 ${!isOpen && "lg:opacity-0 lg:hidden"}`}>
                   {section.category}
