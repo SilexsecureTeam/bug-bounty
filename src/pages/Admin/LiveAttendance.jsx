@@ -43,6 +43,9 @@ const StatusBadge = ({ status }) => {
   if (upperStatus === "ACTIVE" || upperStatus === "LIVE NOW") {
     dotColor = "bg-[#22C55E]";
     textColor = "text-[#22C55E]";
+  } else if (upperStatus === "BLOCK" || upperStatus === "BLOCKED") {
+    dotColor = "bg-[#EF4444]";
+    textColor = "text-[#EF4444]";
   } else if (upperStatus === "ENDING SOON") {
     dotColor = "bg-[#EAB308]";
     textColor = "text-[#EAB308]";
@@ -67,6 +70,7 @@ export default function LiveAttendance() {
   const [orgFilter, setOrgFilter] = useState("All");
   const [locFilter, setLocFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All"); 
+  const [statusFilter, setStatusFilter] = useState("active"); // NEW: Default to active
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // State for Pagination
@@ -100,18 +104,14 @@ export default function LiveAttendance() {
   // --- FILTER LOGIC ---
   const filteredData = useMemo(() => {
     return events.filter(event => {
-      // Map API fields to filters
-      // API returns: id, name, message, group_id, signup, attendance, status, created_at
       const orgName = event.group_id || "Unknown";
-      // Location is not in API, strictly speaking, so we might skip loc filter or use a placeholder
-      const location = "Hybrid"; // Defaulting as not provided in example
 
       const matchOrg = orgFilter === "All" || orgName === orgFilter;
-      // const matchLoc = locFilter === "All" || location.includes(locFilter); 
+      const matchStatus = event.status === statusFilter; 
       
-      return matchOrg; // Simplified filter for now
+      return matchOrg && matchStatus; 
     });
-  }, [events, orgFilter, locFilter]);
+  }, [events, orgFilter, locFilter, statusFilter]);
 
   // --- PAGINATION LOGIC ---
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -133,7 +133,7 @@ export default function LiveAttendance() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
           title="Total Active Events" 
-          value={events.length.toString()} 
+          value={events.filter(e => e.status === 'active').length.toString()} 
           icon={Calendar} 
           trend={0} 
           trendLabel="Current count"
@@ -165,6 +165,26 @@ export default function LiveAttendance() {
       {/* 3. FILTER BAR */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
+          {/* Status Tabs */}
+          <div className="flex bg-[#16181A] rounded-lg p-1 border border-[#2A2E2A] mr-4">
+             <button 
+                onClick={() => { setStatusFilter("active"); setCurrentPage(1); }}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${
+                    statusFilter === "active" ? "bg-[#9ECB32] text-black" : "text-gray-400 hover:text-white"
+                }`}
+             >
+                 Active
+             </button>
+             <button 
+                onClick={() => { setStatusFilter("block"); setCurrentPage(1); }}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${
+                    statusFilter === "block" ? "bg-[#EF4444] text-white" : "text-gray-400 hover:text-white"
+                }`}
+             >
+                 Blocked
+             </button>
+          </div>
+
           {/* Org Filter */}
           <div className="relative group">
             <select 
@@ -191,19 +211,6 @@ export default function LiveAttendance() {
               <option value="All">Location: All</option>
               <option value="HALL A">Hall A / Hybrid</option>
               <option value="ONLINE">Online Only</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
-
-          {/* Type Filter (Visual only for mock) */}
-          <div className="relative group">
-            <select 
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="appearance-none bg-[#141613] text-sm text-gray-300 border border-[#2A2E2A] rounded-lg px-4 py-2.5 pr-10 focus:outline-none focus:border-[#4B5563] min-w-[160px]"
-            >
-              <option value="All">Type : Conference</option>
-              <option value="Webinar">Type : Webinar</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
@@ -283,7 +290,7 @@ export default function LiveAttendance() {
               ) : (
                 <tr>
                   <td colSpan="9" className="p-8 text-center text-gray-500 text-sm">
-                    No active events found for these filters.
+                    No events found for these filters.
                   </td>
                 </tr>
               )}
@@ -302,7 +309,7 @@ export default function LiveAttendance() {
               Rows per page:
               <select 
                 value={rowsPerPage}
-                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}
                 className="bg-transparent border-none text-white focus:outline-none cursor-pointer"
               >
                 <option value={5}>5</option>
