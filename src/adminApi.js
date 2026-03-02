@@ -380,3 +380,9 @@ export async function updateNotification(formData) {
 export async function deleteNotification(id) {
   return adminRequest(`/admin/notification/delete/${id}`);
 }
+
+
+// --- Group Management APIs ---
+export async function fetchGroups() {
+  return adminRequest("/admin/group");
+}
