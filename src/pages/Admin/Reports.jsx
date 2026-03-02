@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Calendar, Users, FileText, ChevronDown, Filter, 
   Search, RefreshCw, ArrowUpRight, ArrowDownRight,
-  Plus, Layers, User, Loader, ChevronLeft, ChevronRight 
+  Plus, Layers, User, Loader, ChevronLeft, ChevronRight // Added missing imports
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -24,13 +24,13 @@ const CustomTooltip = ({ active, payload, label }) => {
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-[#2A2E2A]"></span>
           <span className="text-gray-400 text-[10px]">
-            Capacity/Expected: <span className="text-white font-mono">{payload[0].value}</span>
+            Expected (Applicants): <span className="text-white font-mono">{payload[0].value}</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#9ECB32]"></span>
           <span className="text-gray-400 text-[10px]">
-            Turnout: <span className="text-white font-mono">{payload[1]?.value}</span>
+            Turnout (Present): <span className="text-white font-mono">{payload[1]?.value}</span>
           </span>
         </div>
       </div>
@@ -48,6 +48,11 @@ export default function ReportsManagement() {
   const [events, setEvents] = useState([]);
   const [eventStats, setEventStats] = useState({}); // Map of eventId -> { applicants, attendance }
   const [dashboardStats, setDashboardStats] = useState({});
+
+  // --- FILTER STATES ---
+  const [dateFilter, setDateFilter] = useState("all"); // '30', '90', 'year', 'all'
+  const [eventFilter, setEventFilter] = useState("all"); // event id or 'all'
+  const [orgFilter, setOrgFilter] = useState("all"); // group_id or 'all'
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,9 +73,7 @@ export default function ReportsManagement() {
       allEvents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setEvents(allEvents);
 
-      // To avoid massive parallel requests on huge datasets, we fetch stats for the top recent events 
-      // or visible events. For a complete "Report", we really should fetch all, but let's do all for now
-      // and batch them if needed. Assuming < 50 events for now based on context.
+      // Fetch stats for all events
       const statsMap = {};
       const promises = allEvents.map(async (ev) => {
           try {
@@ -101,15 +104,46 @@ export default function ReportsManagement() {
     loadData();
   }, []);
 
-  // --- DERIVED DATA ---
+  // --- FILTERING LOGIC ---
+  const masterFilteredEvents = useMemo(() => {
+    const now = new Date();
+    
+    return events.filter(ev => {
+        // 1. Date Filter
+        let dateMatch = true;
+        const evDate = new Date(ev.created_at);
+        if (dateFilter === '30') {
+            const diffTime = Math.abs(now - evDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            dateMatch = diffDays <= 30;
+        } else if (dateFilter === '90') {
+            const diffTime = Math.abs(now - evDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            dateMatch = diffDays <= 90;
+        } else if (dateFilter === 'year') {
+            dateMatch = evDate.getFullYear() === now.getFullYear();
+        }
+
+        // 2. Event Match
+        const eventMatch = eventFilter === 'all' || String(ev.id) === eventFilter;
+
+        // 3. Organiser Match
+        const orgMatch = orgFilter === 'all' || ev.group_id === orgFilter;
+
+        return dateMatch && eventMatch && orgMatch;
+    });
+  }, [events, dateFilter, eventFilter, orgFilter]);
+
+
+  // --- DERIVED DATA BASED ON FILTERS ---
 
   // Aggregate Stats
-  const totalApplicants = Object.values(eventStats).reduce((acc, curr) => acc + curr.applicants, 0);
-  const totalAttendance = Object.values(eventStats).reduce((acc, curr) => acc + curr.attendance, 0);
-  const avgAttendance = events.length > 0 ? Math.round(totalAttendance / events.length) : 0;
+  const totalApplicants = masterFilteredEvents.reduce((acc, curr) => acc + (eventStats[curr.id]?.applicants || 0), 0);
+  const totalAttendance = masterFilteredEvents.reduce((acc, curr) => acc + (eventStats[curr.id]?.attendance || 0), 0);
+  const avgAttendance = masterFilteredEvents.length > 0 ? Math.round(totalAttendance / masterFilteredEvents.length) : 0;
   const overallCompliance = totalApplicants > 0 ? Math.round((totalAttendance / totalApplicants) * 100) : 0;
 
-  // Chart Data (Activity by Month)
+  // Chart Data (Activity by Month based on filtered events)
   const activityData = useMemo(() => {
     const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     const currentYear = new Date().getFullYear();
@@ -117,9 +151,10 @@ export default function ReportsManagement() {
     // Initialize array
     const data = months.map(m => ({ name: m, capacity: 0, turnout: 0 }));
 
-    events.forEach(ev => {
+    masterFilteredEvents.forEach(ev => {
         const date = new Date(ev.created_at);
-        if (date.getFullYear() === currentYear) { // Only current year
+        // Only map if it falls within the current year for the chart context
+        if (date.getFullYear() === currentYear) { 
             const monthIdx = date.getMonth();
             const stats = eventStats[ev.id] || { applicants: 0, attendance: 0 };
             data[monthIdx].capacity += stats.applicants;
@@ -128,12 +163,12 @@ export default function ReportsManagement() {
     });
 
     return data;
-  }, [events, eventStats]);
+  }, [masterFilteredEvents, eventStats]);
 
-  // Organiser Data
+  // Organiser Data (Based on filtered events)
   const organiserData = useMemo(() => {
       const orgMap = {};
-      events.forEach(ev => {
+      masterFilteredEvents.forEach(ev => {
           const org = ev.group_id || "Independent";
           if (!orgMap[org]) orgMap[org] = { name: org, events: 0, totalAtt: 0, totalApp: 0 };
           
@@ -148,24 +183,30 @@ export default function ReportsManagement() {
           avg: Math.round(org.totalAtt / org.events),
           compliance: org.totalApp > 0 ? `${Math.round((org.totalAtt / org.totalApp) * 100)}%` : '0%'
       })).sort((a, b) => b.events - a.events).slice(0, 6); // Top 6
-  }, [events, eventStats]);
+  }, [masterFilteredEvents, eventStats]);
 
-  // Pie Chart Data (Mocking certificate breakdown based on dashboard stats if available, else attendance compliance)
+  // Pie Chart Data
   const complianceData = [
     { name: 'Approved (Present)', value: totalAttendance || 1, color: '#9ECB32' },
     { name: 'Pending/Absent', value: Math.max(totalApplicants - totalAttendance, 0) || 1, color: '#EAB308' },
   ];
 
-  // Table Filter & Pagination
-  const filteredEvents = useMemo(() => {
-      return events.filter(e => e.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [events, searchTerm]);
+  // Table Filter (Search) & Pagination
+  const searchedEvents = useMemo(() => {
+      return masterFilteredEvents.filter(e => e.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [masterFilteredEvents, searchTerm]);
 
-  const totalPages = Math.ceil(filteredEvents.length / rowsPerPage);
-  const paginatedData = filteredEvents.slice(
+  const totalPages = Math.ceil(searchedEvents.length / rowsPerPage);
+  const paginatedData = searchedEvents.slice(
       (currentPage - 1) * rowsPerPage,
       currentPage * rowsPerPage
   );
+
+  // Extract unique organisers for filter dropdown
+  const uniqueOrganisers = useMemo(() => {
+      const orgs = new Set(events.map(e => e.group_id).filter(Boolean));
+      return Array.from(orgs);
+  }, [events]);
 
 
   return (
@@ -186,11 +227,64 @@ export default function ReportsManagement() {
         </button>
       </div>
 
+      {/* 2. FILTERS */}
+      <div className="flex flex-wrap items-center gap-3 mb-8">
+        
+        {/* Date Filter */}
+        <div className="relative group">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><Calendar size={14} /></div>
+            <select 
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="appearance-none bg-[#141613] border border-[#2A2E2A] rounded-full py-2 pl-10 pr-10 text-xs font-bold text-gray-300 hover:border-[#9ECB32] focus:outline-none focus:border-[#9ECB32] transition-colors cursor-pointer"
+            >
+                <option value="all">All Time</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+                <option value="year">This Year</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><ChevronDown size={14} /></div>
+        </div>
+
+        {/* Events Filter */}
+        <div className="relative group min-w-[150px]">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><Layers size={14} /></div>
+            <select 
+                value={eventFilter}
+                onChange={(e) => setEventFilter(e.target.value)}
+                className="appearance-none w-full bg-[#141613] border border-[#2A2E2A] rounded-full py-2 pl-10 pr-10 text-xs font-bold text-gray-300 hover:border-[#9ECB32] focus:outline-none focus:border-[#9ECB32] transition-colors cursor-pointer"
+            >
+                <option value="all">All Events</option>
+                {events.map(ev => (
+                    <option key={ev.id} value={ev.id}>{ev.name.length > 20 ? ev.name.substring(0,20)+'...' : ev.name}</option>
+                ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><ChevronDown size={14} /></div>
+        </div>
+
+        {/* Organiser Filter */}
+        <div className="relative group min-w-[160px]">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><Users size={14} /></div>
+            <select 
+                value={orgFilter}
+                onChange={(e) => setOrgFilter(e.target.value)}
+                className="appearance-none w-full bg-[#141613] border border-[#2A2E2A] rounded-full py-2 pl-10 pr-10 text-xs font-bold text-gray-300 hover:border-[#9ECB32] focus:outline-none focus:border-[#9ECB32] transition-colors cursor-pointer"
+            >
+                <option value="all">All Organisers</option>
+                {uniqueOrganisers.map(org => (
+                    <option key={org} value={org}>{org}</option>
+                ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><ChevronDown size={14} /></div>
+        </div>
+
+      </div>
+
       {/* 3. STATS CARDS */}
       <div className="flex flex-col lg:flex-row gap-4 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
           {[
-            { title: "Total Events", val: dashboardStats.eventCount || events.length, sub: "Active records", trend: "neutral", icon: Calendar },
+            { title: "Filtered Events", val: masterFilteredEvents.length, sub: "Active records", trend: "neutral", icon: Calendar },
             { title: "Total Attendance", val: totalAttendance.toLocaleString(), sub: `${totalApplicants} registered`, trend: "up", icon: Users },
             { title: "Avg Attendance", val: avgAttendance.toLocaleString(), sub: "Per event", trend: "neutral", icon: Layers },
             { title: "Certificates Issd.", val: dashboardStats.certificateCount || 0, sub: `${overallCompliance}% Turnout rate`, trend: "up", icon: FileText },
@@ -225,9 +319,6 @@ export default function ReportsManagement() {
         <div className="lg:col-span-2 bg-[#141613] border border-[#2A2E2A] p-6 rounded-2xl flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-white font-bold">Activity This Year</h3>
-            <button className="flex items-center gap-1 text-xs text-[#9ECB32] font-bold">
-              Month <ChevronDown size={14} />
-            </button>
           </div>
           
           <div className="flex items-center gap-4 text-[10px] text-gray-400 mb-4">
@@ -309,7 +400,7 @@ export default function ReportsManagement() {
                     <span className={`w-1 h-3 rounded-full ${item.color}`}></span>
                     {item.label}
                  </div>
-                 <span className="font-bold text-white">{loading ? "..." : item.val}</span>
+                 <span className="font-bold text-white">{loading ? "..." : item.val.toLocaleString()}</span>
               </div>
             ))}
             {/* Progress Bar Visual */}
@@ -326,7 +417,7 @@ export default function ReportsManagement() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-lg font-bold text-white">Event Performance Breakdown</h2>
-            <p className="text-xs text-gray-500">Detailed analysis per event Instance</p>
+            <p className="text-xs text-gray-500">Detailed analysis per event Instance based on filters</p>
           </div>
           <div className="flex items-center gap-2">
              <div className="relative">
@@ -335,7 +426,7 @@ export default function ReportsManagement() {
                  type="text" 
                  placeholder="Search events" 
                  value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)}
+                 onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);}}
                  className="bg-[#141613] border border-[#2A2E2A] rounded-lg py-2 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-[#9ECB32] w-48" 
                />
              </div>
@@ -387,7 +478,7 @@ export default function ReportsManagement() {
                     )
                   })
                 ) : (
-                    <tr><td colSpan="7" className="p-8 text-center text-gray-500 text-xs">No events found.</td></tr>
+                    <tr><td colSpan="7" className="p-8 text-center text-gray-500 text-xs">No events found matching your criteria.</td></tr>
                 )}
               </tbody>
             </table>
@@ -395,7 +486,7 @@ export default function ReportsManagement() {
           {/* Pagination */}
           <div className="flex justify-between items-center p-4 bg-[#141613] border-t border-[#2A2E2A]">
              <div className="text-xs text-gray-500">
-                 {paginatedData.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} - {Math.min(currentPage * rowsPerPage, filteredEvents.length)} of {filteredEvents.length}
+                 {paginatedData.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} - {Math.min(currentPage * rowsPerPage, searchedEvents.length)} of {searchedEvents.length}
              </div>
              <div className="flex gap-2">
                <button 
@@ -425,7 +516,7 @@ export default function ReportsManagement() {
            <div className="flex justify-between items-center mb-4">
               <div>
                 <h3 className="text-base font-bold text-white">Organiser Summary</h3>
-                <p className="text-[10px] text-gray-500">Real-time tracking of events hosted</p>
+                <p className="text-[10px] text-gray-500">Filtered tracking of events hosted</p>
               </div>
            </div>
            
@@ -452,12 +543,15 @@ export default function ReportsManagement() {
                       <td className="py-3 text-[#9ECB32] font-bold">{item.compliance}</td>
                     </tr>
                   ))}
+                  {organiserData.length === 0 && !loading && (
+                      <tr><td colSpan="5" className="py-4 text-center text-gray-500 text-xs">No organiser data available.</td></tr>
+                  )}
                 </tbody>
              </table>
            </div>
         </div>
 
-        {/* Operational Insights (Static/Calculated suggestions) */}
+        {/* Operational Insights */}
         <div className="bg-[#141613] border border-[#2A2E2A] rounded-2xl p-6 flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-base font-bold text-white">System Insights</h3>
@@ -467,7 +561,7 @@ export default function ReportsManagement() {
                <div className="bg-[#1A1D1A] border border-[#2A2E2A] p-4 rounded-xl hover:border-[#9ECB32]/50 transition-colors">
                  <h4 className="text-xs font-bold text-[#9ECB32] mb-1">Overall Turnout</h4>
                  <p className="text-[10px] text-gray-400 leading-relaxed">
-                     Across all tracked events, the average system turnout (conversion from applicant to present) is {overallCompliance}%. 
+                     Across the {masterFilteredEvents.length} filtered events, the average system turnout (conversion from applicant to present) is {overallCompliance}%. 
                      {overallCompliance < 50 ? " Consider improving engagement or reminder communications." : " This indicates healthy engagement."}
                  </p>
                </div>
@@ -475,14 +569,14 @@ export default function ReportsManagement() {
                <div className="bg-[#1A1D1A] border border-[#2A2E2A] p-4 rounded-xl hover:border-[#9ECB32]/50 transition-colors">
                  <h4 className="text-xs font-bold text-[#9ECB32] mb-1">Event Volume</h4>
                  <p className="text-[10px] text-gray-400 leading-relaxed">
-                     A total of {events.length} events are currently managed in the system, organized by {organiserData.length} distinct groups.
+                     A total of {masterFilteredEvents.length} events match your current filters, organized by {organiserData.length} distinct groups within this view.
                  </p>
                </div>
 
                <div className="bg-[#1A1D1A] border border-[#2A2E2A] p-4 rounded-xl hover:border-[#9ECB32]/50 transition-colors">
-                 <h4 className="text-xs font-bold text-[#9ECB32] mb-1">Top Organiser</h4>
+                 <h4 className="text-xs font-bold text-[#9ECB32] mb-1">Top Organiser in View</h4>
                  <p className="text-[10px] text-gray-400 leading-relaxed">
-                     {organiserData[0]?.name || "N/A"} leads with the highest number of events ({organiserData[0]?.events || 0}) configured on the platform.
+                     {organiserData[0]?.name || "N/A"} leads with the highest number of events ({organiserData[0]?.events || 0}) within the selected parameters.
                  </p>
                </div>
           </div>
