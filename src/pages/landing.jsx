@@ -43,6 +43,7 @@ import keynote8 from "../assets/images/keynote8.png";
 import keynote9 from "../assets/images/keynote9.png";
 import keynote10 from "../assets/images/keynote10.png";
 import keynote11 from "../assets/images/keynote11.png";
+import keynote12 from "../assets/images/keynote12.png";
 
 const sponsors = [
   { id: 1, img: sponsor3, link: "#" },
@@ -177,6 +178,13 @@ const speakerCards = [
     name: "Patricia Eromosele",
     image: keynote8,
     role: "Director  \nGlobal Anti-Scam Alliance (GASA) Africa Chapter",
+    // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
+  },
+  {
+    type: "text",
+    name: "Jane Egerton-Idehen",
+    image: keynote12,
+    role: "MD/CEO  \nNIGCOMSAT",
     // text: "Senior Engineer, Artificial Intelligence and Embedded Systems",
   },
   {
