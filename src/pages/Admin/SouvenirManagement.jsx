@@ -70,6 +70,9 @@ export default function SouvenirManagement() {
   const [redemptionLogs, setRedemptionLogs] = useState([]);
   const [selectedSouvenir, setSelectedSouvenir] = useState(null);
 
+  // Filter State for Logs
+  const [logSearchTerm, setLogSearchTerm] = useState("");
+
   // UI State
   const [loadingInventory, setLoadingInventory] = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(false);
@@ -78,8 +81,6 @@ export default function SouvenirManagement() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
-  // For Create: name, image, status, form_id (quantity not needed for create per instruction)
-  // For Update: id, name, image, status, quantity (maybe allowed?)
   const [formData, setFormData] = useState({ name: '', status: 'active', quantity: '' });
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -110,6 +111,7 @@ export default function SouvenirManagement() {
       setInventory(res.data || []);
       setRedemptionLogs([]);
       setSelectedSouvenir(null);
+      setLogSearchTerm(""); // Reset search when changing events
     } catch (err) {
       console.error("Failed to load souvenirs", err);
       setInventory([]);
@@ -127,6 +129,7 @@ export default function SouvenirManagement() {
   const handleViewLogs = async (item) => {
     setSelectedSouvenir(item);
     setLoadingLogs(true);
+    setLogSearchTerm(""); // Reset search when viewing new logs
     try {
       const res = await fetchSouvenirApplicants(item.id);
       setRedemptionLogs(res.data?.applicants || []);
@@ -177,7 +180,6 @@ export default function SouvenirManagement() {
 
   const openEditModal = (item) => {
     setModalMode('edit');
-    // Assuming quantity might be relevant for update or display
     setFormData({ id: item.id, name: item.name, status: item.status, quantity: item.quantity || '' });
     setFile(null);
     setIsModalOpen(true);
@@ -191,21 +193,14 @@ export default function SouvenirManagement() {
     data.append('name', formData.name);
     data.append('status', formData.status);
     
-    // API Spec Update: 
-    // Create: name, image, status, form_id (NO quantity, NO template param name - use 'image')
-    // Update: id, name, image, status, quantity (maybe?) - Keeping consistent with create for now unless specified otherwise
-    
     if (modalMode === 'create') {
         data.append('form_id', selectedEventId);
-        // data.append('quantity') -> Instruction says no quantity for create
     } else {
         data.append('id', formData.id);
         if(formData.quantity) data.append('quantity', formData.quantity);
     }
 
     if (file) {
-        // Renaming 'template' to 'image' as per "the fields to pass to the api is name,image..."
-        // If the backend strictly needs 'image' as key for file
         data.append('image', file); 
     }
 
@@ -229,6 +224,15 @@ export default function SouvenirManagement() {
   const totalItems = inventory.length; 
   const logsCollected = redemptionLogs.filter(l => l.is_collected).length;
   const totalLogs = redemptionLogs.length;
+
+  // --- Filtered Logs ---
+  const filteredLogs = redemptionLogs.filter(log => {
+      if (!logSearchTerm) return true;
+      const searchLower = logSearchTerm.toLowerCase();
+      const nameMatch = log.name && log.name.toLowerCase().includes(searchLower);
+      const emailMatch = log.email && log.email.toLowerCase().includes(searchLower);
+      return nameMatch || emailMatch;
+  });
 
   return (
     <div className="min-h-screen bg-[#060706] text-white p-6 font-sans pb-20 relative">
@@ -377,22 +381,34 @@ export default function SouvenirManagement() {
       {/* 4. SECTION: REDEMPTION LOGS */}
       {selectedSouvenir && (
         <div className="animate-fade-in-up">
-            <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-white">
-                Redemption Logs for: <span className="text-[#9ECB32]">{selectedSouvenir.name}</span>
-            </h2>
-            <div className="flex gap-2">
-                <button className="p-2 border border-[#2A2E2A] bg-[#141613] rounded-lg text-[#9ECB32] hover:bg-[#1F221F]">
-                <Download size={18} />
-                </button>
-            </div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+              <h2 className="text-lg font-bold text-white">
+                  Redemption Logs for: <span className="text-[#9ECB32]">{selectedSouvenir.name}</span>
+              </h2>
+              
+              {/* Added Search Input for Logs */}
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                  <div className="relative w-full md:w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <input 
+                          type="text" 
+                          placeholder="Search applicant name..." 
+                          value={logSearchTerm}
+                          onChange={(e) => setLogSearchTerm(e.target.value)}
+                          className="w-full h-9 bg-[#141613] border border-[#2A2E2A] rounded-lg pl-9 pr-4 text-xs text-white focus:outline-none focus:border-[#9ECB32]"
+                      />
+                  </div>
+                  <button className="p-2 border border-[#2A2E2A] bg-[#141613] rounded-lg text-[#9ECB32] hover:bg-[#1F221F]">
+                    <Download size={18} />
+                  </button>
+              </div>
             </div>
 
-            <div className="bg-[#141613] border border-[#2A2E2A] rounded-xl overflow-hidden min-h-[200px]">
+            <div className="bg-[#141613] border border-[#2A2E2A] rounded-xl overflow-hidden min-h-[200px] max-h-[500px] overflow-y-auto">
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                <thead>
-                    <tr className="bg-[#1F221F] border-b border-[#2A2E2A]">
+                <thead className="sticky top-0 z-10 bg-[#1F221F]">
+                    <tr className="border-b border-[#2A2E2A]">
                     <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest w-16 text-center">#</th>
                     <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Attendee Name</th>
                     <th className="py-4 px-6 text-[10px] font-bold uppercase text-[#9CA3AF] tracking-widest">Email</th>
@@ -403,8 +419,8 @@ export default function SouvenirManagement() {
                 <tbody className="divide-y divide-[#2A2E2A]">
                     {loadingLogs ? (
                         <tr><td colSpan="5" className="p-8 text-center text-gray-500">Loading logs...</td></tr>
-                    ) : redemptionLogs.length > 0 ? (
-                        redemptionLogs.map((item, index) => (
+                    ) : filteredLogs.length > 0 ? (
+                        filteredLogs.map((item, index) => (
                         <tr key={item.id} className="hover:bg-[#1A1D1A] transition-colors group">
                             <td className="py-4 px-6 text-xs text-gray-500 text-center">{index + 1}</td>
                             <td className="py-4 px-6 font-medium text-white">{item.name}</td>
@@ -434,7 +450,7 @@ export default function SouvenirManagement() {
                         </tr>
                         ))
                     ) : (
-                        <tr><td colSpan="5" className="p-8 text-center text-gray-500">No applicants found for this item.</td></tr>
+                        <tr><td colSpan="5" className="p-8 text-center text-gray-500">No applicants found matching your search.</td></tr>
                     )}
                 </tbody>
                 </table>
