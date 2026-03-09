@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom"; // 1. Import useLocation
 import Defcomm from "../assets/images/AFD.svg";
-import { HiMenu, HiX } from "react-icons/hi"; 
+import { HiMenu, HiX } from "react-icons/hi";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,9 +13,9 @@ export default function Navbar() {
     { name: "About", to: "/about" },
     { name: "Programme", to: "/program" },
     { name: "Highlights", to: "/highlights" },
-    { name: "Contact", to: "/contact" },
+    { name: "Gallery", to: "/gallery" },
     { name: "Leaderboard", to: "/leaderboard" },
-    { name: "Login", to: "/signin" },
+    { name: "Contact", to: "/contact" },
   ];
 
   const homeNavigate = () => {
@@ -52,7 +52,9 @@ export default function Navbar() {
                     // 4. Use isActive to determine the border radius
                     borderRadius: isActive ? "20px" : "6px",
                     // 5. Use isActive to apply the border
-                    border: isActive ? "1px solid white" : "1px solid transparent", 
+                    border: isActive
+                      ? "1px solid white"
+                      : "1px solid transparent",
                   }}
                 >
                   {item.name}
@@ -88,16 +90,18 @@ export default function Navbar() {
         } transition-transform duration-300 ease-in-out flex flex-col items-center justify-center space-y-6 z-40`}
       >
         {navItems.map((item) => {
-           // Optional: You can add active styling for mobile here too if you want
-           const isActive = location.pathname === item.to;
-           
-           return item.to ? (
+          // Optional: You can add active styling for mobile here too if you want
+          const isActive = location.pathname === item.to;
+
+          return item.to ? (
             <Link
               key={item.name}
               to={item.to}
               onClick={() => setMobileMenuOpen(false)}
               className={`text-xl font-semibold transition-colors duration-200 ${
-                  isActive ? "text-[#F7FAEE] underline" : "text-white hover:text-[#F7FAEE]"
+                isActive
+                  ? "text-[#F7FAEE] underline"
+                  : "text-white hover:text-[#F7FAEE]"
               }`}
             >
               {item.name}
