@@ -6,8 +6,8 @@ import { AlertTriangle, Shirt, X } from "lucide-react";
 
 // Public & User Pages
 import Landing from "./pages/landing";
-import RegisterSelection from "./pages/register-selection";
-import Register from "./pages/register";
+// import RegisterSelection from "./pages/register-selection";
+// import Register from "./pages/register";
 import SignIn from "./pages/signin";
 import OtpVerification from "./pages/otp";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -27,8 +27,8 @@ import Contact from "./pages/contact";
 import Terms from "./pages/Terms";
 import Term from "./pages/Term";
 import Engagement from "./pages/Engagement";
-import HomepageRegisterModal from "./components/HomepageRegisterModal";
-import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
+// import HomepageRegisterModal from "./components/HomepageRegisterModal";
+// import HomepageRegistrationBanner from "./components/HomepageRegistrationBanner";
 
 // Admin Imports
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
@@ -219,8 +219,8 @@ export default function App() {
       <DebugOverlay />
 
       <TShirtNotificationBanner />
-      <HomepageRegisterModal />
-      <HomepageRegistrationBanner />
+      {/* <HomepageRegisterModal /> */}
+      {/* <HomepageRegistrationBanner /> */}
 
       {!shouldHideNavbar && <Navbar />}
 
@@ -232,8 +232,8 @@ export default function App() {
           <Route path="/highlights" element={<Highlights />} />
           <Route path="/program" element={<Program />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/register" element={<RegisterSelection />} />
-          <Route path="/register/create" element={<Register />} />
+          {/* <Route path="/register" element={<RegisterSelection />} /> */}
+          {/* <Route path="/register/create" element={<Register />} /> */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/otp" element={<OtpVerification />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -304,7 +304,10 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="events" element={<AdminEvents />} />
               <Route path="attendance" element={<LiveAttendance />} />
-              <Route path="attendees/:id" element={<EventAttendanceDetails />} />
+              <Route
+                path="attendees/:id"
+                element={<EventAttendanceDetails />}
+              />
               <Route path="attendees" element={<EventAttendanceDetails />} />
               <Route path="certificates" element={<Certificates />} />
               <Route path="souvenirs" element={<SouvenirManagement />} />
