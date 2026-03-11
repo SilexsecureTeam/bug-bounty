@@ -1,150 +1,190 @@
-import React, { useState } from 'react';
-import { Ban, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Users, Image as ImageIcon, Loader, AlignLeft } from 'lucide-react';
+import { createGroup, updateGroup } from '../../adminApi';
 
-const GroupModal = ({ isOpen, onClose, group }) => {
-  const [activeTab, setActiveTab] = useState('OVERVIEW');
-  const [toggles, setToggles] = useState({
-    threat: true,
-    firewall: false,
-    comms: true
+export default function GroupModal({ isOpen, onClose, group, onSuccess }) {
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
   });
+
+  const isEditMode = !!group;
+
+  useEffect(() => {
+    if (isOpen) {
+      if (group) {
+        setFormData({
+          name: group.name || '',
+          description: group.decription || group.description || '', // Note API returns 'decription'
+        });
+      } else {
+        setFormData({ name: '', description: '' });
+      }
+      setFile(null);
+    }
+  }, [group, isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const payload = new FormData();
+      payload.append('name', formData.name);
+      payload.append('description', formData.description); // Adjust if API strictly expects 'decription'
+      
+      // Add 'decription' just in case of API typo consistency
+      payload.append('decription', formData.description); 
+
+      if (file) {
+          payload.append('avatar', file);
+      }
+
+      if (isEditMode) {
+          payload.append('id', group.id);
+          await updateGroup(payload);
+      } else {
+          await createGroup(payload);
+      }
+
+      if (onSuccess) onSuccess();
+      
+    } catch (error) {
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} group: ` + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
-  const handleToggle = (key) => {
-    setToggles(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const tabs = ['OVERVIEW', 'MEMBERS', 'SERVICE', 'ACTIVITY'];
-
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
       <div 
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
         onClick={onClose}
       />
       
-      {/* Drawer Content */}
-      <div className="relative bg-white w-full max-w-md h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-300">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="px-8 pt-8 pb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-500 tracking-wider">GROUP DETAILS</span>
-            <button className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-800 transition-colors">
-              <Ban className="w-4 h-4" />
-              DEACTIVATE
-            </button>
-          </div>
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold text-gray-800">{group?.name || 'Cyber Intel'}</h2>
-            {/* Mobile close button (visible only on small screens) */}
-            <button onClick={onClose} className="p-2 sm:hidden hover:bg-gray-100 rounded-full text-gray-500">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="px-8 border-b border-gray-200 flex gap-6">
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-xs font-bold tracking-wider transition-colors relative ${
-                activeTab === tab ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              {tab}
-              {activeTab === tab && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#759C2A]" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-8">
-          
-          {/* Enterprise Services */}
+        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 shrink-0">
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-[11px] font-bold text-gray-500 tracking-wider uppercase">Enterprise Services</h4>
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Inherited Access</span>
-            </div>
-            
-            <div className="space-y-3">
-              {[
-                { id: 'threat', name: 'Global Threat Analytics', members: 15 },
-                { id: 'firewall', name: 'Firewall Controller (Level 4)', members: 15 },
-                { id: 'comms', name: 'Internal Comms Hub', members: 15 },
-              ].map((service) => (
-                <div 
-                  key={service.id} 
-                  className={`flex items-center justify-between p-4 rounded-xl transition-colors border ${
-                    toggles[service.id] ? 'bg-[#F2F7E9] border-[#EAF3D8]' : 'bg-gray-50 border-gray-100'
-                  }`}
-                >
-                  <div>
-                    <h5 className="text-sm font-bold text-gray-800">{service.name}</h5>
-                    <p className="text-xs text-gray-500 mt-0.5">Affects {service.members} members</p>
-                  </div>
-                  <button 
-                    onClick={() => handleToggle(service.id)}
-                    className={`w-11 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${
-                      toggles[service.id] ? 'bg-[#4A5D23]' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 shadow-sm ${
-                      toggles[service.id] ? 'translate-x-5' : 'translate-x-0'
-                    }`} />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {isEditMode ? 'Edit Group' : 'Create New Group'}
+            </h2>
+            <p className="text-xs text-gray-500 mt-1">
+              {isEditMode ? 'Update group details and avatar' : 'Set up a new operational group'}
+            </p>
           </div>
-
-          {/* Group Activity Log */}
-          <div>
-            <h4 className="text-[11px] font-bold text-gray-500 tracking-wider uppercase mb-5">Group Activity Log</h4>
-            <div className="relative border-l-2 border-gray-100 ml-2 space-y-6 pb-4">
-              {[
-                { title: 'Service Enabled: Global Threat Analytics', time: '2023-11-24 13:31', user: 'Admin EBI', active: true },
-                { title: 'Member Added: Sarah Jenkins (ID-992)', time: '2023-11-20 08:32', user: 'Automated Sync', active: false },
-                { title: 'Group Created: Cyber Intel', time: '2023-11-15 08:08', user: 'System', active: false },
-              ].map((log, i) => (
-                <div key={i} className="relative pl-6">
-                  <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-4 border-white ${
-                    log.active ? 'bg-[#759C2A]' : 'bg-gray-200'
-                  }`}></div>
-                  <p className="text-xs font-bold text-gray-800">{log.title}</p>
-                  <p className="text-[10px] text-gray-500 font-medium mt-0.5">
-                    {log.time} — by {log.user}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-
-        {/* Sticky Footer Actions */}
-        <div className="p-6 border-t border-gray-200 bg-white flex gap-4">
           <button 
             onClick={onClose}
-            className="flex-1 py-3.5 bg-white border border-gray-300 text-gray-700 rounded-xl font-bold text-xs tracking-wider hover:bg-gray-50 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
           >
-            CLOSE
+            <X className="w-5 h-5" />
           </button>
-          <button className="flex-1 py-3.5 bg-[#4A5D23] text-white rounded-xl font-bold text-xs tracking-wider hover:bg-[#3E4F1E] transition-colors shadow-sm">
-            APPLY CHANGES
-          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 overflow-y-auto flex-1">
+          <form id="group-form" onSubmit={handleSubmit} className="space-y-5">
+            
+            {/* Avatar Upload */}
+            <div className="flex flex-col items-center justify-center mb-2">
+               <div 
+                  onClick={() => fileInputRef.current.click()}
+                  className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-300 hover:border-[#759C2A] bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden transition-colors group relative"
+               >
+                   {file ? (
+                       <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover" />
+                   ) : group?.avatar ? (
+                       <img src={group.avatar} alt="Current" className="w-full h-full object-cover" />
+                   ) : (
+                       <ImageIcon className="w-8 h-8 text-gray-400 group-hover:text-[#759C2A] transition-colors" />
+                   )}
+                   
+                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                       <span className="text-[10px] font-bold text-white uppercase tracking-wider">Upload</span>
+                   </div>
+               </div>
+               <p className="text-[10px] text-gray-400 mt-2 font-medium uppercase">Group Avatar (Optional)</p>
+               <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files[0])}
+               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                Group Name
+              </label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="text" 
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 focus:border-[#759C2A] transition-all"
+                  placeholder="e.g., Cyber Intel"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                Description / Function
+              </label>
+              <div className="relative">
+                <AlignLeft className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <textarea 
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 focus:border-[#759C2A] transition-all min-h-[100px] resize-none"
+                  placeholder="Describe the primary function of this group..."
+                />
+              </div>
+            </div>
+
+            {isEditMode && (
+               <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex justify-between items-center">
+                   <span className="text-xs font-bold text-gray-500 uppercase">Current Members</span>
+                   <span className="text-lg font-extrabold text-gray-900">{group.member_count}</span>
+               </div>
+            )}
+
+          </form>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-5 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/50 shrink-0">
+            <button 
+                type="button"
+                onClick={onClose}
+                disabled={loading}
+                className="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+            >
+                Cancel
+            </button>
+            <button 
+                type="submit"
+                form="group-form"
+                disabled={loading}
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#A0C850] hover:bg-[#8FB840] text-gray-900 text-sm font-bold rounded-lg transition-colors shadow-sm disabled:opacity-50"
+            >
+                {loading && <Loader className="w-4 h-4 animate-spin" />}
+                {isEditMode ? 'Save Changes' : 'Create Group'}
+            </button>
         </div>
 
       </div>
     </div>
   );
-};
-
-export default GroupModal;
+}
