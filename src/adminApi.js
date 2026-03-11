@@ -299,7 +299,7 @@ export async function collectSouvenir(data) {
 
 // --- Notification APIs ---
 export async function fetchNotifications() {
-  return adminRequest("/admin/notification/");
+  return adminRequest("/admin/notification");
 }
 export async function createNotification(formData) {
   const session = getAdminSession();
