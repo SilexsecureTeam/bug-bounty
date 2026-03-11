@@ -402,3 +402,28 @@ export async function acceptFileRequest(id) {
 export async function declineFileRequest(id) {
   return adminRequest(`/admin/file/${id}/decline`);
 }
+
+// --- Profile APIs ---
+
+export async function fetchProfile() {
+  return adminRequest("/admin/profile");
+}
+
+export async function updateProfile(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  
+  const response = await fetch(`${API_BASE_URL}/admin/profile/upload`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+  
+  if (!response.ok) {
+    let errData = {};
+    try { errData = await response.json(); } catch(e) {}
+    throw new Error(errData.message || "Failed to update profile");
+  }
+  return await response.json();
+}
