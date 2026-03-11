@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from "./api";
+import { getApiBaseUrl } from "./api"; 
 
 const API_BASE_URL = getApiBaseUrl();
 const ADMIN_SESSION_KEY = "adminSession";
@@ -14,7 +14,6 @@ export function getAdminSession() {
     const parsed = JSON.parse(data);
     const now = Date.now();
 
-    // Check Timeout
     if (now - parsed.timestamp > SESSION_TIMEOUT_MS) {
       console.warn("Admin session expired.");
       logoutAdmin();
@@ -32,14 +31,14 @@ export function saveAdminSession(token, user) {
   const sessionData = {
     token,
     user,
-    timestamp: Date.now(), // Save login time
+    timestamp: Date.now(), 
   };
   localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(sessionData));
 }
 
 export function logoutAdmin() {
   localStorage.removeItem(ADMIN_SESSION_KEY);
-  window.location.href = "/admin/login"; // Force redirect
+  window.location.href = "/admin/login"; 
 }
 
 export class AdminApiError extends Error {
@@ -55,9 +54,7 @@ async function adminRequest(path, { method = "GET", headers = {}, body } = {}) {
   const session = getAdminSession();
   const token = session?.token;
 
-  // Append token if available
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
   const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
   
   try {
@@ -73,17 +70,10 @@ async function adminRequest(path, { method = "GET", headers = {}, body } = {}) {
 
     const text = await response.text();
     let data = {};
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (e) {
-      // ignore JSON parse error
-    }
+    try { data = text ? JSON.parse(text) : {}; } catch (e) {}
 
     if (!response.ok) {
-        // Handle 401 Unauthorized globally for admins
-      if (response.status === 401) {
-        logoutAdmin();
-      }
+      if (response.status === 401) logoutAdmin();
       throw new AdminApiError(data?.message || `Request failed: ${response.status}`, {
         status: response.status,
         data,
@@ -97,173 +87,168 @@ async function adminRequest(path, { method = "GET", headers = {}, body } = {}) {
   }
 }
 
-// --- Admin Auth APIs (OTP FLOW) ---
+// --- Admin Auth APIs ---
 
-// 1. Request OTP
 export async function requestAdminOtp(identifier) {
-  // identifier can be email or phone, but endpoint expects "phone" key based on prompt
   const response = await fetch(`${API_BASE_URL}/requestOtpSms`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phone: identifier }),
   });
-
   const responseBody = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseBody.message || "Failed to send OTP");
-  }
+  if (!response.ok) throw new Error(responseBody.message || "Failed to send OTP");
   return responseBody;
 }
 
-// 2. Verify OTP & Login
 export async function verifyAdminOtpAndLogin({ identifier, otp }) {
   const response = await fetch(`${API_BASE_URL}/loginWithPhone`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phone: identifier, otp: otp }),
   });
-
   const responseBody = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseBody.message || "Login failed");
-  }
-
+  if (!response.ok) throw new Error(responseBody.message || "Login failed");
+  
   const apiData = responseBody.data;
-
-  if (!apiData) {
-    throw new Error("Invalid Server Response: Missing data object");
-  }
+  if (!apiData) throw new Error("Invalid Server Response: Missing data object");
 
   const user = apiData.user;
   const accessToken = apiData.access_token;
-
-  // Validate User is Admin or Volunteer
   const role = user?.role ? user.role.toLowerCase() : "";
   const allowedRoles = ["admin", "volunteer"];
 
   if (!allowedRoles.includes(role)) {
      throw new Error("Access Denied: Restricted to Admins and Volunteers.");
   }
-
-  // Save Token (access_token) and User
   saveAdminSession(accessToken, user);
-
   return responseBody;
 }
 
-// Deprecated Password Login (Kept for reference or fallback if needed, but not used in new flow)
-export async function adminLogin({ email, password }) {
-  const response = await fetch(`${API_BASE_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const responseBody = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseBody.message || "Login failed");
-  }
-  const apiData = responseBody.data;
-  saveAdminSession(apiData.access_token, apiData.user);
-  return responseBody;
-}
-
-// --- Admin Dashboard API ---
 export async function fetchAdminDashboardStats() {
   return adminRequest("/admin/dashboard");
 }
 
-// --- Event Management APIs ---
+// --- Team (User Account) APIs ---
+export async function fetchTeams() {
+  return adminRequest("/admin/account");
+}
+export async function createTeam(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}/admin/account/create`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Failed to create team member");
+  return await response.json();
+}
+export async function changeTeamStatus(id, status) {
+  return adminRequest(`/admin/account/${id}/${status}`); 
+}
 
-// Fetch all events
+// --- Group Management APIs ---
+export async function fetchGroups() {
+  return adminRequest("/admin/group");
+}
+export async function createGroup(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}/admin/group/create`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Failed to create group");
+  return await response.json();
+}
+export async function updateGroup(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}/admin/group/update`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Failed to update group");
+  return await response.json();
+}
+export async function addGroupMember(data) {
+  return adminRequest(`/admin/group/member/add`, { method: "POST", body: data });
+}
+export async function fetchGroupMembers(id) {
+  return adminRequest(`/admin/group/member/${id}`);
+}
+export async function removeGroupMember(data) {
+  return adminRequest(`/admin/group/member/remove`, { method: "POST", body: data });
+}
+
+// --- Event Management APIs ---
 export async function fetchEvents() {
   return adminRequest("/admin/form");
 }
-
-// Create Event
 export async function createEvent(data) {
   return adminRequest("/admin/form/create", { method: "POST", body: data });
 }
-
-// Update Event
 export async function updateEvent(data) {
   return adminRequest("/admin/form/update", { method: "POST", body: data });
 }
-
-// Delete Event
 export async function deleteEvent(id) {
   return adminRequest(`/admin/form/delete/${id}`); 
 }
-
-// Fetch applicants for an event
 export async function fetchEventApplicants(eventId) {
   return adminRequest(`/admin/form/application/${eventId}`);
 }
-
-// Fetch approved attendance for an event
 export async function fetchEventAttendance(eventId) {
   return adminRequest(`/admin/form/attendance/${eventId}`);
 }
-
-// Approve attendance for a user
 export async function approveAttendance(eventId, userId) {
   return adminRequest(`/admin/form/attendance/${eventId}/${userId}`);
 }
 
 // --- Certificate APIs ---
-
 export async function fetchEventCertificates(eventId) {
   return adminRequest(`/admin/form/certificate/${eventId}`);
 }
-
 export async function createCertificate(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/form/certificate/create`, {
     method: "POST",
     headers: headers,
     body: formData,
   });
-
   if (!response.ok) throw new Error("Failed to create certificate");
   return await response.json();
 }
-
 export async function updateCertificate(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/form/certificate/update`, {
     method: "POST",
     headers: headers,
     body: formData,
   });
-
   if (!response.ok) throw new Error("Failed to update certificate");
   return await response.json();
 }
-
 export async function deleteCertificate(certificateId) {
   return adminRequest(`/admin/form/certificate/delete/${certificateId}`);
 }
-
 export async function fetchCertificateApplicants(certificateId) {
   return adminRequest(`/admin/form/certificate/applicants/${certificateId}`);
 }
-
 export async function collectCertificate(data) {
   return adminRequest(`/admin/form/certificate/applicants/collect`, {
     method: "POST",
     body: data
   });
 }
-
 export async function mailCertificate(data) {
   return adminRequest(`/admin/form/certificate/mail`, {
     method: "POST",
@@ -272,54 +257,39 @@ export async function mailCertificate(data) {
 }
 
 // --- Souvenir APIs ---
-
 export async function fetchEventSouvenirs(eventId) {
   return adminRequest(`/admin/form/souvenir/${eventId}`);
 }
-
 export async function createSouvenir(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/form/souvenir/create`, {
     method: "POST",
     headers: headers,
     body: formData,
   });
-
-  if (!response.ok) {
-    const text = await response.text();
-    let data = {};
-    try { data = JSON.parse(text); } catch(e) {}
-    throw new Error(data.message || "Failed to create souvenir");
-  }
+  if (!response.ok) throw new Error("Failed to create souvenir");
   return await response.json();
 }
-
 export async function updateSouvenir(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/form/souvenir/update`, {
     method: "POST",
     headers: headers,
     body: formData,
   });
-
   if (!response.ok) throw new Error("Failed to update souvenir");
   return await response.json();
 }
-
 export async function deleteSouvenir(souvenirId) {
   return adminRequest(`/admin/form/souvenir/delete/${souvenirId}`);
 }
-
 export async function fetchSouvenirApplicants(souvenirId) {
   return adminRequest(`/admin/form/souvenir/applicants/${souvenirId}`);
 }
-
 export async function collectSouvenir(data) {
   return adminRequest(`/admin/form/souvenir/applicants/collect`, {
     method: "POST",
@@ -327,62 +297,34 @@ export async function collectSouvenir(data) {
   });
 }
 
-// --- Notification/Communications APIs ---
-
-// Fetch all notifications
+// --- Notification APIs ---
 export async function fetchNotifications() {
-  return adminRequest("/admin/notification");
+  return adminRequest("/admin/notification/");
 }
-
-// Create a notification (Multipart/Form-Data)
 export async function createNotification(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/notification/create`, {
     method: "POST",
     headers: headers,
     body: formData,
   });
-
-  if (!response.ok) {
-    const text = await response.text();
-    let data = {};
-    try { data = JSON.parse(text); } catch(e) {}
-    throw new Error(data.message || "Failed to create notification");
-  }
+  if (!response.ok) throw new Error("Failed to create notification");
   return await response.json();
 }
-
-// Update a notification (Multipart/Form-Data)
 export async function updateNotification(formData) {
   const session = getAdminSession();
   const token = session?.token;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
   const response = await fetch(`${API_BASE_URL}/admin/notification/edit`, {
-    method: "POST", // Endpoint is /edit but accepts POST with ID in body
+    method: "POST", 
     headers: headers,
     body: formData,
   });
-
-  if (!response.ok) {
-    const text = await response.text();
-    let data = {};
-    try { data = JSON.parse(text); } catch(e) {}
-    throw new Error(data.message || "Failed to update notification");
-  }
+  if (!response.ok) throw new Error("Failed to update notification");
   return await response.json();
 }
-
-// Delete a notification
 export async function deleteNotification(id) {
   return adminRequest(`/admin/notification/delete/${id}`);
-}
-
-
-// --- Group Management APIs ---
-export async function fetchGroups() {
-  return adminRequest("/admin/group");
 }
