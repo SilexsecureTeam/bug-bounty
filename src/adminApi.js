@@ -328,3 +328,77 @@ export async function updateNotification(formData) {
 export async function deleteNotification(id) {
   return adminRequest(`/admin/notification/delete/${id}`);
 }
+// --- File & Document Management APIs ---
+
+export async function fetchFiles() {
+  return adminRequest("/admin/file");
+}
+
+export async function fetchUserFiles() {
+  return adminRequest("/admin/file/user");
+}
+
+export async function fetchFileRequests() {
+  return adminRequest("/admin/file/request");
+}
+
+export async function viewFile(id) {
+  return adminRequest(`/admin/file/view/${id}`);
+}
+
+export async function downloadFile(id) {
+  return adminRequest(`/admin/file/download/${id}`);
+}
+
+export async function uploadFile(formData) {
+  const session = getAdminSession();
+  const token = session?.token;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}/admin/file/upload`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Failed to upload file");
+  return await response.json();
+}
+
+export async function fetchFileGroupShares(id) {
+  return adminRequest(`/admin/file/share/group/${id}`);
+}
+
+export async function addFileGroupShare(data) {
+  return adminRequest(`/admin/file/share/group/add`, { method: "POST", body: data });
+}
+
+export async function fetchFileUserShares(id) {
+  return adminRequest(`/admin/file/share/user/${id}`);
+}
+
+export async function addFileUserShare(data) {
+  return adminRequest(`/admin/file/share/user/add`, { method: "POST", body: data });
+}
+
+export async function fetchFileGroupAccess(id) {
+  return adminRequest(`/admin/file/access/group/${id}`);
+}
+
+export async function fetchFileUserAccess(id) {
+  return adminRequest(`/admin/file/access/user/${id}`);
+}
+
+export async function revokeFileAccess(id) {
+  return adminRequest(`/admin/file/access/${id}/revoke`);
+}
+
+export async function fetchFileAccessLog(id) {
+  return adminRequest(`/admin/file/access/${id}/log`);
+}
+
+export async function acceptFileRequest(id) {
+  return adminRequest(`/admin/file/${id}/accept`);
+}
+
+export async function declineFileRequest(id) {
+  return adminRequest(`/admin/file/${id}/decline`);
+}
