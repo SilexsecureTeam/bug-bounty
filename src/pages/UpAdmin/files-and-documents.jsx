@@ -3,48 +3,45 @@ import Layout from '../../components/UpAdmin/Layout';
 import ShareDocumentModal from '../../components/UpAdmin/ShareDocumentModal';
 import { 
   FolderPlus, UploadCloud, Search, ChevronDown, Filter,
-  FileText, Share2, Edit2, Trash2, ChevronLeft, ChevronRight, Loader
+  FileText, Share2, Eye, Download, ChevronLeft, ChevronRight, Loader, Inbox, CheckCircle, XCircle
 } from 'lucide-react';
-import { fetchFiles, uploadFile } from '../../adminApi';
+import { 
+  fetchFiles, fetchFileRequests, uploadFile, 
+  viewFile, downloadFile, acceptFileRequest, declineFileRequest 
+} from '../../adminApi';
 
 export default function UpAdminFilesAndDocuments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
+  const [activeMainTab, setActiveMainTab] = useState('Documents'); // 'Documents' or 'Requests'
   
   // Data State
   const [documents, setDocuments] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null); // stores 'id-action'
   
   // Filter & Pagination State
   const [searchTerm, setSearchTerm] = useState("");
-  const [classFilter, setClassFilter] = useState("Classification");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
   
   const fileInputRef = useRef(null);
 
-  // Fallback mock data in case API is empty/not ready
-  const fallbackDocuments = [
-    { id: 1, name: 'Radon_System_Blueprint_V2-004.dwg', classification: 'Confidential', category: 'Tech Specs', access: 'Ops Members', uploader: 'Michael Ali', created_at: '2023-09-18' },
-    { id: 2, name: 'Vendor_Agreement_LocalHost_2023.pdf', classification: 'Confidential', category: 'Tech Specs', access: 'All Users', uploader: 'Michael Ali', created_at: '2023-09-18' },
-    { id: 3, name: 'Q4_Financial_Report.xlsx', classification: 'Internal', category: 'Contracts', access: 'Admins Only', uploader: 'Michael Ali', created_at: '2023-09-18' },
-    { id: 4, name: 'Employee_Handbook.pdf', classification: 'Public', category: 'Legal', access: 'Legal', uploader: 'Michael Ali', created_at: '2023-09-18' },
-    { id: 5, name: 'API_Keys_And_Secrets.env', classification: 'Secret', category: 'Contracts', access: 'Audit', uploader: 'Michael Ali', created_at: '2023-09-18' },
-  ];
-
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await fetchFiles();
-      if (res.data && res.data.length > 0) {
-        setDocuments(res.data);
-      } else {
-        setDocuments(fallbackDocuments); // Use fallback if API returns empty
-      }
+      const [filesRes, reqRes] = await Promise.allSettled([
+        fetchFiles(),
+        fetchFileRequests()
+      ]);
+      
+      if (filesRes.status === 'fulfilled') setDocuments(filesRes.value.data || []);
+      if (reqRes.status === 'fulfilled') setRequests(reqRes.value.data || []);
+      
     } catch (error) {
-      console.error("Failed to load files", error);
-      setDocuments(fallbackDocuments); // Use fallback on error
+      console.error("Failed to load files and requests", error);
     } finally {
       setLoading(false);
     }
@@ -60,12 +57,11 @@ export default function UpAdminFilesAndDocuments() {
 
     const formData = new FormData();
     formData.append('file', file);
-    // Add extra default payload fields if required by your API later
-    // formData.append('classification', 'Internal');
     
     setUploading(true);
     try {
       await uploadFile(formData);
+      alert("File uploaded successfully.");
       loadData(); // Refresh list after upload
     } catch (error) {
       alert("Failed to upload document: " + error.message);
@@ -80,14 +76,55 @@ export default function UpAdminFilesAndDocuments() {
     setIsModalOpen(true);
   };
 
+  const handleFileAction = async (action, id) => {
+    setActionLoading(`${id}-${action}`);
+    try {
+      let res;
+      if (action === 'view') {
+        res = await viewFile(id);
+      } else if (action === 'download') {
+        res = await downloadFile(id);
+      }
+      
+      // If the API returns a URL in 'data', attempt to open it
+      if (res && res.data && typeof res.data === 'string' && res.data.startsWith('http')) {
+         window.open(res.data, '_blank');
+      } else {
+         alert(`Action '${action}' successful. Note: Backend did not return a valid direct URL to open.`);
+      }
+    } catch (err) {
+      alert(`Failed to ${action} file: ` + err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRequestAction = async (action, id) => {
+    setActionLoading(`${id}-${action}`);
+    try {
+      if (action === 'accept') {
+        await acceptFileRequest(id);
+      } else {
+        await declineFileRequest(id);
+      }
+      loadData();
+    } catch (err) {
+      alert(`Failed to ${action} request: ` + err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // --- FILTER LOGIC ---
+  const activeData = activeMainTab === 'Documents' ? documents : requests;
+
   const filteredData = useMemo(() => {
-    return documents.filter(doc => {
-      const matchSearch = doc.name?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchClass = classFilter === 'Classification' || doc.classification === classFilter;
-      return matchSearch && matchClass;
-    });
-  }, [documents, searchTerm, classFilter]);
+    return activeData.filter(item => {
+      const matchSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          item.file?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchSearch;
+    }).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  }, [activeData, searchTerm, activeMainTab]);
 
   // --- PAGINATION LOGIC ---
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -96,18 +133,21 @@ export default function UpAdminFilesAndDocuments() {
     currentPage * rowsPerPage
   );
 
-  const ClassificationBadge = ({ type }) => {
-    const styles = {
-      Confidential: 'bg-[#A65B5B] text-white',
-      Internal: 'bg-[#5B88A6] text-white',
-      Public: 'bg-[#5BA684] text-white',
-      Secret: 'bg-[#E5484D] text-white',
-      'Top Secret': 'bg-[#A098E5] text-white',
+  const FileExtBadge = ({ ext }) => {
+    const cleanExt = ext?.toLowerCase() || 'file';
+    const colors = {
+      pdf: 'bg-[#E5484D] text-white',
+      dwg: 'bg-[#5B88A6] text-white',
+      xlsx: 'bg-[#5BA684] text-white',
+      csv: 'bg-[#5BA684] text-white',
+      docx: 'bg-[#3B82F6] text-white',
+      png: 'bg-[#A098E5] text-white',
+      jpg: 'bg-[#A098E5] text-white',
     };
     
     return (
-      <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider whitespace-nowrap ${styles[type] || 'bg-gray-200 text-gray-600'}`}>
-        {type || 'Unclassified'}
+      <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider whitespace-nowrap ${colors[cleanExt] || 'bg-gray-200 text-gray-600'}`}>
+        {cleanExt}
       </span>
     );
   };
@@ -125,17 +165,13 @@ export default function UpAdminFilesAndDocuments() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm whitespace-nowrap w-full sm:w-auto">
-              <FolderPlus className="w-4 h-4" />
-              New Folder
-            </button>
             <button 
               onClick={() => fileInputRef.current.click()}
               disabled={uploading}
               className="inline-flex items-center justify-center gap-2 bg-[#A0C850] hover:bg-[#8FB840] text-gray-900 px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm whitespace-nowrap w-full sm:w-auto disabled:opacity-70"
             >
               {uploading ? <Loader className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-              {uploading ? 'Uploading...' : 'Upload Documents'}
+              {uploading ? 'Uploading...' : 'Upload Document'}
             </button>
             <input 
               type="file" 
@@ -146,6 +182,23 @@ export default function UpAdminFilesAndDocuments() {
           </div>
         </div>
 
+        {/* Main Status Tabs */}
+        <div className="flex gap-2 mt-6">
+            {['Documents', 'Access Requests'].map((tab) => (
+            <button
+                key={tab}
+                onClick={() => { setActiveMainTab(tab); setCurrentPage(1); }}
+                className={`px-5 py-2 rounded-lg text-sm font-bold transition-colors ${
+                activeMainTab === tab 
+                    ? 'bg-gray-800 text-white shadow-sm' 
+                    : 'text-gray-600 bg-white border border-gray-200 hover:bg-gray-50'
+                }`}
+            >
+                {tab}
+            </button>
+            ))}
+        </div>
+
         {/* Toolbar: Search and Filters */}
         <div className="flex flex-col sm:flex-row gap-3 py-2">
           {/* Search */}
@@ -153,36 +206,11 @@ export default function UpAdminFilesAndDocuments() {
             <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input 
               type="text" 
-              placeholder="Search or type command..." 
+              placeholder={`Search ${activeMainTab.toLowerCase()}...`} 
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 transition-shadow"
             />
-          </div>
-
-          <div className="flex flex-wrap sm:flex-nowrap gap-3 w-full sm:w-auto">
-            {/* Classification Dropdown */}
-            <div className="relative flex-1 sm:flex-none sm:min-w-[150px]">
-              <select 
-                value={classFilter}
-                onChange={(e) => { setClassFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 hover:border-gray-300 transition-colors cursor-pointer h-full"
-              >
-                <option>Classification</option>
-                <option>Confidential</option>
-                <option>Internal</option>
-                <option>Public</option>
-                <option>Secret</option>
-                <option>Top Secret</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* Filter Button */}
-            <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors flex-1 sm:flex-none">
-              <Filter className="w-4 h-4" />
-              More
-            </button>
           </div>
         </div>
 
@@ -190,80 +218,147 @@ export default function UpAdminFilesAndDocuments() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col mt-2">
           <div className="overflow-x-auto min-h-[300px]">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead>
-                <tr className="bg-[#CDE59C]">
-                  <th className="px-6 py-4 w-10">
-                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#759C2A] focus:ring-[#759C2A]" />
-                  </th>
-                  <th className="px-2 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap min-w-[280px]">File Name</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Classification</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Category</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Access Level</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Uploaded By</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Upload Date</th>
-                  <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap text-right">Actions</th>
-                </tr>
-              </thead>
+              
+              {activeMainTab === 'Documents' ? (
+                // --- DOCUMENTS TABLE HEADER ---
+                <thead>
+                  <tr className="bg-[#CDE59C]">
+                    <th className="px-6 py-4 w-10">
+                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#759C2A] focus:ring-[#759C2A]" />
+                    </th>
+                    <th className="px-2 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap min-w-[280px]">File Name</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Type</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Size</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Uploaded By</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Date</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap text-right">Actions</th>
+                  </tr>
+                </thead>
+              ) : (
+                // --- REQUESTS TABLE HEADER ---
+                <thead>
+                  <tr className="bg-[#CDE59C]">
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Request ID</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800">Details</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Status</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">Date</th>
+                    <th className="px-6 py-4 text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap text-right">Actions</th>
+                  </tr>
+                </thead>
+              )}
+
               <tbody className="divide-y divide-gray-50">
                 {loading ? (
                   <tr>
                     <td colSpan="8" className="p-8 text-center text-gray-500">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <Loader className="w-6 h-6 animate-spin text-[#759C2A]" />
-                        <span className="text-sm">Loading documents...</span>
+                        <span className="text-sm">Loading data...</span>
                       </div>
                     </td>
                   </tr>
                 ) : paginatedData.length > 0 ? (
-                  paginatedData.map((doc, idx) => (
-                    <tr key={doc.id || idx} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#759C2A] focus:ring-[#759C2A]" />
-                      </td>
-                      <td className="px-2 py-4">
-                        <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-gray-400 shrink-0" />
-                          <span className="text-sm font-semibold text-gray-600 truncate max-w-[200px] sm:max-w-[240px]" title={doc.name}>
-                            {doc.name}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ClassificationBadge type={doc.classification} />
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
-                        {doc.category || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
-                        {doc.access || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
-                        {doc.uploader || 'System'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
-                          {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : doc.date || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="flex items-center justify-end gap-2 sm:gap-3 text-gray-400">
-                          <button onClick={() => handleShareClick(doc)} className="p-1.5 hover:bg-gray-100 hover:text-gray-800 rounded transition-colors" title="Share">
-                            <Share2 className="w-4 h-4" />
-                          </button>
-                          <button className="p-1.5 hover:bg-gray-100 hover:text-[#759C2A] rounded transition-colors" title="Edit">
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded transition-colors" title="Delete">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                  paginatedData.map((item, idx) => (
+                    activeMainTab === 'Documents' ? (
+                      // --- DOCUMENTS ROW ---
+                      <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#759C2A] focus:ring-[#759C2A]" />
+                        </td>
+                        <td className="px-2 py-4">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-gray-400 shrink-0" />
+                            <span className="text-sm font-semibold text-gray-600 truncate max-w-[200px] sm:max-w-[240px]" title={item.name}>
+                              {item.name || item.file || `File #${item.id}`}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <FileExtBadge ext={item.file_ext} />
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap font-mono">
+                          {item.file_size || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap uppercase">
+                          {item.user_type || 'Admin'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+                            {item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-2 sm:gap-3 text-gray-400">
+                            <button 
+                                onClick={() => handleShareClick(item)} 
+                                className="p-1.5 hover:bg-gray-100 hover:text-gray-800 rounded transition-colors" title="Manage Access & Share"
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </button>
+                            <button 
+                                onClick={() => handleFileAction('view', item.id)} 
+                                disabled={actionLoading === `${item.id}-view`}
+                                className="p-1.5 hover:bg-gray-100 hover:text-[#759C2A] rounded transition-colors disabled:opacity-50" title="View File"
+                            >
+                                {actionLoading === `${item.id}-view` ? <Loader size={16} className="animate-spin" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                            <button 
+                                onClick={() => handleFileAction('download', item.id)} 
+                                disabled={actionLoading === `${item.id}-download`}
+                                className="p-1.5 hover:bg-gray-100 hover:text-[#759C2A] rounded transition-colors disabled:opacity-50" title="Download File"
+                            >
+                                {actionLoading === `${item.id}-download` ? <Loader size={16} className="animate-spin" /> : <Download className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      // --- REQUESTS ROW ---
+                      <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 text-sm font-semibold text-gray-600 whitespace-nowrap">
+                           REQ-{item.id}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-800">
+                           <div className="flex items-center gap-2">
+                              <Inbox className="w-4 h-4 text-orange-500" />
+                              <span>User ID <b className="text-gray-900">{item.user_id || 'Unknown'}</b> requested access to File ID <b className="text-gray-900">{item.file_id || 'Unknown'}</b></span>
+                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider ${
+                                item.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                            }`}>
+                                {item.status || 'Pending'}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
+                           {item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                           <div className="flex items-center justify-end gap-2 text-gray-400">
+                              <button 
+                                onClick={() => handleRequestAction('accept', item.id)} 
+                                disabled={actionLoading === `${item.id}-accept`}
+                                className="p-1.5 hover:bg-green-50 text-green-600 rounded transition-colors disabled:opacity-50" title="Approve Request"
+                              >
+                                {actionLoading === `${item.id}-accept` ? <Loader size={16} className="animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                              </button>
+                              <button 
+                                onClick={() => handleRequestAction('decline', item.id)} 
+                                disabled={actionLoading === `${item.id}-decline`}
+                                className="p-1.5 hover:bg-red-50 text-red-500 rounded transition-colors disabled:opacity-50" title="Decline Request"
+                              >
+                                {actionLoading === `${item.id}-decline` ? <Loader size={16} className="animate-spin" /> : <XCircle className="w-4 h-4" />}
+                              </button>
+                           </div>
+                        </td>
+                      </tr>
+                    )
                   ))
                 ) : (
                   <tr>
                     <td colSpan="8" className="p-8 text-center text-gray-500 text-sm">
-                      No documents found matching your criteria.
+                      No records found.
                     </td>
                   </tr>
                 )}
@@ -304,7 +399,7 @@ export default function UpAdminFilesAndDocuments() {
 
       </div>
 
-      {/* Share Document Modal */}
+      {/* Share/Access Document Modal */}
       <ShareDocumentModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
