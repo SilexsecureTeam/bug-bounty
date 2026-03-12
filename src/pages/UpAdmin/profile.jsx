@@ -8,15 +8,24 @@ export default function UpAdminProfile() {
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Form State
+  // Form State matching API requirements
   const [formData, setFormData] = useState({
     name: '',
-    username: '',
-    email: '',
+    username: '', // From previous UI, keep it if needed visually, but API uses name
+    email: '',    // Readonly usually, but keep in state
     phone: '',
     address: '',
     avatar: null, // Holds URL for preview
+    enable_2fa: 0,
+    device_token: '',
+    device_type: '',
+    pin: '',
+    onboarding_stage: '',
+    encryptorkey: '',
+    role: '',     // To display Admin Role
+    department: '',// To display Department/Company
   });
+  
   const [selectedFile, setSelectedFile] = useState(null); // Holds actual file to upload
 
   // Mock data for sessions and logs as API doesn't seem to provide this yet
@@ -37,14 +46,25 @@ export default function UpAdminProfile() {
     setLoading(true);
     try {
       const res = await fetchProfile();
-      if (res && res.data) {
+      if (res && res.data && res.data.user) {
+        const user = res.data.user;
+        const company = res.data.companyUser;
+        
         setFormData({
-          name: res.data.name || '',
-          username: res.data.username || '',
-          email: res.data.email || '',
-          phone: res.data.phone || '',
-          address: res.data.address || '',
-          avatar: res.data.avatar || null,
+          name: user.name || '',
+          username: user.username || '', 
+          email: user.email || '',
+          phone: user.phone || '',
+          address: user.address || '',
+          avatar: user.avatar || null,
+          enable_2fa: user.enable_2fa || 0,
+          device_token: user.device_token || '',
+          device_type: user.device_type || '',
+          pin: user.pin || '',
+          onboarding_stage: user.onboarding_stage || '',
+          encryptorkey: user.encryptorkey || '',
+          role: user.role || 'Admin',
+          department: company?.name || 'Cybersecurity & Infrastructure',
         });
       }
     } catch (error) {
@@ -59,7 +79,11 @@ export default function UpAdminProfile() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ 
+        ...formData, 
+        [name]: type === 'checkbox' ? (checked ? 1 : 0) : value 
+    });
   };
 
   const handleFileChange = (e) => {
@@ -75,11 +99,19 @@ export default function UpAdminProfile() {
     setSaving(true);
     try {
       const payload = new FormData();
+      
+      // Append fields based on provided API spec
       payload.append('name', formData.name);
-      payload.append('username', formData.username);
-      payload.append('email', formData.email);
-      payload.append('phone', formData.phone);
-      payload.append('address', formData.address);
+      payload.append('phone', formData.phone || '');
+      payload.append('address', formData.address || '');
+      payload.append('enable_2fa', formData.enable_2fa);
+      
+      // Append these if they exist to prevent sending "null" strings
+      if(formData.device_token) payload.append('device_token', formData.device_token);
+      if(formData.device_type) payload.append('device_type', formData.device_type);
+      if(formData.pin) payload.append('pin', formData.pin);
+      if(formData.onboarding_stage) payload.append('onboarding_stage', formData.onboarding_stage);
+      if(formData.encryptorkey) payload.append('encryptor_key', formData.encryptorkey); // Note: API spec said encryptor_key, response was encryptorkey
       
       if (selectedFile) {
         payload.append('avatar', selectedFile);
@@ -180,16 +212,7 @@ export default function UpAdminProfile() {
                   className="w-full bg-[#F8FAFC] border border-gray-200 text-sm font-semibold text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:border-[#759C2A] focus:bg-white transition-colors" 
                 />
               </div>
-              <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Username</label>
-                <input 
-                  type="text" 
-                  name="username"
-                  value={formData.username} 
-                  onChange={handleChange}
-                  className="w-full bg-[#F8FAFC] border border-gray-200 text-sm font-semibold text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:border-[#759C2A] focus:bg-white transition-colors" 
-                />
-              </div>
+              
               <div>
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Email Address</label>
                 <div className="relative">
@@ -197,12 +220,13 @@ export default function UpAdminProfile() {
                     <input 
                         type="email" 
                         name="email"
+                        readOnly
                         value={formData.email} 
-                        onChange={handleChange}
-                        className="w-full bg-[#F8FAFC] border border-gray-200 text-sm font-semibold text-gray-800 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-[#759C2A] focus:bg-white transition-colors" 
+                        className="w-full bg-gray-100 border border-gray-200 text-sm font-semibold text-gray-500 rounded-xl pl-10 pr-4 py-3 focus:outline-none cursor-not-allowed" 
                     />
                 </div>
               </div>
+
               <div>
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Phone Number</label>
                 <input 
@@ -213,6 +237,27 @@ export default function UpAdminProfile() {
                   className="w-full bg-[#F8FAFC] border border-gray-200 text-sm font-semibold text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:border-[#759C2A] focus:bg-white transition-colors" 
                 />
               </div>
+              
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Admin Role</label>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={formData.role} 
+                  className="w-full bg-gray-100 border border-gray-200 text-sm font-semibold text-gray-500 rounded-xl px-4 py-3 focus:outline-none cursor-not-allowed uppercase" 
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Department / Company</label>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={formData.department} 
+                  className="w-full bg-gray-100 border border-gray-200 text-sm font-semibold text-gray-500 rounded-xl px-4 py-3 focus:outline-none cursor-not-allowed" 
+                />
+              </div>
+
               <div className="sm:col-span-2">
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Address</label>
                 <input 
@@ -237,24 +282,35 @@ export default function UpAdminProfile() {
                   <ShieldCheck className="w-4 h-4 text-[#759C2A]" />
                   Security Controls
                 </h2>
-                <span className="bg-[#EAF3D8] text-[#557B1A] text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Enforced
-                </span>
+                {formData.enable_2fa === 1 && (
+                  <span className="bg-[#EAF3D8] text-[#557B1A] text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Enforced
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-xl mb-6 gap-4">
                 <div className="flex gap-3 items-center">
-                  <div className="p-2 bg-[#F2F7E9] rounded-lg shrink-0">
-                    <ShieldCheck className="w-5 h-5 text-[#557B1A]" />
+                  <div className={`p-2 rounded-lg shrink-0 ${formData.enable_2fa === 1 ? 'bg-[#F2F7E9]' : 'bg-gray-100'}`}>
+                    <ShieldCheck className={`w-5 h-5 ${formData.enable_2fa === 1 ? 'text-[#557B1A]' : 'text-gray-400'}`} />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-gray-800">Multi-Factor Authentication (MFA)</h3>
-                    <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium">Extra security verification is enabled</p>
+                    <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium">Extra security verification is {formData.enable_2fa === 1 ? 'enabled' : 'disabled'}</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg font-bold text-xs hover:bg-gray-50 transition-colors w-full sm:w-auto whitespace-nowrap">
-                  Manage MFA
-                </button>
+                
+                {/* Toggle Switch for 2FA */}
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    name="enable_2fa"
+                    checked={formData.enable_2fa === 1}
+                    onChange={handleChange}
+                    className="sr-only peer" 
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#759C2A]"></div>
+                </label>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
