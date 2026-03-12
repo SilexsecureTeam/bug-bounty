@@ -47,7 +47,7 @@ const AdminLogin = () => {
       });
       
       toast.success("Welcome back, Administrator");
-      navigate("/admin"); // Redirect to Admin Dashboard
+      navigate("/upadmin"); // Redirect to Admin Dashboard
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Invalid OTP or Access Denied");
