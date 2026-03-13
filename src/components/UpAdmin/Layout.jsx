@@ -5,38 +5,33 @@ import Header from './Header';
 const Layout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
-  // Theme state: Load from local storage, default to light
+  // Theme state: Load from local storage, specific to UpAdmin
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark';
+      return localStorage.getItem('upadmin_theme') === 'dark';
     }
     return false;
   });
 
-  // Apply dark class to the HTML element whenever the state changes
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    localStorage.setItem('upadmin_theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   return (
-    // Added dark mode background colors here
-    <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#060706] overflow-hidden font-sans transition-colors duration-300">
+    // We apply the "dark" class dynamically here. 
+    // All components inside will react to dark:... Tailwind classes.
+    <div className={`flex h-screen overflow-hidden font-sans transition-colors duration-300 ${isDarkMode ? 'dark bg-[#060706] text-white' : 'bg-[#F8FAFC] text-gray-900'}`}>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden relative">
+      
+      <div className="flex-1 flex flex-col overflow-hidden relative bg-[#F8FAFC] dark:bg-[#060706]">
         <Header 
             setIsOpen={setIsSidebarOpen} 
             isDarkMode={isDarkMode} 
             toggleTheme={toggleTheme} 
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#F8FAFC] dark:bg-[#0A0C0A] p-4 lg:p-8 transition-colors duration-300">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-8 transition-colors duration-300">
           {children}
         </main>
       </div>
