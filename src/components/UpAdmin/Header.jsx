@@ -23,11 +23,9 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
   useEffect(() => {
     const loadHeaderData = async () => {
       try {
-        // Optimistically load from local session first
         const session = getAdminSession();
         if (session?.user) setUser(session.user);
 
-        // Fetch fresh data
         const [profRes, notifRes] = await Promise.allSettled([
           fetchProfile(),
           fetchNotifications()
@@ -78,7 +76,6 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // You can implement actual routing/searching logic here
       console.log("Searching for:", searchQuery);
     }
   };
@@ -100,15 +97,15 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
         
         {/* Global Search */}
         <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center max-w-md w-full relative">
-          <Search className="w-4 h-4 absolute left-4 text-gray-400" />
+          <Search className="w-4 h-4 absolute left-4 text-gray-400 dark:text-gray-500" />
           <input 
             ref={searchInputRef}
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search or type command..." 
-            // The text-gray-900 and dark:text-white classes fix the invisible typing text
-            className="w-full pl-10 pr-12 py-2.5 rounded-full border border-gray-200 dark:border-[#2A2E2A] dark:bg-[#0B0E0B] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 bg-gray-50 transition-all placeholder-gray-400"
+            // FIX: explicitly set text colors so it's visible while typing
+            className="w-full pl-10 pr-12 py-2.5 rounded-full border border-gray-200 dark:border-[#2A2E2A] bg-gray-50 dark:bg-[#1F221F] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 transition-all placeholder-gray-400 dark:placeholder-gray-500"
           />
           <span className="absolute right-4 px-1.5 py-0.5 border border-gray-200 dark:border-[#2A2E2A] rounded text-xs text-gray-400 font-medium bg-white dark:bg-[#141613]">
             ⌘K
@@ -117,7 +114,7 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
       </div>
 
       <div className="flex items-center gap-3 lg:gap-5">
-        {/* Theme Toggle (Hooks up to the Layout state) */}
+        {/* Theme Toggle Button */}
         <button 
             onClick={toggleTheme}
             className="p-2.5 rounded-full bg-gray-50 dark:bg-[#1F221F] border border-gray-200 dark:border-[#2A2E2A] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2A2E2A] transition-colors"
@@ -141,7 +138,7 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
             {/* Notification Dropdown */}
             {showNotifDropdown && (
                 <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-[#141613] rounded-2xl shadow-xl border border-gray-100 dark:border-[#2A2E2A] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-200">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-[#2A2E2A] bg-gray-50/50 dark:bg-[#1F221F]/50">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-[#2A2E2A] bg-gray-50/50 dark:bg-[#1F221F]">
                         <h3 className="font-bold text-sm text-gray-900 dark:text-white">Notifications</h3>
                         <span className="text-[10px] font-bold bg-[#759C2A]/10 text-[#759C2A] px-2 py-1 rounded-full">
                             {unreadCount} New
@@ -153,26 +150,26 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
                         ) : notifications.length > 0 ? (
                             <div className="divide-y divide-gray-100 dark:divide-[#2A2E2A]">
                                 {notifications.slice(0, 4).map((note, i) => (
-                                    <div key={note.id || i} className={`p-4 hover:bg-gray-50 dark:hover:bg-[#1F221F] transition-colors ${note.status === 'Unread' ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}>
+                                    <div key={note.id || i} className={`p-4 hover:bg-gray-50 dark:hover:bg-[#1F221F] transition-colors ${note.status === 'Unread' ? 'bg-blue-50/30 dark:bg-[#1F3513]/20' : ''}`}>
                                         <div className="flex justify-between items-start mb-1">
                                             <span className="text-xs font-bold text-gray-900 dark:text-white truncate">{note.label || note.event}</span>
                                             <span className="text-[10px] text-gray-400 whitespace-nowrap ml-2">
                                                 {note.created_at ? new Date(note.created_at).toLocaleDateString() : 'Just now'}
                                             </span>
                                         </div>
-                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                                        <p className="text-[11px] text-gray-500 dark:text-[#9CA3AF] line-clamp-2 leading-relaxed">
                                             {note.short_message || note.desc || note.message}
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="p-6 text-center text-xs text-gray-500 dark:text-gray-400">
+                            <div className="p-6 text-center text-xs text-gray-500 dark:text-[#9CA3AF]">
                                 You're all caught up!
                             </div>
                         )}
                     </div>
-                    <div className="p-2 border-t border-gray-100 dark:border-[#2A2E2A] bg-gray-50/50 dark:bg-[#1F221F]/50">
+                    <div className="p-2 border-t border-gray-100 dark:border-[#2A2E2A] bg-gray-50/50 dark:bg-[#1F221F]">
                         <button 
                             onClick={() => { setShowNotifDropdown(false); navigate('/upadmin/notifications'); }}
                             className="w-full py-2 text-xs font-bold text-[#759C2A] hover:text-[#557B1A] transition-colors"
@@ -199,7 +196,7 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate max-w-[120px]">{displayName}</p>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium capitalize">{user?.role || 'Administrator'}</p>
+            <p className="text-[10px] text-gray-500 dark:text-[#9CA3AF] font-medium capitalize">{user?.role || 'Administrator'}</p>
           </div>
         </Link>
       </div>
