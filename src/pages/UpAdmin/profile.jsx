@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../../components/UpAdmin/Layout';
-import { ShieldCheck, Monitor, MapPin, User, Mail, Camera, Loader } from 'lucide-react';
+import { ShieldCheck, Monitor, MapPin, User, Mail, Camera, Loader, Eye, EyeOff, Copy, Check } from 'lucide-react';
 import { fetchProfile, updateProfile } from '../../adminApi';
 
 export default function UpAdminProfile() {
@@ -8,27 +8,31 @@ export default function UpAdminProfile() {
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Token visibility & copy states
+  const [showToken, setShowToken] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   // Form State matching API requirements
   const [formData, setFormData] = useState({
     name: '',
-    username: '', // From previous UI, keep it if needed visually, but API uses name
-    email: '',    // Readonly usually, but keep in state
+    username: '', 
+    email: '',    
     phone: '',
     address: '',
-    avatar: null, // Holds URL for preview
+    avatar: null, 
     enable_2fa: 0,
     device_token: '',
     device_type: '',
     pin: '',
     onboarding_stage: '',
     encryptorkey: '',
-    role: '',     // To display Admin Role
-    department: '',// To display Department/Company
+    role: '',     
+    department: '',
+    access_token: '', // Added access_token
   });
   
-  const [selectedFile, setSelectedFile] = useState(null); // Holds actual file to upload
+  const [selectedFile, setSelectedFile] = useState(null); 
 
-  // Mock data for sessions and logs as API doesn't seem to provide this yet
   const sessions = Array(4).fill({
     device: 'PRO-92X/Device v.12',
     location: 'Abuja, Abuja',
@@ -65,6 +69,7 @@ export default function UpAdminProfile() {
           encryptorkey: user.encryptorkey || '',
           role: user.role || 'Admin',
           department: company?.name || 'Cybersecurity & Infrastructure',
+          access_token: user.access_token || '', // Map access token from API
         });
       }
     } catch (error) {
@@ -90,7 +95,6 @@ export default function UpAdminProfile() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      // Create local preview
       setFormData({ ...formData, avatar: URL.createObjectURL(file) });
     }
   };
@@ -100,18 +104,16 @@ export default function UpAdminProfile() {
     try {
       const payload = new FormData();
       
-      // Append fields based on provided API spec
       payload.append('name', formData.name);
       payload.append('phone', formData.phone || '');
       payload.append('address', formData.address || '');
       payload.append('enable_2fa', formData.enable_2fa);
       
-      // Append these if they exist to prevent sending "null" strings
       if(formData.device_token) payload.append('device_token', formData.device_token);
       if(formData.device_type) payload.append('device_type', formData.device_type);
       if(formData.pin) payload.append('pin', formData.pin);
       if(formData.onboarding_stage) payload.append('onboarding_stage', formData.onboarding_stage);
-      if(formData.encryptorkey) payload.append('encryptor_key', formData.encryptorkey); // Note: API spec said encryptor_key, response was encryptorkey
+      if(formData.encryptorkey) payload.append('encryptor_key', formData.encryptorkey); 
       
       if (selectedFile) {
         payload.append('avatar', selectedFile);
@@ -119,12 +121,20 @@ export default function UpAdminProfile() {
 
       await updateProfile(payload);
       alert("Profile updated successfully!");
-      setSelectedFile(null); // Clear selected file after successful upload
-      loadProfile(); // Reload to get definitive URLs and data
+      setSelectedFile(null); 
+      loadProfile(); 
     } catch (error) {
       alert("Failed to update profile: " + error.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCopyToken = () => {
+    if (formData.access_token) {
+      navigator.clipboard.writeText(formData.access_token);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -268,6 +278,41 @@ export default function UpAdminProfile() {
                   className="w-full bg-[#F8FAFC] border border-gray-200 text-sm font-semibold text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:border-[#759C2A] focus:bg-white transition-colors" 
                 />
               </div>
+
+              {/* Personal Access Token Field */}
+              <div className="sm:col-span-2 mt-2">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-2 flex items-center justify-between">
+                  Personal Access Token
+                </label>
+                <div className="relative flex items-center">
+                    <input 
+                        type={showToken ? "text" : "password"} 
+                        readOnly
+                        value={formData.access_token || ''} 
+                        placeholder="••••••••••••••••"
+                        className="w-full bg-gray-50 border border-gray-200 text-sm font-mono text-gray-600 rounded-xl pl-4 pr-24 py-3 focus:outline-none cursor-not-allowed" 
+                    />
+                    <div className="absolute right-3 flex items-center gap-2">
+                        <button 
+                          type="button"
+                          onClick={() => setShowToken(!showToken)}
+                          className="p-1.5 text-gray-400 hover:text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm transition-colors"
+                          title={showToken ? "Hide Token" : "Show Token"}
+                        >
+                          {showToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={handleCopyToken}
+                          className="p-1.5 text-gray-400 hover:text-[#759C2A] hover:bg-[#F2F7E9] hover:border-[#759C2A] bg-white border border-gray-200 rounded-lg shadow-sm transition-colors"
+                          title="Copy Token"
+                        >
+                          {copied ? <Check className="w-3.5 h-3.5 text-[#759C2A]" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                    </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
