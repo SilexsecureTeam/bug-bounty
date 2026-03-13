@@ -40,7 +40,6 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
         if (notifRes.status === 'fulfilled' && notifRes.value.data) {
           const fetchedNotifs = notifRes.value.data;
           setNotifications(fetchedNotifs);
-          // Count unread (assuming API returns 'Unread' or 'unread')
           const unread = fetchedNotifs.filter(n => (n.status || '').toLowerCase() === 'unread').length;
           setUnreadCount(unread);
         }
@@ -79,9 +78,8 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      // You can implement actual routing/searching logic here
       console.log("Searching for:", searchQuery);
-      // Typically you would navigate to a global search results page here
-      // navigate(`/upadmin/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -109,7 +107,8 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search or type command..." 
-            className="w-full pl-10 pr-12 py-2.5 rounded-full border border-gray-200 dark:border-[#2A2E2A] dark:bg-[#0B0E0B] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 bg-gray-50 transition-all placeholder-gray-400"
+            // The text-gray-900 and dark:text-white classes fix the invisible typing text
+            className="w-full pl-10 pr-12 py-2.5 rounded-full border border-gray-200 dark:border-[#2A2E2A] dark:bg-[#0B0E0B] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#759C2A]/50 bg-gray-50 transition-all placeholder-gray-400"
           />
           <span className="absolute right-4 px-1.5 py-0.5 border border-gray-200 dark:border-[#2A2E2A] rounded text-xs text-gray-400 font-medium bg-white dark:bg-[#141613]">
             ⌘K
@@ -118,7 +117,7 @@ const Header = ({ setIsOpen, isDarkMode, toggleTheme }) => {
       </div>
 
       <div className="flex items-center gap-3 lg:gap-5">
-        {/* Theme Toggle */}
+        {/* Theme Toggle (Hooks up to the Layout state) */}
         <button 
             onClick={toggleTheme}
             className="p-2.5 rounded-full bg-gray-50 dark:bg-[#1F221F] border border-gray-200 dark:border-[#2A2E2A] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2A2E2A] transition-colors"
