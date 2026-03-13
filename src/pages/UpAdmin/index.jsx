@@ -188,10 +188,10 @@ export default function UpAdminOverview() {
           <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Admin Action Center</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: 'Invite Team Member', desc: 'Add new users to your organization', icon: UserPlus, color: 'text-blue-500 bg-blue-50', path: '/upadmin/team' },
-              { title: 'Upload Document', desc: 'Add files to secure storage', icon: UploadCloud, color: 'text-purple-500 bg-purple-50', path: '/upadmin/files' },
-              { title: 'Submit Form', desc: 'Complete required documentation', icon: FileText, color: 'text-teal-500 bg-teal-50', path: '/upadmin/forms' },
-              { title: 'Request New Service', desc: 'Apply for additional access', icon: PlusSquare, color: 'text-green-500 bg-green-50', path: '/upadmin/forms' }, // Mapping to forms for now
+              { title: 'Invite Team Member', desc: 'Add new users to your organization', icon: UserPlus, color: 'text-blue-500 bg-blue-50', path: '/upadmin/team-management' },
+              { title: 'Upload Document', desc: 'Add files to secure storage', icon: UploadCloud, color: 'text-purple-500 bg-purple-50', path: '/upadmin/files-and-documents' },
+              { title: 'Submit Form', desc: 'Complete required documentation', icon: FileText, color: 'text-teal-500 bg-teal-50', path: '/upadmin/forms-and-requests' },
+              { title: 'Request New Service', desc: 'Apply for additional access', icon: PlusSquare, color: 'text-green-500 bg-green-50', path: '/upadmin/applications' }, // Mapping to forms for now
             ].map((action, i) => (
               <Link to={action.path} key={i} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm text-left hover:border-[#759C2A] transition-all hover:shadow-md group flex flex-col h-full cursor-pointer">
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-3 sm:mb-4 shrink-0 ${action.color}`}>
